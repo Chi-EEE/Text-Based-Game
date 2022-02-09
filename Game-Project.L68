@@ -1,57 +1,82 @@
 00001000 Starting Address
 Assembler used: EASy68K Editor/Assembler v5.16.01
-Created On: 09/02/2022 15:58:15
+Created On: 09/02/2022 16:24:35
 
 00001000                             1      ORG $1000
-00001000  =00000E13                  2  SALARY      EQU 3603 * Cash every month
+00001000  =00000C88                  2  SALARY      EQU 3208 * Cash every month
 00001000  =000F4240                  3  MILLION     EQU 1000000
-00001000                             4  START:  
-00001000  6000 0002                  5      BRA GAME_LOOP
-00001004                             6  GAME_LOOP:
-00001004  2439 00001038              7      MOVE.L  MONEY,  D2
-0000100A  0682 00000E13              8      ADD.L   #SALARY, D2
-00001010  23C2 00001038              9      MOVE.L  D2,     MONEY
-00001016                            10      
-Line 11 ERROR: Immediate data exceeds 16 bits
-00001016  0C79 4240 00001038        11      CMP     #MILLION, MONEY
-0000101E  6C00 0008                 12      BGE     RICH
-00001022  60E0                      13      BRA     GAME_LOOP
-00001024                            14  INPUT:
-00001024                            15      
-00001024  4E75                      16      RTS
-00001026                            17  UPDATE:
-00001026                            18  
-00001026  4E75                      19      RTS
-00001028                            20  RICH:
-00001028  43F9 0002B3D8             21      LEA WIN, A1
-0000102E  103C 000E                 22      MOVE.B #14, D0
-00001032  4E4F                      23      TRAP #15
-00001034                            24  END_GAME:
-00001034                            25      
-00001034                            26  
-00001034                            27  
-00001034  FFFF FFFF                 28      SIMHALT
-00001038                            29  
-00001038                            30  * Starting Cash
-00001038                            31  MONEY:  DS.L    43240
-0002B3D8= 43 6F 6E 67 72 61 ...     32  WIN:    DC.B   'Congrats, your wealthy!', 0
-0002B3F0                            33  
-0002B3F0                            34      END START 
+00001000                             4  START:
+00001000                             5      * Ask User for name
+00001000  43F9 00001072              6      LEA NAME, A1
+00001006  103C 000E                  7      MOVE.B #14, D0
+0000100A  4E4F                       8      TRAP #15
+0000100C                             9      
+0000100C                            10      * Input name
+0000100C  103C 0002                 11      MOVE.B #2, D0
+00001010  4E4F                      12      TRAP #15
+00001012                            13      
+00001012  33C9 00001058             14      MOVE  A1,  PLAYER_NAME
+00001018                            15      
+00001018  6000 0002                 16      BRA GAME_LOOP
+0000101C                            17  GAME_LOOP:
+0000101C  2439 00001054             18      MOVE.L  MONEY,  D2
+00001022  0682 00000C88             19      ADD.L   #SALARY, D2
+00001028  23C2 00001054             20      MOVE.L  D2,     MONEY
+0000102E                            21      
+0000102E  283C 000F4240             22      MOVE.L  #MILLION, D4
+00001034                            23      
+00001034  B8B9 00001054             24      CMP.L     MONEY, D4
+0000103A  6C00 0008                 25      BGE     RICH
+0000103E  60DC                      26      BRA     GAME_LOOP
+00001040                            27  INPUT:
+00001040                            28      
+00001040  4E75                      29      RTS
+00001042                            30  UPDATE:
+00001042                            31  
+00001042  4E75                      32      RTS
+00001044                            33  RICH:
+00001044  43F9 0000105A             34      LEA WIN, A1
+0000104A  103C 000E                 35      MOVE.B #14, D0
+0000104E  4E4F                      36      TRAP #15
+00001050                            37  END_GAME:
+00001050                            38      
+00001050                            39  
+00001050                            40      
+00001050  FFFF FFFF                 41      SIMHALT
+00001054                            42  
+00001054                            43  * Starting Cash
+00001054                            44  MONEY:          DS.L    1
+00001058                            45  PLAYER_NAME:    DS.W    1
+0000105A                            46  
+0000105A= 43 6F 6E 67 72 61 ...     47  WIN:    DC.B   'Congrats, your wealthy!', 0
+00001072                            48  
+00001072= 45 6E 74 65 72 20 ...     49  NAME:           DC.B    'Enter the player name: ',0
+0000108A                            50  
+0000108A= 2A 2A 2A 2A 2A 2A ...     51  WELCOME_MSG:    DC.B    '************************************************************'
+000010C6= 0D 0A                     52                  DC.B    $0D,$0A
+000010C8= 53 54 52 41 54 45 ...     53                  DC.B    'STRATEGY GAMES SUCH AS ZORK, AVALON, OR RABBITS VS PLUMBERS'
+00001103= 0D 0A                     54                  DC.B    $0D,$0A
+00001105= 2A 2A 2A 2A 2A 2A ...     55                  DC.B    '************************************************************'
+00001141= 0D 0A 00                  56                  DC.B    $0D,$0A,0
+00001144                            57      END START 
 
-1 error detected
+No errors detected
 No warnings generated
 
 
 SYMBOL TABLE INFORMATION
 Symbol-name         Value
 -------------------------
-END_GAME            1034
-GAME_LOOP           1004
-INPUT               1024
+END_GAME            1050
+GAME_LOOP           101C
+INPUT               1040
 MILLION             F4240
-MONEY               1038
-RICH                1028
-SALARY              E13
+MONEY               1054
+NAME                1072
+PLAYER_NAME         1058
+RICH                1044
+SALARY              C88
 START               1000
-UPDATE              1026
-WIN                 2B3D8
+UPDATE              1042
+WELCOME_MSG         108A
+WIN                 105A
