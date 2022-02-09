@@ -3,7 +3,7 @@ SALARY      EQU 3208 * Cash every month
 MILLION     EQU 1000000
 START:
     * Ask User for name
-    LEA NAME, A1
+    LEA LOG_LINE, A1
     MOVE.B #14, D0
     TRAP #15
     
@@ -12,7 +12,10 @@ START:
     TRAP #15
     
     * Moves the address location of the inputted name into PLAYER_NAME
-    MOVE  A1,  PLAYER_NAME
+    MOVE    A1, NAME_PTR
+    MOVE    D1, NAME_SIZE
+    
+    * TODO: String Concatenation
     
 	BRA GAME_LOOP
 GAME_LOOP:
@@ -43,11 +46,14 @@ END_GAME:
 
 * Starting Cash
 MONEY:          DS.L    1 * Reserve 1 LONG
-PLAYER_NAME:    DS.W    1 * Reserve 1 WORD
+NAME_PTR:    DS.W    1 * Reserve 1 WORD
+NAME_SIZE:    DS.B    1 * Reserve 1 BYTE
 
 WIN:    DC.B   'Congrats, your wealthy!', 0
 
 NAME:           DC.B    'Enter the player name: ',0
+
+LOG_LINE        DC.B    '============================================================',0
 
 * Later
 WELCOME_MSG:    DC.B    '************************************************************'

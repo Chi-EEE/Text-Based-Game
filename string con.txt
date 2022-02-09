@@ -1,0 +1,96 @@
+Don't know what your solution was so I wrote this code anyway which may help.
+Also don't know if your program already knows the amount of memory required for the new string and so just assumes the memory has been allocated.
+
+
+
+
+START    LEA     STR1,A0       ; Load address of str1
+
+         LEA     STR2,A1       ; Load address of str2
+
+         LEA     STR3,A2       ; Load address of str3
+
+
+
+         CLR.L   D0            ; initalise string counter
+
+
+
+         TST.B   (A0)          ; Test for null string
+
+         BEQ.S   SKIP_1
+
+
+
+LOOP_1   ADDQ.L  #1,D0         ; Count characters copied
+
+         MOVE.B  (A0)+,(A2)+   ; Copy str1 into str3
+
+         BNE.S   LOOP_1        ; Test for end of str1 and continue until completed
+
+
+
+         SUBQ.L  #1,D0         ; Discard null character count
+
+
+
+SKIP_1   TST.B   (A1)          ; Test for null string
+
+         BEQ.S   SKIP_2
+
+
+
+LOOP_2   ADDQ.L  #1,D0         ; Count characters copied
+
+         MOVE.B  (A1)+,(A2)+   ; Append and copy str2 into str3
+
+         BNE.S   LOOP_2        ; Test for end of str2 and continue until null character copied
+
+
+
+         SUBQ.L  #1,D0         ; Discard last character counted = string terminator
+
+
+
+
+
+SKIP_2   { end code }
+
+
+Motorola 68000 assembly text strings
+
+[Log in to get rid of this advertisement]
+I am writing an assembly program for the Motorola 68000, and I am having trouble doing dynamic strings. I want to be able to append information to a string, and then print it out.
+
+EDIT: Made some progress. I can dynamically generate a string, but to append to that string is a problem. I am having trouble using the kludgey pointer system here in Assembler. I cannot seem to use pointers to the actual buffer....
+
+Code:
+
+goodbuffer  MACRO
+            LEA     bufferptr,A1    ; Load pointer to string buffer
+            LEA     \1,A2           ; Load the string starting address
+            LEA     \2,A3           ; Load the string ending address
+for_loop\@  CMPA    A2,A3           ; Check loop counters
+            BEQ     loop_end\@      ; Check for ending loop
+            MOVE.B  (A2),(A1)+      ; Move a character of string in A2 into the buffer
+            ADDA    #1,A2           ; Increment the loop counter by 1
+            BRA     for_loop\@      ; Loop again
+loop_end\@
+            LEA     bufferptr,A1    ; Reload original pointing address of bufferptr
+            ADDA    A3,A1           ; Add ending string address to  bufferptr address
+            MOVE.L A1,bufferptr     ; Store the new address into bufferptr
+            ENDM
+
+Here is an example in C++ of what to do in Assembly:
+
+string str = "";
+// doing stuff....
+str += "ADDI.W ";
+// more stuff....
+str += " D2,D4";
+cout << str << endl;
+[/code]
+
+Edit: Solved, though not efficiently.
+
+  
