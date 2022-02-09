@@ -1,29 +1,37 @@
-	ORG	$1000
-START:	MOVE.B #1, $2000
+    ORG	$1000
+SALARY      EQU 3603 * Cash every month
+START:	
 	BRA GAME_LOOP
 GAME_LOOP:
-	MOVE.B $2000, D3
-	CMP #1, D3
-	BNE END_GAME
-	BSR INPUT
-	BSR UPDATE
-	BSR DRAW
-	BRA GAME_LOOP
-		
+    MOVE.W  MONEY,  D2
+    ADD.W   #SALARY, D2
+    MOVE.W  D2,     MONEY
+	
+    CMP     #1000000, MONEY
+    BGE     RICH
+    BRA     GAME_LOOP
 INPUT:
-	MOVE.B #4,D0
-	TRAP #15
-	MOVE.B D1, $2000    * Moves inputted value into memory address 2000
 	
     RTS
 UPDATE:
 
 	RTS
+RICH:
+    LEA WIN, A1
+    MOVE.B #14, D0
+    TRAP #15
 END_GAME:
+    
+
 
 	SIMHALT
 
+* Starting Cash
+MONEY:  DS.W    43240
+WIN     'Congrats, your wealthy', 0
+
 	END	START 
+
 *~Font name~Courier New~
 *~Font size~10~
 *~Tab type~1~

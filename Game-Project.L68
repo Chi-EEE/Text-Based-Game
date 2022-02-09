@@ -1,0 +1,57 @@
+00001000 Starting Address
+Assembler used: EASy68K Editor/Assembler v5.16.01
+Created On: 09/02/2022 15:58:15
+
+00001000                             1      ORG $1000
+00001000  =00000E13                  2  SALARY      EQU 3603 * Cash every month
+00001000  =000F4240                  3  MILLION     EQU 1000000
+00001000                             4  START:  
+00001000  6000 0002                  5      BRA GAME_LOOP
+00001004                             6  GAME_LOOP:
+00001004  2439 00001038              7      MOVE.L  MONEY,  D2
+0000100A  0682 00000E13              8      ADD.L   #SALARY, D2
+00001010  23C2 00001038              9      MOVE.L  D2,     MONEY
+00001016                            10      
+Line 11 ERROR: Immediate data exceeds 16 bits
+00001016  0C79 4240 00001038        11      CMP     #MILLION, MONEY
+0000101E  6C00 0008                 12      BGE     RICH
+00001022  60E0                      13      BRA     GAME_LOOP
+00001024                            14  INPUT:
+00001024                            15      
+00001024  4E75                      16      RTS
+00001026                            17  UPDATE:
+00001026                            18  
+00001026  4E75                      19      RTS
+00001028                            20  RICH:
+00001028  43F9 0002B3D8             21      LEA WIN, A1
+0000102E  103C 000E                 22      MOVE.B #14, D0
+00001032  4E4F                      23      TRAP #15
+00001034                            24  END_GAME:
+00001034                            25      
+00001034                            26  
+00001034                            27  
+00001034  FFFF FFFF                 28      SIMHALT
+00001038                            29  
+00001038                            30  * Starting Cash
+00001038                            31  MONEY:  DS.L    43240
+0002B3D8= 43 6F 6E 67 72 61 ...     32  WIN:    DC.B   'Congrats, your wealthy!', 0
+0002B3F0                            33  
+0002B3F0                            34      END START 
+
+1 error detected
+No warnings generated
+
+
+SYMBOL TABLE INFORMATION
+Symbol-name         Value
+-------------------------
+END_GAME            1034
+GAME_LOOP           1004
+INPUT               1024
+MILLION             F4240
+MONEY               1038
+RICH                1028
+SALARY              E13
+START               1000
+UPDATE              1026
+WIN                 2B3D8
