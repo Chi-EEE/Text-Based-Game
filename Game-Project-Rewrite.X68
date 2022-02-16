@@ -67,7 +67,7 @@ CITY:
     BEQ     SHOP
     CMP.W   #2,D1       ACTION IF (D2 == #2)
     BEQ     ACTION
-    RTS
+    BRA     CITY
 
 *-------------------------------------------------------
 *--------------------SHOP SUBROUTINE--------------------
