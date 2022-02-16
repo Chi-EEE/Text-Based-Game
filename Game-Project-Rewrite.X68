@@ -15,17 +15,10 @@ START:
     MOVE.W  #38500,MONEY
     
     BSR     WELCOME
-    BSR     GAME
+    BSR     GAMELOOP
     
 END:
     SIMHALT
-
-*-------------------------------------------------------
-*--------------------GAME SUBROUTINE--------------------
-*-------------------------------------------------------
-GAME:
-    BSR     GAMELOOP
-    RTS
 
 *-------------------------------------------------------
 *-------------------WELCOME SUBROUTINE------------------
@@ -44,21 +37,69 @@ WELCOME:
 GAMELOOP:
     BSR     INPUT
     BSR     UPDATE
-    CMP.W   #0,D2       EXIT IF (D2 == #0)
-    BGE     END
-    BRA     GAMELOOP
+    BRA     GAMELOOP    LOOP FOREVER
     
 *-------------------------------------------------------
 *--------------------INPUT SUBROUTINE-------------------
 *-------------------------------------------------------
 INPUT:
+    LEA INPUT_S, A1
+    MOVE.B #14, D0
+    TRAP #15
+    BSR     ENDL
+    MOVE.B  #4, D0
+    TRAP    #15         ASK FOR INPUT
     RTS
 
 *-------------------------------------------------------
 *--------------------UPDATE SUBROUTINE------------------
 *-------------------------------------------------------
-UPDATE:
+UPDATE:    
+    BSR     CHECK_INPUTS
+    BSR     EVENT
+    RTS
+    
+*-------------------------------------------------------
+*--------------------CHECK_INPUTS SUBROUTINE------------
+*-------------------------------------------------------
+CHECK_INPUTS:
+    LEA CHECK_INPUTS_S, A1
+    MOVE.B #14, D0
+    TRAP #15
+    CMP.W   #0,D1       SHOP IF (D2 == #1)
+    BEQ     SHOP
+    CMP.W   #1,D1       ACTION IF (D2 == #1)
+    BEQ     ACTION
+    RTS
+    
+*-------------------------------------------------------
+*--------------------EVENT SUBROUTINE-------------------
+*-------------------------------------------------------
+EVENT:
+    LEA EVENT_S, A1
+    MOVE.B #14, D0
+    TRAP #15
     ADD.W   #SALARY, MONEY
+    RTS
+
+*-------------------------------------------------------
+*--------------------SHOP SUBROUTINE--------------------
+*-------------------------------------------------------
+SHOP:
+    LEA SHOP_S, A1
+    MOVE.B #14, D0
+    TRAP #15
+    BSR     ENDL
+    RTS
+
+*-------------------------------------------------------
+*--------------------SHOP SUBROUTINE--------------------
+*-------------------------------------------------------
+ACTION:
+    LEA ACTION_S, A1
+    MOVE.B #14, D0
+    TRAP #15
+    BSR     ENDL
     RTS
 
 *-------------------------------------------------------
@@ -71,6 +112,7 @@ ENDL:
     TRAP    #15
     MOVEM.L (A7)+,D0/A1
     RTS
+    
 *-------------------------------------------------------
 *-------------------DATA DELARATIONS--------------------
 *-------------------------------------------------------
@@ -81,9 +123,23 @@ WELCOME_MSG:    DC.B    '*******************************************************
                 DC.B    $0D,$0A
                 DC.B    '************************************************************'
                 DC.B    $0D,$0A,0
+        
+INPUT_S         DC.B    'What would you like to do?'
+                DC.B    $0D,$0A
+                DC.B    '[0] = Shop' 
+                DC.B    $0D,$0A
+                DC.B    '[1] = Exit Shop.'
+                DC.B    $0D,$0A, 0
+SHOP_S       DC.B    'TODO: SHOP', 0
+ACTION_S       DC.B    'TODO: ACTION', 0
+CHECK_INPUTS_S  DC.B    'TODO: CHECK_INPUTS', 0
+EVENT_S       DC.B    'TODO: EVENT', 0 
+
 MONEY:    DS.W    1     PLAYER MONEY
 
 	END	START
+
+
 *~Font name~Courier New~
 *~Font size~10~
 *~Tab type~1~
