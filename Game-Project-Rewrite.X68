@@ -137,6 +137,7 @@ SYSTEM_PAUSE:
     TRAP #15            
     MOVE.B  #5,D0       WAIT FOR SINGLE CHARACTER
     TRAP    #15
+    BSR     ENDL
     RTS
     
 *-------------------------------------------------------
