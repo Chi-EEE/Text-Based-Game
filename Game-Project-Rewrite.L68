@@ -1,6 +1,6 @@
 00001000 Starting Address
 Assembler used: EASy68K Editor/Assembler v5.16.01
-Created On: 16/02/2022 16:40:33
+Created On: 02/03/2022 15:27:06
 
 00000000                             1  *-------------------------------------------------------
 00000000                             2  * STARTING MEMORY ADDRESS FOR THE PROGRAMME $1000
@@ -16,7 +16,7 @@ Created On: 16/02/2022 16:40:33
 00001000  =000F4240                 12  MILLION     EQU 1000000
 00001000                            13  
 00001000                            14  START:
-00001000  33FC 9664 00001292        15      MOVE.W  #38500,MONEY
+00001000  33FC 9664 00001294        15      MOVE.W  #38500,MONEY
 00001008                            16      
 00001008  6100 000A                 17      BSR     WELCOME
 0000100C  6000 001C                 18      BRA     GAMELOOP
@@ -113,8 +113,8 @@ Created On: 16/02/2022 16:40:33
 000010C2  43F9 00001258            109      LEA EVENT_S, A1
 000010C8  103C 000E                110      MOVE.B #14, D0
 000010CC  4E4F                     111      TRAP #15
-000010CE  0679 9664 00001292       112      ADD.W   #SALARY, MONEY
-000010D6  5279 00001294            113      ADD.W   #1,AGE
+000010CE  0679 9664 00001294       112      ADD.W   #SALARY, MONEY
+000010D6  5279 00001296            113      ADD.W   #1,AGE
 000010DC  6100 001E                114      BSR     SYSTEM_PAUSE
 000010E0  6000 FF48                115      BRA     GAMELOOP
 000010E4                           116      
@@ -174,10 +174,11 @@ Created On: 16/02/2022 16:40:33
 00001264= 54 4F 44 4F 3A 20 ...    170  DISPLAY_S      DC.B    'TODO: DISPLAY', 0
 00001272= 50 72 65 73 73 20 ...    171  PAUSE_MESSAGE          DC.B    'Press any key to continue . . .', 0
 00001292                           172  
-00001292                           173  MONEY:    DS.W    1     PLAYER MONEY
-00001294                           174  AGE:      DS.W    1     PLAYER AGE || START AT 0 TO 52
-00001296                           175  
-00001296                           176      END START
+00001292                           173  NAME:     DS.W    1
+00001294                           174  MONEY:    DS.W    1     PLAYER MONEY
+00001296                           175  AGE:      DS.W    1     PLAYER AGE || START AT 0 TO 52
+00001298                           176  
+00001298                           177      END START
 
 No errors detected
 No warnings generated
@@ -186,7 +187,7 @@ No warnings generated
 SYMBOL TABLE INFORMATION
 Symbol-name         Value
 -------------------------
-AGE                 1294
+AGE                 1296
 CITY                1052
 CITY_MESSAGE        11FF
 CRLF                112E
@@ -204,7 +205,8 @@ GAMELOOP            102A
 MANAGE              10B0
 MANAGE_S            124B
 MILLION             F4240
-MONEY               1292
+MONEY               1294
+NAME                1292
 PAUSE_MESSAGE       1272
 SALARY              9664
 SHOP                108C
