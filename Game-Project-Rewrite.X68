@@ -17,6 +17,7 @@ START:
     
     BSR     WELCOME
     BSR     INPUT_NAME
+    BSR     INTRO
     BRA     GAMELOOP
     
 END:
@@ -28,7 +29,7 @@ END:
 *-------------------------------------------------------
 WELCOME:
     BSR     ENDL
-    LEA     WELCOME_MSG,A1
+    LEA     welcome_string,A1
     MOVE.B  #14,D0
     TRAP    #15
     BSR     ENDL
@@ -37,17 +38,36 @@ WELCOME:
 *-------------------------------------------------------
 *-------------------NAME INPUT SUBROUTINE---------------
 *-------------------------------------------------------
+INTRO:
+    BSR     ENDL
+    LEA     intro_string,A1
+    BSR     PRINT
+	
+    LEA     name,A1
+    BSR     PRINT
+    
+    LEA     tripleDot,A1
+    BSR     PRINT
+
+    BSR     SYSTEM_PAUSE
+    BSR     CLEAR_SCREEN
+    RTS
+
+*-------------------------------------------------------
+*-------------------NAME INPUT SUBROUTINE---------------
+*-------------------------------------------------------
 INPUT_NAME:
     BSR     ENDL
     LEA     enterName,A1
-    MOVE.B  #14,D0
-	
-    TRAP    #15
+    BSR     PRINT
+    
     BSR     ENDL        *NEW LINE
     
     MOVE.B  #2,D0
     LEA     NAME, A1    *LOAD NAME ADDRESS TO A1
     TRAP    #15         *INPUT NAME
+    
+    BSR     CLEAR_SCREEN
     
     RTS
 
@@ -56,8 +76,7 @@ INPUT_NAME:
 *------------------------------------------------------- 
 GAMELOOP:
     LEA mainChoice, A1   *LOAD MESSAGE
-    MOVE.B #14, D0
-    TRAP #15            *DISPLAY MESSAGE
+    BSR     PRINT
     BSR     ENDL        *NEW LINE
     
     MOVE.B  #4, D0
@@ -74,9 +93,10 @@ GAMELOOP:
 *-------------------------------------------------------
 CITY:
     BSR     DISPLAY_DETAILS
+    
     LEA 	cityChoice, A1   *LOAD MESSAGE
-    MOVE.B #14, D0
-    TRAP #15            *DISPLAY MESSAGE
+    BSR     PRINT
+    
     BSR     ENDL        *NEW LINE
     
     MOVE.B  #4, D0
@@ -107,8 +127,8 @@ SHOP:
 *-------------------------------------------------------
 EXPLORE:
     LEA exploreChoice, A1
-    MOVE.B #14, D0
-    TRAP #15
+    BSR     PRINT
+    
     BSR     SYSTEM_PAUSE
     BRA     CITY
     
@@ -117,8 +137,8 @@ EXPLORE:
 *-------------------------------------------------------
 MANAGE:
     LEA manageChoice, A1
-    MOVE.B #14, D0
-    TRAP #15
+    BSR     PRINT
+    
     BSR     SYSTEM_PAUSE
     BRA     CITY
     
@@ -127,8 +147,8 @@ MANAGE:
 *-------------------------------------------------------
 EVENT:
     LEA eventText, A1
-    MOVE.B #14, D0
-    TRAP #15
+    BSR     PRINT
+    
     ADD.W   #SALARY, MONEY
     ADD.W   #1,AGE
     BSR     SYSTEM_PAUSE
@@ -136,7 +156,7 @@ EVENT:
     
 
 *-------------------------------------------------------
-*--------------------ENDL SUBROUTINE--------------------
+*--------------------DISPLAY DETAILS SUBROUTINE---------
 *-------------------------------------------------------
 DISPLAY_DETAILS:
     MOVE.B  #11,D0
@@ -146,15 +166,31 @@ DISPLAY_DETAILS:
     MOVE.B  #14,D0
     TRAP    #15
     RTS
-      
+         
+*-------------------------------------------------------
+*----------------CLEAR SCREEN SUBROUTINE----------------
+*-------------------------------------------------------
+CLEAR_SCREEN: 
+    MOVE.B  #11,D0      CLEAR SCREEN
+    MOVE.W  #$FF00,D1
+    TRAP    #15
+    RTS
+    
+*-------------------------------------------------------
+*----------------PRINT SUBROUTINE-----------------------
+*-------------------------------------------------------
+PRINT:
+    MOVE.B  #14,D0
+    TRAP    #15
+    RTS
+    
 *-------------------------------------------------------
 *----------------SYSTEM PAUSE SUBROUTINE----------------
 *-------------------------------------------------------
 SYSTEM_PAUSE:
     BSR     ENDL
     LEA PAUSE, A1   *DISPLAY PAUSE MESSAGE
-    MOVE.B #14, D0
-    TRAP #15            
+    BSR     PRINT          
     MOVE.B  #5,D0       *WAIT FOR SINGLE CHARACTER
     TRAP    #15
     BSR     ENDL
@@ -175,13 +211,17 @@ ENDL:
 *-------------------DATA DELARATIONS--------------------
 *-------------------------------------------------------
 CRLF:           DC.B    $0D,$0A,0
-WELCOME_MSG:    DC.B    '************************************************************'
+welcome_string: DC.B    '************************************************************'
                 DC.B    $0D,$0A
-                DC.B    'Life with Carbon Tax!'
+                DC.B    'Save the Earth by defeating the CO2 Dragon!!!'
                 DC.B    $0D,$0A
                 DC.B    '************************************************************'
                 DC.B    $0D,$0A,0
 enterName		DC.B    'Please enter your name: ',0
+intro_string:   DC.B    'Welcome to the Kingdom of Oxeris.'
+                DC.B    $0D,$0A
+                DC.B    'You have been choosen to slay the C02 dragon, ',0
+tripleDot  		DC.B    '...',0
 mainChoice   	DC.B    'TODO: EVENT OR CITY', 0
 cityChoice	    DC.B    'TODO: CITY ||| 1 LEAVE; 2 SHOP; 3 EXPLORE;4 MANAGE',0
 shopChoice      DC.B    'TODO: SHOP', 0
@@ -196,6 +236,8 @@ MONEY:    DS.W    1     PLAYER MONEY
 AGE:      DS.W    1     PLAYER AGE || START AT 0 TO 52
 
 	END	START
+
+
 
 
 
