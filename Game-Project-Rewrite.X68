@@ -301,22 +301,22 @@ ENDL:
 *-------------------[D1,D2,D3,input: D4]----------------
 PRINT_DOTS:
     LEA     Dot,A1
-WELCOME_NEXT_PRINT:
+DOT_NEXT_PRINT:
     BSR     PRINT
     BSR     GET_MILLISECONDS
     MOVE.L  D1,D2
-WELCOME_NEXT: 
+DOT_NEXT: 
     BSR     GET_MILLISECONDS
     
     MOVE    D2,D3
     SUB     D3,D1
     
     CMP     #SECOND,D1
-    BLS     NEXT
+    BLS     DOT_NEXT
     
     SUB     #1, D4
     CMP     #0, D4
-    BNE     NEXT_PRINT
+    BNE     DOT_NEXT_PRINT
     RTS
 	
 GET_MILLISECONDS:
