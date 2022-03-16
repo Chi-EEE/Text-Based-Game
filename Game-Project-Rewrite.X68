@@ -4,20 +4,13 @@
 	
 	ORG $1000
 
-*-------------------------------------------------------
-*VALIDATION VALUES TO BE USED, MODIFY AS NEEDED
-*-------------------------------------------------------
-EXIT		EQU 0	  USED TO EXIT ASSEMBLY PROGRAM
-SALARY	  EQU 38500
-MILLION	 EQU 1000000
-HUNDREDTHOUSAND EQU 100000
-
 START:
 	MOVE.W  #SALARY,MONEY
 	
-	BSR	 	WELCOME
+	BSR     SPLASH
 	BSR	 	INPUT_NAME
-	BSR	 	INTRO
+	BSR	 	WELCOME
+	BSR     STORY
 	BRA	 	GAMELOOP
 	
 END:
@@ -25,43 +18,17 @@ END:
 
 
 *-------------------------------------------------------
-*-------------------WELCOME SUBROUTINE------------------
+*-------------------SPLASH SUBROUTINE------------------
 *-------------------------------------------------------
-WELCOME:
+SPLASH:
 	BSR	 	ENDL
-	LEA	 	welcome_string,A1
-	MOVE.B  #14,D0
-	TRAP	#15
+	LEA	 	splash_string,A1    *Load Splash string
+	BSR     PRINT
 	BSR	 	ENDL
-	RTS
-
-*-------------------------------------------------------
-*-------------------INTRO SUBROUTINE--------------------
-*-------------------------------------------------------
-INTRO:
-	BSR	 	ENDL
-	LEA	 	intro_string,A1
-	BSR	 	PRINT
-	
-	LEA	 	name,A1
-	BSR	 	PRINT
-	
-	LEA	 	tripleDot,A1
-	BSR	 	PRINT
-	
-    BSR	 	ENDL
-	
-	BSR	 	SYSTEM_PAUSE
+    
+    BSR	 	SYSTEM_PAUSE
+    
 	BSR	 	CLEAR_SCREEN
-
-	LEA	 	story_string_1,A1
-	BSR	 	PRINT
-	
-	BSR	 	ENDL
-	
-	BSR	 	SYSTEM_PAUSE
-	BSR	 	CLEAR_SCREEN
-
 	RTS
 
 *-------------------------------------------------------
@@ -71,15 +38,110 @@ INPUT_NAME:
 	BSR	 	ENDL
 	LEA	 	enterName,A1
 	BSR	 	PRINT
-	
-	BSR	 	ENDL		*NEW LINE
+	BSR	 	ENDL
 	
 	MOVE.B  #2,D0
-	LEA	 	NAME, A1	*LOAD NAME ADDRESS TO A1
-	TRAP	#15		 *INPUT NAME
+	LEA	 	NAME, A1	*Load Name address to A1 to be able to store name
+	TRAP	#15		    *Input Name
 	
+INPUT_NAME_LOOP:
+	LEA	 	name_confirmation_1, A1
+	BSR     PRINT
+	
+	LEA	 	NAME, A1
+	BSR     PRINT
+	
+	LEA	 	name_confirmation_2, A1
+	BSR     PRINT
+	
+    MOVE.B  #4,D0
+	TRAP	#15		    *Get a number - D1
+
+    CMP     #2,D1       *No
+	BEQ     INPUT_NAME
+	
+	CMP     #1,D1       *Yes
+	BNE     INPUT_NAME_ERROR    *Since number is not 1 or 2
+
+	BSR	 	CLEAR_SCREEN
+    RTS
+INPUT_NAME_ERROR:
+    BSR     ENDL
+    
+    LEA     name_confirmation_fail, A1
+    BSR     PRINT
+
+    BSR     ENDL
+    BSR     ENDL
+    
+    BRA     INPUT_NAME_LOOP
+
+
+*-------------------------------------------------------
+*-------------------WELCOME SUBROUTINE------------------
+*-------------------------------------------------------
+WELCOME:
+	BSR	 	ENDL
+	
+	LEA	 	welcome_string_1,A1
+	BSR     PRINT
+	
+	LEA	 	NAME,A1
+	BSR     PRINT
+	
+	LEA	 	Dot, A1
+	BSR     PRINT
+	
+    BSR     ENDL
+	
+	LEA     welcome_string_2,A1
+	BSR     PRINT
+	
+	MOVE    #5, D4      *Loop for 5 seconds for dots
+	BSR     PRINT_DOTS
+	
+	BSR	 	ENDL
+	
+	BSR	 	SYSTEM_PAUSE
 	BSR	 	CLEAR_SCREEN
 	
+	RTS
+*-------------------------------------------------------
+*-------------------STORY SUBROUTINE--------------------
+*-------------------------------------------------------
+STORY:
+    LEA     intro_story_string_1
+    BSR     PRINT
+    
+    RTS
+
+*-------------------------------------------------------
+*-------------------INTRO SUBROUTINE--------------------
+*-------------------------------------------------------
+INTRO:
+	BSR	 	ENDL
+	*LEA	 	intro_string,A1
+	BSR	 	PRINT
+	
+	LEA	 	name,A1
+	BSR	 	PRINT
+	
+	*LEA	 	tripleDot,A1
+	BSR	 	PRINT
+	
+    BSR	 	ENDL
+	
+	BSR	 	SYSTEM_PAUSE
+	BSR	 	CLEAR_SCREEN
+
+	*LEA	 	story_string_1,A1
+	BSR	 	PRINT
+	
+	BSR	 	ENDL
+	
+	BSR	 	SYSTEM_PAUSE
+	BSR	 	CLEAR_SCREEN
+
 	RTS
 
 *-------------------------------------------------------
@@ -233,16 +295,44 @@ ENDL:
 	MOVEM.L (A7)+,D0/A1
 	RTS
 	
-* D4 = LOOPCOUNTER
 
+*-------------------------------------------------------
+*----------------TIMED PRINT DOT SUBROUTINE-------------
+*-------------------[D1,D2,D3,input: D4]----------------
+PRINT_DOTS:
+    LEA     Dot,A1
+WELCOME_NEXT_PRINT:
+    BSR     PRINT
+    BSR     GET_MILLISECONDS
+    MOVE.L  D1,D2
+WELCOME_NEXT: 
+    BSR     GET_MILLISECONDS
+    
+    MOVE    D2,D3
+    SUB     D3,D1
+    
+    CMP     #SECOND,D1
+    BLS     NEXT
+    
+    SUB     #1, D4
+    CMP     #0, D4
+    BNE     NEXT_PRINT
+    RTS
 	
+GET_MILLISECONDS:
+    MOVE.B #8, D0 # Load
+    TRAP #15  #Time in D1
+    RTS
+
+
+
 *-------------------------------------------------------
 *-------------------DATA DELARATIONS--------------------
 *-------------------------------------------------------
 
 CRLF:		    DC.B	$0D,$0A,0
 
-welcome_string: DC.B	'************************************************************'
+splash_string: DC.B	'************************************************************'
 				DC.B	$0D,$0A
 				DC.B	'Save the Earth by defeating the CO2 Dragon!!!'
 				DC.B	$0D,$0A
@@ -251,21 +341,46 @@ welcome_string: DC.B	'**********************************************************
 				
 enterName		DC.B	'Please enter your name: ',0
 
-intro_string:   DC.B	'Welcome to the Kingdom of Oxeris.',0
+name_confirmation_1 DC.B    'Your name is ',0
+name_confirmation_2 DC.B    ' correct?'
+                    DC.B	$0D,$0A
+                    DC.B	$0D,$09
+                    DC.B	'1) Yes'
+                    DC.B	$0D,$0A
+                    DC.B	$0D,$09
+                    DC.B	'2) No'
+                    DC.B	$0D,$0A
+                    DC.B	$0D,$09
+                    DC.B	'Enter your choice) ',0
+
+name_confirmation_fail  DC.B    'Please type a valid menu option.',0
+
+welcome_string_1:       DC.B	'Welcome to the Kingdom of Oxeris, ',0
+
+welcome_string_2:       DC.B	'You have immigrated to the Kingdom of Oxeris as your hometown'
+                        DC.B	$0D,$0A
+                        DC.B	'has been burned down from a conflict',0
+
+
+intro_story_string_1:	DC.B	'It has been 3 years since you immigrated to'
+				DC.B	$0D,$0A
+				DC.B	' the Kingdom of Oxeris', 0
 				
-story_string_1:	DC.B	'The king of Oxeris has imposed a tax which forces individuals'
+intro_story_string_2:	DC.B	'The king of Oxeris has imposed a tax which forces individuals'
 				DC.B	$0D,$0A
 				DC.B	'of the kingdom to pay based on their C02 output.', 0
 
-story_string_2:	DC.B	'You are not sure why he has imposed a tax on CO2'
+intro_story_string_3:	DC.B	'You are not sure why he has imposed a tax on CO2'
 				DC.B	$0D,$0A
 				DC.B	'if it is what we breathe out!', 0
 		
 story_string_3:	DC.B	'Do you want to go and ask the King why he has imposed'
                 DC.B    'a tax on CO2?'
 				DC.B	$0D,$0A
-				DC.B	$0D,$09'1) Yes!'
-				DC.B	$0D,$09'2) No way!', 0
+				DC.B	$0D,$09
+                DC.B	'1) Yes!'
+				DC.B	$0D,$09
+                DC.B	'2) No way!', 0
 
 line            DC.B    '================================================================================'
 				DC.B	$0D,$0A
@@ -285,6 +400,14 @@ PAUSE		  	DC.B	'Press any key to continue . . .', 0
 MONEY:			DS.W	1	 PLAYER MONEY
 NAME:	 		DS.W	0
 
+*-------------------------------------------------------
+*VALIDATION VALUES TO BE USED
+*-------------------------------------------------------
+EXIT		EQU 0	  USED TO EXIT ASSEMBLY PROGRAM
+SALARY	  EQU 38500
+MILLION	 EQU 1000000
+HUNDREDTHOUSAND EQU 100000
+SECOND  EQU 100
 
 	END	START
 

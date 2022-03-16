@@ -1,0 +1,58 @@
+00001000 Starting Address
+Assembler used: EASy68K Editor/Assembler v5.16.01
+Created On: 16/03/2022 16:04:49
+
+00001000                             1    ORG    $1000
+00001000                             2  START: 
+00001000  183C 000A                  3      MOVE.B  #10, D4
+00001004                             4  LOOP:
+00001004  43F9 00001042              5      LEA     Dot,A1
+0000100A                             6  NEXT_PRINT:
+0000100A  6100 0022                  7      BSR     PRINT
+0000100E  6100 0026                  8      BSR     GET_MILLISECONDS
+00001012  2401                       9      MOVE.L  D1,D2
+00001014                            10  NEXT: 
+00001014  6100 0020                 11      BSR     GET_MILLISECONDS
+00001018                            12      
+00001018  3602                      13      MOVE    D2,D3
+0000101A  9243                      14      SUB     D3,D1
+0000101C                            15      
+0000101C  B27C 03E8                 16      CMP     #1000,D1
+00001020  63F2                      17      BLS     NEXT
+00001022                            18      
+00001022  5344                      19      SUB     #1, D4
+00001024  B87C 0000                 20      CMP     #0, D4
+00001028  66E0                      21      BNE     NEXT_PRINT
+0000102A                            22      
+0000102A  6000 0012                 23      BRA     COMPLETE
+0000102E                            24  PRINT:
+0000102E  103C 000E                 25      MOVE.B  #14,D0
+00001032  4E4F                      26      TRAP    #15
+00001034  4E75                      27      RTS
+00001036                            28  GET_MILLISECONDS:
+00001036  103C 0008                 29      MOVE.B #8, D0 # Load
+0000103A  4E4F                      30      TRAP #15  #Time in D1
+0000103C  4E75                      31      RTS
+0000103E                            32      
+0000103E                            33  COMPLETE:
+0000103E  FFFF FFFF                 34      SIMHALT  
+00001042                            35      
+00001042= 2E 00                     36  Dot             DC.B    '.',0
+00001044                            37            
+00001044                            38      END    START
+
+No errors detected
+No warnings generated
+
+
+SYMBOL TABLE INFORMATION
+Symbol-name         Value
+-------------------------
+COMPLETE            103E
+DOT                 1042
+GET_MILLISECONDS    1036
+LOOP                1004
+NEXT                1014
+NEXT_PRINT          100A
+PRINT               102E
+START               1000
