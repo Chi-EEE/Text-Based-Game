@@ -184,7 +184,7 @@ DISPLAY_DETAILS:
 	MOVE.B  #14,D0
 	TRAP	#15
 	RTS
-		 
+
 *-------------------------------------------------------
 *----------------CLEAR SCREEN SUBROUTINE----------------
 *-------------------------------------------------------
@@ -233,9 +233,13 @@ ENDL:
 	MOVEM.L (A7)+,D0/A1
 	RTS
 	
+* D4 = LOOPCOUNTER
+
+	
 *-------------------------------------------------------
 *-------------------DATA DELARATIONS--------------------
 *-------------------------------------------------------
+
 CRLF:		    DC.B	$0D,$0A,0
 
 welcome_string: DC.B	'************************************************************'
@@ -247,19 +251,27 @@ welcome_string: DC.B	'**********************************************************
 				
 enterName		DC.B	'Please enter your name: ',0
 
-intro_string:   DC.B	'Welcome to the Kingdom of Oxeris.'
-				DC.B	$0D,$0A
-				DC.B	'You have been choosen to slay the C02 dragon, ',0
+intro_string:   DC.B	'Welcome to the Kingdom of Oxeris.',0
 				
 story_string_1:	DC.B	'The king of Oxeris has imposed a tax which forces individuals'
 				DC.B	$0D,$0A
 				DC.B	'of the kingdom to pay based on their C02 output.', 0
-				
+
+story_string_2:	DC.B	'You are not sure why he has imposed a tax on CO2'
+				DC.B	$0D,$0A
+				DC.B	'if it is what we breathe out!', 0
+		
+story_string_3:	DC.B	'Do you want to go and ask the King why he has imposed'
+                DC.B    'a tax on CO2?'
+				DC.B	$0D,$0A
+				DC.B	$0D,$09'1) Yes!'
+				DC.B	$0D,$09'2) No way!', 0
+
 line            DC.B    '================================================================================'
 				DC.B	$0D,$0A
 				DC.B	$0D,$09, 0
 				
-tripleDot  		DC.B	'...',0
+Dot  		    DC.B	'.',0
 
 mainChoice   	DC.B	'TODO: EVENT OR CITY', 0
 cityChoice		DC.B	'TODO: CITY ||| 1 LEAVE; 2 SHOP; 3 EXPLORE;4 MANAGE',0
@@ -275,6 +287,7 @@ NAME:	 		DS.W	0
 
 
 	END	START
+
 
 
 
