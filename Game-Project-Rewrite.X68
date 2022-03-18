@@ -11,6 +11,7 @@ START:
 	BSR	 	INPUT_NAME
 	BSR	 	WELCOME
 	BSR     STORY
+	BSR     GUIDE_1
 	BRA	 	GAMELOOP
 	
 END:
@@ -22,7 +23,7 @@ END:
 *-------------------------------------------------------
 SPLASH:
 	BSR	 	ENDL
-	LEA	 	splash_string,A1    *Load Splash string
+	LEA	 	TITLE,A1    *Load Splash string
 	BSR     PRINT
     
     BSR	 	SYSTEM_PAUSE
@@ -33,6 +34,9 @@ SPLASH:
 *-------------------------------------------------------
 *-------------------NAME INPUT SUBROUTINE---------------
 *-------------------------------------------------------
+CLEAR_INPUT_NAME:
+    BSR     CLEAR_SCREEN
+
 INPUT_NAME:
 	BSR	 	ENDL
 	LEA	 	enterName,A1
@@ -43,6 +47,12 @@ INPUT_NAME:
 	LEA	 	NAME, A1	*Load Name address to A1 to be able to store name
 	TRAP	#15		    *Input Name
 	BSR	 	ENDL
+
+    * Check if name is between length 3 and 30
+    CMP.W     #2,    D1
+    BLS     INPUT_NAME_LENGTH_ERROR
+	CMP.W     #30,    D1
+	BHI     INPUT_NAME_LENGTH_ERROR
 	
 INPUT_NAME_LOOP:
 	LEA	 	name_confirmation_1, A1
@@ -54,28 +64,35 @@ INPUT_NAME_LOOP:
 	LEA	 	name_confirmation_2, A1
 	BSR     PRINT
 	
-    MOVE.B  #4,D0
-	TRAP	#15		    *Get a number - D1
+    BSR     INPUT_NUM
 
     CMP     #2,D1       *No
-	BEQ     INPUT_NAME
+	BEQ     CLEAR_INPUT_NAME
 	
 	CMP     #1,D1       *Yes
-	BNE     INPUT_NAME_ERROR    *Since number is not 1 or 2
+	BNE     INPUT_NAME_MENU_ERROR    *Since number is not 1 or 2
 
 	BSR	 	CLEAR_SCREEN
     RTS
-INPUT_NAME_ERROR:
+INPUT_NAME_LENGTH_ERROR:
+    LEA     name_length_fail,   A1
+    BSR     PRINT
+    
+    BSR     ENDL
+    
+    BSR	 	SYSTEM_PAUSE
+    BSR	 	CLEAR_SCREEN
+	BRA     INPUT_NAME
+
+INPUT_NAME_MENU_ERROR:
     BSR     ENDL
     
     LEA     name_confirmation_fail, A1
     BSR     PRINT
 
-    BSR     ENDL
-    BSR     ENDL
+    BSR	 	SYSTEM_PAUSE
     
     BRA     INPUT_NAME_LOOP
-
 
 *-------------------------------------------------------
 *-------------------WELCOME SUBROUTINE------------------
@@ -92,15 +109,22 @@ WELCOME:
 	BSR     PRINT
 	
     BSR     ENDL
+    BSR     ENDL
+    
 	LEA     welcome_string_2,A1
+	BSR     PRINT
+	
+	BSR	 	ENDL
+	
+	BSR	 	SYSTEM_PAUSE
+	BSR	 	CLEAR_SCREEN
+	
+	LEA     welcome_string_3,A1
 	BSR     PRINT
 	
 	MOVE    #3, D4      *Loop for 3 seconds for dots
 	BSR     PRINT_DOTS
 	
-	BSR	 	ENDL
-	
-	BSR	 	SYSTEM_PAUSE
 	BSR	 	CLEAR_SCREEN
 	
 	RTS
@@ -108,64 +132,54 @@ WELCOME:
 *-------------------STORY SUBROUTINE--------------------
 *-------------------------------------------------------
 STORY:
-    BSR	 	ENDL
-
-    LEA     YOU, A1
-    BSR     PRINT
+    LEA     NAME, A2    *Load name for SPEAKING_ASCII
     
-    BSR     ENDL
+    LEA     intro_story_string_1, A3
+    BSR     YOU_SPEAKING_ASCII
     
-    LEA 	LINE, A1
-	BSR	 	PRINT
-	
-    BSR     ENDL
+    LEA     intro_story_string_2, A3
+    BSR     YOU_SPEAKING_ASCII
     
-    LEA     intro_story_string_1, A2
-    BSR     SPEAK
+    LEA     intro_story_string_3, A3
+    BSR     YOU_SPEAKING_ASCII
     
-    BSR	 	ENDL
-    
-	BSR	 	SYSTEM_PAUSE
-    BSR	 	CLEAR_SCREEN
-    
-    BSR	 	ENDL
-    
-    LEA     intro_story_string_2, A1
-    BSR     PRINT
-    
-    BSR	 	ENDL
-    
-	BSR	 	SYSTEM_PAUSE
-    BSR	 	CLEAR_SCREEN
-    
-    BSR	 	ENDL
-    
-    LEA     intro_story_string_3, A1
-    BSR     PRINT
-    
-    BSR	 	ENDL
-    
-	BSR	 	SYSTEM_PAUSE
-    BSR	 	CLEAR_SCREEN
-
-    BSR	 	ENDL
-
-    LEA     intro_story_string_4, A1
-    BSR     PRINT
-    
-    BSR	 	ENDL
-    
-	BSR	 	SYSTEM_PAUSE
-    BSR	 	CLEAR_SCREEN
-
+    LEA     intro_story_string_4, A3
+    BSR     YOU_SPEAKING_ASCII
     RTS
 
+*-------------------------------------------------------
+*-----------------GUIDE_1 SUBROUTINE--------------------
+*-------------------------------------------------------
+GUIDE_1:
+    LEA     GUIDE_NAME, A2
+    
+    * SHOW ASCII OF SELF
+    BSR	 	ENDL
+    LEA     YOU, A1
+    BSR     PRINT
+    BSR     ENDL
+    LEA 	LINE, A1
+	BSR	 	PRINT
+	*
+    
+    * TALK ABOUT STORY
+    BSR     ENDL
+    BSR     SPEAK
+    BSR	 	ENDL
+    *
+    
+    * NEXT
+	BSR	 	SYSTEM_PAUSE
+    BSR	 	CLEAR_SCREEN
+    *
 
+    
+    RTS
 *-------------------------------------------------------
 *----------------GAMELOOP (MAIN LOOP)-------------------
 *------------------------------------------------------- 
 GAMELOOP:
-    LEA 	LINE, A1   *LOAD LINE
+    LEA 	GAME_LINES, A1   *LOAD LINES
 	BSR	 	PRINT
 
     MOVE.W  (MONEY), D1
@@ -253,7 +267,7 @@ EVENT:
 	
 
 *-------------------------------------------------------
-*--------------------DISPLAY DETAILS SUBROUTINE---------
+*----------------DISPLAY DETAILS SUBROUTINE-------------
 *-------------------------------------------------------
 DISPLAY_DETAILS:
 	MOVE.B  #11,D0
@@ -291,7 +305,14 @@ PRINT_INT:
 	LEA     hundred_text, A1
 	BSR     PRINT
 	RTS
-	
+
+*-------------------------------------------------------
+*----------------INPUT_NUM SUBROUTINE-------------------
+*-------------------------------------------------------
+INPUT_NUM:
+    MOVE.B  #4,D0
+	TRAP	#15
+    RTS
 *-------------------------------------------------------
 *----------------SYSTEM PAUSE SUBROUTINE----------------
 *-------------------------------------------------------
@@ -316,13 +337,41 @@ ENDL:
 	RTS
 	
 *-------------------------------------------------------
+*---------------YOU_SPEAKING_ASCII SUBROUTINE-----------
+*----------------[A1,name: A2, text: A3]----------------
+YOU_SPEAKING_ASCII:
+* SHOW ASCII OF SELF
+    BSR	 	ENDL
+    LEA     YOU, A1
+    BSR     PRINT
+    BSR     ENDL
+    LEA 	LINE, A1
+	BSR	 	PRINT
+	*
+    
+    * TALK ABOUT STORY
+    BSR     ENDL
+    BSR     SPEAK
+    BSR	 	ENDL
+    *
+    
+    * NEXT
+	BSR	 	SYSTEM_PAUSE
+    BSR	 	CLEAR_SCREEN
+    *
+    RTS
+
+*-------------------------------------------------------
 *---------------------SPEAK SUBROUTINE------------------
 *----------------[A1,name: A2, text: A3]----------------
 SPEAK:
+    MOVE     A2, A1
+    BSR     PRINT
+
     LEA     TALK_1, A1
     BSR     PRINT
     
-    MOVE    A2, A1
+    MOVE    A3, A1
     BSR     PRINT
     
     LEA     TALK_2, A1
@@ -364,19 +413,27 @@ GET_MILLISECONDS:
 *-------------------DATA DELARATIONS--------------------
 *-------------------------------------------------------
 
-CRLF:		    DC.B	$0D,$0A,0
+CRLF		     DC.B	$0D,$0A,0
 
-splash_string: DC.B	'************************************************************'
-				DC.B	$0D,$0A
-				DC.B	'Save the Earth by defeating the CO2 Dragon!!!'
-				DC.B	$0D,$0A
-				DC.B	'************************************************************'
-				DC.B	$0D,$0A,0
-				
+TITLE            DC.B    '================================================================================'
+                 DC.B	$0D,$0A
+                 DC.B    ' _  ___                 _                   ___   __    ___                _    '
+                 DC.B	$0D,$0A
+                 DC.B    '| |/ (_)_ __   __ _  __| | ___  _ __ ___   / _ \ / _| / _ \__  _____ _ __(_)___ '
+                 DC.B	$0D,$0A
+                 DC.B    '| ^ /| | ^_ \ / _` |/ _` |/ _ \| ^_ ` _ \ | | | | |_ | | | \ \/ / _ \ ^__| / __|'
+                 DC.B	$0D,$0A
+                 DC.B    '| . \| | | | | (_| | (_| | (_) | | | | | || |_| |  _|| |_| |>  <  __/ |  | \__ \'
+                 DC.B	$0D,$0A
+                 DC.B    '|_|\_\_|_| |_|\__, |\__,_|\___/|_| |_| |_| \___/|_|   \___//_/\_\___|_|  |_|___/'
+                 DC.B	$0D,$0A
+                 DC.B    '              |___/                                                             '
+                 DC.B	$0D,$0A
+				 DC.B    '================================================================================',0
 enterName		DC.B	'Please enter your name: ',0
 
-name_confirmation_1 DC.B    'Your name is ',0
-name_confirmation_2 DC.B    ' correct?'
+name_confirmation_1 DC.B    'Your name is "',0
+name_confirmation_2 DC.B    '" correct?'
                     DC.B	$0D,$0A
                     DC.B	$0D,$09
                     DC.B	'1) Yes'
@@ -386,30 +443,32 @@ name_confirmation_2 DC.B    ' correct?'
                     DC.B	$0D,$0A
                     DC.B	'Enter your choice) ',0
 
+name_length_fail        DC.B    'Please type a name between 3 - 30 length.',0
 name_confirmation_fail  DC.B    'Please type a valid menu option.',0
 
-welcome_string_1:       DC.B	'Welcome to the Kingdom of Oxeris, ',0
+welcome_string_1       DC.B	'Welcome to the Kingdom of Oxeris, ',0
 
-welcome_string_2:       DC.B	'You have immigrated to the Kingdom of Oxeris as your hometown'
+welcome_string_2        DC.B	'You have immigrated to the Kingdom of Oxeris as your hometown'
                         DC.B	$0D,$0A
                         DC.B	'has been burned down from a conflict',0
 
+welcome_string_3        DC.B	'3 years later', 0
 
-intro_story_string_1:	DC.B	'It has been 3 years since I immigrated to'
+intro_story_string_1 	DC.B	'It has been 3 years since I immigrated to'
 				DC.B	$0D,$0A
 				DC.B	'the Kingdom of Oxeris', 0
 				
-intro_story_string_2:	DC.B	'The king of Oxeris has imposed a tax which forces individuals'
+intro_story_string_2 	DC.B	'The king of Oxeris has imposed a tax which forces individuals'
 				DC.B	$0D,$0A
 				DC.B	'of the kingdom to pay based on their C02 output.', 0
 
-intro_story_string_3:	DC.B	'You are not sure why he has imposed a tax on CO2'
+intro_story_string_3 	DC.B	'I am unsure why he has imposed a tax on CO2'
 				DC.B	$0D,$0A
-				DC.B	'if it is what everybody breath out!', 0
+				DC.B	'if it is what everybody breaths out!', 0
 
-intro_story_string_4:	DC.B	'You decide to make a plan to solve this problem.',0
+intro_story_string_4 	DC.B	'I should make a plan to solve this problem.',0
 
-story_string_3:	DC.B	'Do you want to go and ask the King why he has imposed'
+story_string_3 	DC.B	'Do you want to go and ask the King why he has imposed'
                 DC.B    'a tax on CO2?'
 				DC.B	$0D,$0A
 				DC.B	$0D,$09
@@ -417,12 +476,20 @@ story_string_3:	DC.B	'Do you want to go and ask the King why he has imposed'
 				DC.B	$0D,$09
                 DC.B	'2) No way!', 0
 
-LINE            DC.B    '================================================================================'
+guide_1_string_1        DC.B    'Welcome to the Kingdom of Oxeris, ',0
+guide_1_string_2        DC.B    'Theres was a lot ',0
+
+
+LINE            DC.B    '================================================================================',0
+
+GAME_LINES      DC.B    '================================================================================'
 				DC.B	$0D,$0A
-				DC.B	$0D,$09, 0
-				
+				DC.B	$0D,$0A
+				DC.B	$0D,$0A
+				DC.B	'================================================================================', 0
+				    
 Dot  		        DC.B	'.',0
-TALK_1              DC.B    ':"',0
+TALK_1              DC.B    ': "',0
 TALK_2              DC.B    '"',0
 
 YOU              DC.B    '             ^JB&@@@@@&&&&BY~.          '
@@ -450,6 +517,41 @@ YOU              DC.B    '             ^JB&@@@@@&&&&BY~.          '
                  DC.B    '&@G    ~@&                         ^@B  '
                  DC.B	$0D,$0A
                  DC.B    '@@G    .@&                         7@B  ', 0  
+
+GUIDE_NAME          DC.B    'Guide Gary',   0
+GUIDE            DC.B    '                .!5B&&&@&&#B5?!^             '
+                 DC.B	$0D,$0A
+                 DC.B    '            !5G#&#G?^.....^~?PB&&7           '
+                 DC.B	$0D,$0A
+                 DC.B    '           P@G!^.              ^@&:          '
+                 DC.B	$0D,$0A
+                 DC.B    '          .@@^                  B@@&##P?:    '
+                 DC.B	$0D,$0A
+                 DC.B    '     .~?PG#@@.                   B@#~!5#&&5. '
+                 DC.B	$0D,$0A
+                 DC.B    '  ^P&&#G?P@@P                  :~P@@5   .!&@7'
+                 DC.B	$0D,$0A
+                 DC.B    ' P@#~.   .P#&&#BP55J???JJY5GB#&&&BJ~      ?@@'
+                 DC.B	$0D,$0A
+                 DC.B    '#@G          .^~7JY5PPPPP5J?!^.        .!G@#7'
+                 DC.B	$0D,$0A
+                 DC.B    'G@#~.          ...:::^~!777???JY555PPB#&&5^  '
+                 DC.B	$0D,$0A
+                 DC.B    ' !P#&##BBB##&####B&@@&#BBBBGG5YYYJJJ#@&:     '
+                 DC.B	$0D,$0A
+                 DC.B    '    :J#&@@@@7     &@#P!:::::::...   !&@J     '
+                 DC.B	$0D,$0A
+                 DC.B    '   7@#YJ?B@&      &@BPPY7~~^^^^^^^~~J&@!     '
+                 DC.B	$0D,$0A
+                 DC.B    '   &&    J@B      P@&GPPPPP5555555PG#@@^     '
+                 DC.B	$0D,$0A
+                 DC.B    '  ^@P    P@5       5&@&&########&&&@@B:      '
+                 DC.B	$0D,$0A
+                 DC.B    '  J@Y    B@?        .~?5GGBBBBGPY?~B@Y       '
+                 DC.B	$0D,$0A
+                 DC.B    '  B@?    B@?                       Y@Y       '
+                 DC.B	$0D,$0A
+                 DC.B    '  &@?    P@J                       J@Y       ', 0
            
 KING             DC.B    '            P&G:          ..            '
                  DC.B	$0D,$0A
@@ -502,6 +604,7 @@ hundred_text	DC.B	'00', 0
 
 MONEY:			DS.W	1	 PLAYER MONEY in hundreds
 NAME:	 		DS.W	1
+DAY:            DS.B    1   DAYS PASSED
 
 *-------------------------------------------------------
 *VALIDATION VALUES TO BE USED
