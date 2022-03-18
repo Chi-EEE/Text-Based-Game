@@ -24,7 +24,6 @@ SPLASH:
 	BSR	 	ENDL
 	LEA	 	splash_string,A1    *Load Splash string
 	BSR     PRINT
-	BSR	 	ENDL
     
     BSR	 	SYSTEM_PAUSE
     
@@ -43,6 +42,7 @@ INPUT_NAME:
 	MOVE.B  #2,D0
 	LEA	 	NAME, A1	*Load Name address to A1 to be able to store name
 	TRAP	#15		    *Input Name
+	BSR	 	ENDL
 	
 INPUT_NAME_LOOP:
 	LEA	 	name_confirmation_1, A1
@@ -82,7 +82,6 @@ INPUT_NAME_ERROR:
 *-------------------------------------------------------
 WELCOME:
 	BSR	 	ENDL
-	
 	LEA	 	welcome_string_1,A1
 	BSR     PRINT
 	
@@ -93,11 +92,10 @@ WELCOME:
 	BSR     PRINT
 	
     BSR     ENDL
-	
 	LEA     welcome_string_2,A1
 	BSR     PRINT
 	
-	MOVE    #5, D4      *Loop for 5 seconds for dots
+	MOVE    #3, D4      *Loop for 3 seconds for dots
 	BSR     PRINT_DOTS
 	
 	BSR	 	ENDL
@@ -110,39 +108,48 @@ WELCOME:
 *-------------------STORY SUBROUTINE--------------------
 *-------------------------------------------------------
 STORY:
-    LEA     intro_story_string_1
+    BSR	 	ENDL
+
+    LEA     intro_story_string_1, A1
     BSR     PRINT
     
+    BSR	 	ENDL
+    
+	BSR	 	SYSTEM_PAUSE
+    BSR	 	CLEAR_SCREEN
+    
+    BSR	 	ENDL
+    
+    LEA     intro_story_string_2, A1
+    BSR     PRINT
+    
+    BSR	 	ENDL
+    
+	BSR	 	SYSTEM_PAUSE
+    BSR	 	CLEAR_SCREEN
+    
+    BSR	 	ENDL
+    
+    LEA     intro_story_string_3, A1
+    BSR     PRINT
+    
+    BSR	 	ENDL
+    
+	BSR	 	SYSTEM_PAUSE
+    BSR	 	CLEAR_SCREEN
+
+    BSR	 	ENDL
+
+    LEA     intro_story_string_4, A1
+    BSR     PRINT
+    
+    BSR	 	ENDL
+    
+	BSR	 	SYSTEM_PAUSE
+    BSR	 	CLEAR_SCREEN
+
     RTS
 
-*-------------------------------------------------------
-*-------------------INTRO SUBROUTINE--------------------
-*-------------------------------------------------------
-INTRO:
-	BSR	 	ENDL
-	*LEA	 	intro_string,A1
-	BSR	 	PRINT
-	
-	LEA	 	name,A1
-	BSR	 	PRINT
-	
-	*LEA	 	tripleDot,A1
-	BSR	 	PRINT
-	
-    BSR	 	ENDL
-	
-	BSR	 	SYSTEM_PAUSE
-	BSR	 	CLEAR_SCREEN
-
-	*LEA	 	story_string_1,A1
-	BSR	 	PRINT
-	
-	BSR	 	ENDL
-	
-	BSR	 	SYSTEM_PAUSE
-	BSR	 	CLEAR_SCREEN
-
-	RTS
 
 *-------------------------------------------------------
 *----------------GAMELOOP (MAIN LOOP)-------------------
@@ -151,7 +158,7 @@ GAMELOOP:
     LEA 	line, A1   *LOAD LINE
 	BSR	 	PRINT
 
-    MOVE.W  MONEY, D1
+    MOVE.W  (MONEY), D1
 	BSR	 	PRINT_INT
 
     BSR	 	ENDL		*NEW LINE
@@ -270,6 +277,9 @@ PRINT:
 PRINT_INT:
 	MOVE.B  #3,D0
 	TRAP	#15
+	
+	LEA     hundred_text, A1
+	BSR     PRINT
 	RTS
 	
 *-------------------------------------------------------
@@ -350,7 +360,6 @@ name_confirmation_2 DC.B    ' correct?'
                     DC.B	$0D,$09
                     DC.B	'2) No'
                     DC.B	$0D,$0A
-                    DC.B	$0D,$09
                     DC.B	'Enter your choice) ',0
 
 name_confirmation_fail  DC.B    'Please type a valid menu option.',0
@@ -364,7 +373,7 @@ welcome_string_2:       DC.B	'You have immigrated to the Kingdom of Oxeris as yo
 
 intro_story_string_1:	DC.B	'It has been 3 years since you immigrated to'
 				DC.B	$0D,$0A
-				DC.B	' the Kingdom of Oxeris', 0
+				DC.B	'the Kingdom of Oxeris', 0
 				
 intro_story_string_2:	DC.B	'The king of Oxeris has imposed a tax which forces individuals'
 				DC.B	$0D,$0A
@@ -372,8 +381,10 @@ intro_story_string_2:	DC.B	'The king of Oxeris has imposed a tax which forces in
 
 intro_story_string_3:	DC.B	'You are not sure why he has imposed a tax on CO2'
 				DC.B	$0D,$0A
-				DC.B	'if it is what we breathe out!', 0
-		
+				DC.B	'if it is what everybody breath out!', 0
+
+intro_story_string_4:	DC.B	'You decide to make a plan to solve this problem.',0
+
 story_string_3:	DC.B	'Do you want to go and ask the King why he has imposed'
                 DC.B    'a tax on CO2?'
 				DC.B	$0D,$0A
@@ -397,19 +408,22 @@ eventText	   	DC.B	'TODO: EVENT', 0
 display	  		DC.B	'TODO: DISPLAY', 0
 PAUSE		  	DC.B	'Press any key to continue . . .', 0
 
-MONEY:			DS.W	1	 PLAYER MONEY
-NAME:	 		DS.W	0
+hundred_text	DC.B	'00', 0
+
+MONEY:			DS.W	1	 PLAYER MONEY in hundreds
+NAME:	 		DS.W	1
 
 *-------------------------------------------------------
 *VALIDATION VALUES TO BE USED
 *-------------------------------------------------------
 EXIT		EQU 0	  USED TO EXIT ASSEMBLY PROGRAM
-SALARY	  EQU 38500
-MILLION	 EQU 1000000
-HUNDREDTHOUSAND EQU 100000
+SALARY	  EQU 385
+MILLION	 EQU 10000
+HUNDREDTHOUSAND EQU 1000
 SECOND  EQU 100
 
 	END	START
+
 
 
 
