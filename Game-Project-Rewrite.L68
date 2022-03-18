@@ -1,6 +1,6 @@
 00001000 Starting Address
 Assembler used: EASy68K Editor/Assembler v5.16.01
-Created On: 18/03/2022 01:46:34
+Created On: 18/03/2022 14:04:05
 
 00000000                             1  *-------------------------------------------------------
 00000000                             2  * STARTING MEMORY ADDRESS FOR THE PROGRAMME $1000
@@ -9,13 +9,13 @@ Created On: 18/03/2022 01:46:34
 00001000                             5      ORG $1000
 00001000                             6  
 00001000                             7  START:
-00001000  33FC 0181 000016FA         8      MOVE.W  #SALARY,MONEY
+00001000  33FC 0181 00001C76         8      MOVE.W  #SALARY,MONEY
 00001008                             9      
 00001008  6100 0016                 10      BSR     SPLASH
 0000100C  6100 002A                 11      BSR     INPUT_NAME
 00001010  6100 0098                 12      BSR     WELCOME
 00001014  6100 00DA                 13      BSR     STORY
-00001018  6000 0140                 14      BRA     GAMELOOP
+00001018  6000 0162                 14      BRA     GAMELOOP
 0000101C                            15      
 0000101C                            16  END:
 0000101C  FFFF FFFF                 17      SIMHALT
@@ -25,38 +25,38 @@ Created On: 18/03/2022 01:46:34
 00001020                            21  *-------------------SPLASH SUBROUTINE------------------
 00001020                            22  *-------------------------------------------------------
 00001020                            23  SPLASH:
-00001020  6100 024E                 24      BSR     ENDL
-00001024  43F9 000012B7             25      LEA     splash_string,A1    *Load Splash string
-0000102A  6100 0214                 26      BSR     PRINT
+00001020  6100 0270                 24      BSR     ENDL
+00001024  43F9 000012F3             25      LEA     splash_string,A1    *Load Splash string
+0000102A  6100 0236                 26      BSR     PRINT
 0000102E                            27      
-0000102E  6100 0228                 28      BSR     SYSTEM_PAUSE
+0000102E  6100 024A                 28      BSR     SYSTEM_PAUSE
 00001032                            29      
-00001032  6100 0200                 30      BSR     CLEAR_SCREEN
+00001032  6100 0222                 30      BSR     CLEAR_SCREEN
 00001036  4E75                      31      RTS
 00001038                            32  
 00001038                            33  *-------------------------------------------------------
 00001038                            34  *-------------------NAME INPUT SUBROUTINE---------------
 00001038                            35  *-------------------------------------------------------
 00001038                            36  INPUT_NAME:
-00001038  6100 0236                 37      BSR     ENDL
-0000103C  43F9 00001363             38      LEA     enterName,A1
-00001042  6100 01FC                 39      BSR     PRINT
-00001046  6100 0228                 40      BSR     ENDL
+00001038  6100 0258                 37      BSR     ENDL
+0000103C  43F9 0000139F             38      LEA     enterName,A1
+00001042  6100 021E                 39      BSR     PRINT
+00001046  6100 024A                 40      BSR     ENDL
 0000104A                            41      
 0000104A  103C 0002                 42      MOVE.B  #2,D0
-0000104E  43F9 000016FC             43      LEA     NAME, A1    *Load Name address to A1 to be able to store name
+0000104E  43F9 00001C78             43      LEA     NAME, A1    *Load Name address to A1 to be able to store name
 00001054  4E4F                      44      TRAP    #15         *Input Name
-00001056  6100 0218                 45      BSR     ENDL
+00001056  6100 023A                 45      BSR     ENDL
 0000105A                            46      
 0000105A                            47  INPUT_NAME_LOOP:
-0000105A  43F9 0000137C             48      LEA     name_confirmation_1, A1
-00001060  6100 01DE                 49      BSR     PRINT
+0000105A  43F9 000013B8             48      LEA     name_confirmation_1, A1
+00001060  6100 0200                 49      BSR     PRINT
 00001064                            50      
-00001064  43F9 000016FC             51      LEA     NAME, A1
-0000106A  6100 01D4                 52      BSR     PRINT
+00001064  43F9 00001C78             51      LEA     NAME, A1
+0000106A  6100 01F6                 52      BSR     PRINT
 0000106E                            53      
-0000106E  43F9 0000138A             54      LEA     name_confirmation_2, A1
-00001074  6100 01CA                 55      BSR     PRINT
+0000106E  43F9 000013C6             54      LEA     name_confirmation_2, A1
+00001074  6100 01EC                 55      BSR     PRINT
 00001078                            56      
 00001078  103C 0004                 57      MOVE.B  #4,D0
 0000107C  4E4F                      58      TRAP    #15         *Get a number - D1
@@ -67,16 +67,16 @@ Created On: 18/03/2022 01:46:34
 00001084  B27C 0001                 63      CMP     #1,D1       *Yes
 00001088  6600 0008                 64      BNE     INPUT_NAME_ERROR    *Since number is not 1 or 2
 0000108C                            65  
-0000108C  6100 01A6                 66      BSR     CLEAR_SCREEN
+0000108C  6100 01C8                 66      BSR     CLEAR_SCREEN
 00001090  4E75                      67      RTS
 00001092                            68  INPUT_NAME_ERROR:
-00001092  6100 01DC                 69      BSR     ENDL
+00001092  6100 01FE                 69      BSR     ENDL
 00001096                            70      
-00001096  43F9 000013BC             71      LEA     name_confirmation_fail, A1
-0000109C  6100 01A2                 72      BSR     PRINT
+00001096  43F9 000013F8             71      LEA     name_confirmation_fail, A1
+0000109C  6100 01C4                 72      BSR     PRINT
 000010A0                            73  
-000010A0  6100 01CE                 74      BSR     ENDL
-000010A4  6100 01CA                 75      BSR     ENDL
+000010A0  6100 01F0                 74      BSR     ENDL
+000010A4  6100 01EC                 75      BSR     ENDL
 000010A8                            76      
 000010A8  60B0                      77      BRA     INPUT_NAME_LOOP
 000010AA                            78  
@@ -85,348 +85,442 @@ Created On: 18/03/2022 01:46:34
 000010AA                            81  *-------------------WELCOME SUBROUTINE------------------
 000010AA                            82  *-------------------------------------------------------
 000010AA                            83  WELCOME:
-000010AA  6100 01C4                 84      BSR     ENDL
-000010AE  43F9 000013DD             85      LEA     welcome_string_1,A1
-000010B4  6100 018A                 86      BSR     PRINT
+000010AA  6100 01E6                 84      BSR     ENDL
+000010AE  43F9 00001419             85      LEA     welcome_string_1,A1
+000010B4  6100 01AC                 86      BSR     PRINT
 000010B8                            87      
-000010B8  43F9 000016FC             88      LEA     NAME,A1
-000010BE  6100 0180                 89      BSR     PRINT
+000010B8  43F9 00001C78             88      LEA     NAME,A1
+000010BE  6100 01A2                 89      BSR     PRINT
 000010C2                            90      
-000010C2  43F9 0000164D             91      LEA     Dot, A1
-000010C8  6100 0176                 92      BSR     PRINT
+000010C2  43F9 00001687             91      LEA     Dot, A1
+000010C8  6100 0198                 92      BSR     PRINT
 000010CC                            93      
-000010CC  6100 01A2                 94      BSR     ENDL
-000010D0  43F9 00001400             95      LEA     welcome_string_2,A1
-000010D6  6100 0168                 96      BSR     PRINT
+000010CC  6100 01C4                 94      BSR     ENDL
+000010D0  43F9 0000143C             95      LEA     welcome_string_2,A1
+000010D6  6100 018A                 96      BSR     PRINT
 000010DA                            97      
 000010DA  383C 0003                 98      MOVE    #3, D4      *Loop for 3 seconds for dots
-000010DE  6100 01A6                 99      BSR     PRINT_DOTS
+000010DE  6100 01E2                 99      BSR     PRINT_DOTS
 000010E2                           100      
-000010E2  6100 018C                101      BSR     ENDL
+000010E2  6100 01AE                101      BSR     ENDL
 000010E6                           102      
-000010E6  6100 0170                103      BSR     SYSTEM_PAUSE
-000010EA  6100 0148                104      BSR     CLEAR_SCREEN
+000010E6  6100 0192                103      BSR     SYSTEM_PAUSE
+000010EA  6100 016A                104      BSR     CLEAR_SCREEN
 000010EE                           105      
 000010EE  4E75                     106      RTS
 000010F0                           107  *-------------------------------------------------------
 000010F0                           108  *-------------------STORY SUBROUTINE--------------------
 000010F0                           109  *-------------------------------------------------------
 000010F0                           110  STORY:
-000010F0  6100 017E                111      BSR     ENDL
+000010F0  6100 01A0                111      BSR     ENDL
 000010F4                           112  
-000010F4  43F9 00001464            113      LEA     intro_story_string_1, A1
-000010FA  6100 0144                114      BSR     PRINT
+000010F4  43F9 0000168E            113      LEA     YOU, A1
+000010FA  6100 0166                114      BSR     PRINT
 000010FE                           115      
-000010FE  6100 0170                116      BSR     ENDL
+000010FE  6100 0192                116      BSR     ENDL
 00001102                           117      
-00001102  6100 0154                118      BSR     SYSTEM_PAUSE
-00001106  6100 012C                119      BSR     CLEAR_SCREEN
-0000110A                           120      
-0000110A  6100 0164                121      BSR     ENDL
-0000110E                           122      
-0000110E  43F9 000014A7            123      LEA     intro_story_string_2, A1
-00001114  6100 012A                124      BSR     PRINT
-00001118                           125      
-00001118  6100 0156                126      BSR     ENDL
-0000111C                           127      
-0000111C  6100 013A                128      BSR     SYSTEM_PAUSE
-00001120  6100 0112                129      BSR     CLEAR_SCREEN
-00001124                           130      
-00001124  6100 014A                131      BSR     ENDL
-00001128                           132      
-00001128  43F9 00001517            133      LEA     intro_story_string_3, A1
-0000112E  6100 0110                134      BSR     PRINT
-00001132                           135      
-00001132  6100 013C                136      BSR     ENDL
-00001136                           137      
-00001136  6100 0120                138      BSR     SYSTEM_PAUSE
-0000113A  6100 00F8                139      BSR     CLEAR_SCREEN
-0000113E                           140  
-0000113E  6100 0130                141      BSR     ENDL
-00001142                           142  
-00001142  43F9 0000156D            143      LEA     intro_story_string_4, A1
-00001148  6100 00F6                144      BSR     PRINT
-0000114C                           145      
-0000114C  6100 0122                146      BSR     ENDL
-00001150                           147      
-00001150  6100 0106                148      BSR     SYSTEM_PAUSE
-00001154  6100 00DE                149      BSR     CLEAR_SCREEN
-00001158                           150  
-00001158  4E75                     151      RTS
-0000115A                           152  
-0000115A                           153  
-0000115A                           154  *-------------------------------------------------------
-0000115A                           155  *----------------GAMELOOP (MAIN LOOP)-------------------
-0000115A                           156  *------------------------------------------------------- 
-0000115A                           157  GAMELOOP:
-0000115A  43F9 000015F8            158      LEA     line, A1   *LOAD LINE
-00001160  6100 00DE                159      BSR     PRINT
-00001164                           160  
-00001164  3239 000016FA            161      MOVE.W  (MONEY), D1
-0000116A  6100 00DC                162      BSR     PRINT_INT
-0000116E                           163  
-0000116E  6100 0100                164      BSR     ENDL        *NEW LINE
-00001172                           165  
-00001172  43F9 0000164F            166      LEA     mainChoice, A1   *LOAD MESSAGE
-00001178  6100 00C6                167      BSR     PRINT
-0000117C  6100 00F2                168      BSR     ENDL        *NEW LINE
-00001180                           169      
-00001180  103C 0004                170      MOVE.B  #4, D0
-00001184  4E4F                     171      TRAP    #15      *ASK FOR INPUT
-00001186                           172      
-00001186  B27C 0001                173      CMP.W   #1,D1      *SHOP IF (D2 == #1)
-0000118A  6700 0076                174      BEQ     EVENT
-0000118E  B27C 0002                175      CMP.W   #2,D1      *ACTION IF (D2 == #2)
-00001192  6700 0004                176      BEQ     CITY
-00001196  60C2                     177      BRA     GAMELOOP    *LOOP FOREVER
-00001198                           178  
-00001198                           179  *-------------------------------------------------------
-00001198                           180  *--------------------CITY SUBROUTINE--------------------
-00001198                           181  *-------------------------------------------------------
-00001198                           182  CITY:
-00001198  6100 0082                183      BSR     DISPLAY_DETAILS
-0000119C                           184      
-0000119C  43F9 00001663            185      LEA     cityChoice, A1   *LOAD MESSAGE
-000011A2  6100 009C                186      BSR     PRINT
-000011A6                           187      
-000011A6  6100 00C8                188      BSR     ENDL        *NEW LINE
-000011AA                           189      
-000011AA  103C 0004                190      MOVE.B  #4, D0
-000011AE  4E4F                     191      TRAP    #15      *ASK FOR INPUT
-000011B0                           192      
-000011B0  B27C 0001                193      CMP.W   #1,D1      *LEAVE IF (D2 == #1)
-000011B4  67A4                     194      BEQ     GAMELOOP
-000011B6  B27C 0002                195      CMP.W   #2,D1      *SHOP IF (D2 == #2)
-000011BA  6700 0014                196      BEQ     SHOP
-000011BE  B27C 0003                197      CMP.W   #3,D1      *EXPLORE IF (D2 == #3)
-000011C2  6700 001E                198      BEQ     EXPLORE
-000011C6  B27C 0004                199      CMP.W   #4,D1      *MANAGE IF (D2 == #4)
-000011CA  6700 0026                200      BEQ     MANAGE
-000011CE  60C8                     201      BRA     CITY
-000011D0                           202  
-000011D0                           203  *-------------------------------------------------------
-000011D0                           204  *--------------------SHOP SUBROUTINE--------------------
-000011D0                           205  *-------------------------------------------------------
-000011D0                           206  SHOP:
-000011D0  43F9 00001696            207      LEA     shopChoice, A1
-000011D6  103C 000E                208      MOVE.B  #14, D0
-000011DA  4E4F                     209      TRAP    #15
-000011DC  6100 0092                210      BSR     ENDL
-000011E0  60B6                     211      BRA     CITY
-000011E2                           212  
-000011E2                           213  *-------------------------------------------------------
-000011E2                           214  *--------------------EXPLORE SUBROUTINE-----------------
-000011E2                           215  *-------------------------------------------------------
-000011E2                           216  EXPLORE:
-000011E2  43F9 000016A1            217      LEA     exploreChoice, A1
-000011E8  6100 0056                218      BSR     PRINT
-000011EC                           219      
-000011EC  6100 006A                220      BSR     SYSTEM_PAUSE
-000011F0  60A6                     221      BRA     CITY
-000011F2                           222      
-000011F2                           223  *-------------------------------------------------------
-000011F2                           224  *--------------------MANAGE SUBROUTINE------------------
-000011F2                           225  *-------------------------------------------------------
-000011F2                           226  MANAGE:
-000011F2  43F9 000016AF            227      LEA     manageChoice, A1
-000011F8  6100 0046                228      BSR     PRINT
-000011FC                           229      
-000011FC  6100 005A                230      BSR     SYSTEM_PAUSE
-00001200  6096                     231      BRA     CITY
-00001202                           232      
-00001202                           233  *-------------------------------------------------------
-00001202                           234  *--------------------EVENT SUBROUTINE-------------------
-00001202                           235  *-------------------------------------------------------
-00001202                           236  EVENT:
-00001202  43F9 000016BC            237      LEA     eventText, A1
-00001208  6100 0036                238      BSR     PRINT
-0000120C                           239      
-0000120C  0679 0181 000016FA       240      ADD.W   #SALARY, MONEY
-00001214  6100 0042                241      BSR     SYSTEM_PAUSE
-00001218  6000 FF40                242      BRA     GAMELOOP
-0000121C                           243      
-0000121C                           244  
-0000121C                           245  *-------------------------------------------------------
-0000121C                           246  *--------------------DISPLAY DETAILS SUBROUTINE---------
-0000121C                           247  *-------------------------------------------------------
-0000121C                           248  DISPLAY_DETAILS:
-0000121C  103C 000B                249      MOVE.B  #11,D0
-00001220  323C FF00                250      MOVE.W  #$FF00,D1
-00001224  4E4F                     251      TRAP    #15
-00001226  43F9 000016C8            252      LEA     display,A1
-0000122C  103C 000E                253      MOVE.B  #14,D0
-00001230  4E4F                     254      TRAP    #15
-00001232  4E75                     255      RTS
-00001234                           256  
-00001234                           257  *-------------------------------------------------------
-00001234                           258  *----------------CLEAR SCREEN SUBROUTINE----------------
-00001234                           259  *-------------------------------------------------------
-00001234                           260  CLEAR_SCREEN: 
-00001234  103C 000B                261      MOVE.B  #11,D0    CLEAR SCREEN
-00001238  323C FF00                262      MOVE.W  #$FF00,D1
-0000123C  4E4F                     263      TRAP    #15
-0000123E  4E75                     264      RTS
-00001240                           265      
-00001240                           266  *-------------------------------------------------------
-00001240                           267  *----------------PRINT SUBROUTINE-----------------------
-00001240                           268  *-------------------------------------------------------
-00001240                           269  PRINT:
-00001240  103C 000E                270      MOVE.B  #14,D0
-00001244  4E4F                     271      TRAP    #15
-00001246  4E75                     272      RTS
-00001248                           273      
-00001248                           274  *-------------------------------------------------------
-00001248                           275  *----------------PRINT_INT SUBROUTINE-------------------
-00001248                           276  *-------------------------------------------------------
-00001248                           277  PRINT_INT:
-00001248  103C 0003                278      MOVE.B  #3,D0
-0000124C  4E4F                     279      TRAP    #15
-0000124E                           280      
-0000124E  43F9 000016F6            281      LEA     hundred_text, A1
-00001254  61EA                     282      BSR     PRINT
-00001256  4E75                     283      RTS
-00001258                           284      
-00001258                           285  *-------------------------------------------------------
-00001258                           286  *----------------SYSTEM PAUSE SUBROUTINE----------------
-00001258                           287  *-------------------------------------------------------
-00001258                           288  SYSTEM_PAUSE:
-00001258  6100 0016                289      BSR      ENDL
-0000125C  43F9 000016D6            290      LEA      PAUSE, A1   *DISPLAY PAUSE MESSAGE
-00001262  61DC                     291      BSR      PRINT        
-00001264  103C 0005                292      MOVE.B  #5,D0      *WAIT FOR SINGLE CHARACTER
-00001268  4E4F                     293      TRAP    #15
-0000126A  6100 0004                294      BSR     ENDL
-0000126E  4E75                     295      RTS
-00001270                           296      
-00001270                           297  *-------------------------------------------------------
-00001270                           298  *--------------------ENDL SUBROUTINE--------------------
-00001270                           299  *-------------------------------------------------------
-00001270                           300  ENDL:
-00001270  48E7 8040                301      MOVEM.L D0/A1,-(A7)
-00001274  303C 000E                302      MOVE    #14,D0
-00001278  43F9 000012B4            303      LEA     CRLF,A1
-0000127E  4E4F                     304      TRAP    #15
-00001280  4CDF 0201                305      MOVEM.L (A7)+,D0/A1
-00001284  4E75                     306      RTS
-00001286                           307      
-00001286                           308  
-00001286                           309  *-------------------------------------------------------
-00001286                           310  *----------------TIMED PRINT DOT SUBROUTINE-------------
-00001286                           311  *-------------------[D1,D2,D3,input: D4]----------------
-00001286                           312  PRINT_DOTS:
-00001286  43F9 0000164D            313      LEA     Dot,A1
-0000128C                           314  DOT_NEXT_PRINT:
-0000128C  61B2                     315      BSR     PRINT
-0000128E  6100 001C                316      BSR     GET_MILLISECONDS
-00001292  2401                     317      MOVE.L  D1,D2
-00001294                           318  DOT_NEXT: 
-00001294  6100 0016                319      BSR     GET_MILLISECONDS
-00001298                           320      
-00001298  3602                     321      MOVE    D2,D3
-0000129A  9243                     322      SUB     D3,D1
-0000129C                           323      
-0000129C  B27C 0064                324      CMP     #SECOND,D1
-000012A0  63F2                     325      BLS     DOT_NEXT
-000012A2                           326      
-000012A2  5344                     327      SUB     #1, D4
-000012A4  B87C 0000                328      CMP     #0, D4
-000012A8  66E2                     329      BNE     DOT_NEXT_PRINT
-000012AA  4E75                     330      RTS
-000012AC                           331      
-000012AC                           332  GET_MILLISECONDS:
-000012AC  103C 0008                333      MOVE.B #8, D0 # Load
-000012B0  4E4F                     334      TRAP #15  #Time in D1
-000012B2  4E75                     335      RTS
-000012B4                           336  
-000012B4                           337  
-000012B4                           338  
-000012B4                           339  *-------------------------------------------------------
-000012B4                           340  *-------------------DATA DELARATIONS--------------------
-000012B4                           341  *-------------------------------------------------------
-000012B4                           342  
-000012B4= 0D 0A 00                 343  CRLF:           DC.B    $0D,$0A,0
-000012B7                           344  
-000012B7= 2A 2A 2A 2A 2A 2A ...    345  splash_string: DC.B '************************************************************'
-000012F3= 0D 0A                    346                  DC.B    $0D,$0A
-000012F5= 53 61 76 65 20 74 ...    347                  DC.B    'Save the Earth by defeating the CO2 Dragon!!!'
-00001322= 0D 0A                    348                  DC.B    $0D,$0A
-00001324= 2A 2A 2A 2A 2A 2A ...    349                  DC.B    '************************************************************'
-00001360= 0D 0A 00                 350                  DC.B    $0D,$0A,0
-00001363                           351                  
-00001363= 50 6C 65 61 73 65 ...    352  enterName       DC.B    'Please enter your name: ',0
-0000137C                           353  
-0000137C= 59 6F 75 72 20 6E ...    354  name_confirmation_1 DC.B    'Your name is ',0
-0000138A= 20 63 6F 72 72 65 ...    355  name_confirmation_2 DC.B    ' correct?'
-00001393= 0D 0A                    356                      DC.B    $0D,$0A
-00001395= 0D 09                    357                      DC.B    $0D,$09
-00001397= 31 29 20 59 65 73        358                      DC.B    '1) Yes'
-0000139D= 0D 0A                    359                      DC.B    $0D,$0A
-0000139F= 0D 09                    360                      DC.B    $0D,$09
-000013A1= 32 29 20 4E 6F           361                      DC.B    '2) No'
-000013A6= 0D 0A                    362                      DC.B    $0D,$0A
-000013A8= 45 6E 74 65 72 20 ...    363                      DC.B    'Enter your choice) ',0
-000013BC                           364  
-000013BC= 50 6C 65 61 73 65 ...    365  name_confirmation_fail  DC.B    'Please type a valid menu option.',0
-000013DD                           366  
-000013DD= 57 65 6C 63 6F 6D ...    367  welcome_string_1:       DC.B    'Welcome to the Kingdom of Oxeris, ',0
-00001400                           368  
-00001400= 59 6F 75 20 68 61 ...    369  welcome_string_2:       DC.B    'You have immigrated to the Kingdom of Oxeris as your hometown'
-0000143D= 0D 0A                    370                          DC.B    $0D,$0A
-0000143F= 68 61 73 20 62 65 ...    371                          DC.B    'has been burned down from a conflict',0
-00001464                           372  
-00001464                           373  
-00001464= 49 74 20 68 61 73 ...    374  intro_story_string_1:   DC.B    'It has been 3 years since you immigrated to'
-0000148F= 0D 0A                    375                  DC.B    $0D,$0A
-00001491= 74 68 65 20 4B 69 ...    376                  DC.B    'the Kingdom of Oxeris', 0
-000014A7                           377                  
-000014A7= 54 68 65 20 6B 69 ...    378  intro_story_string_2:   DC.B    'The king of Oxeris has imposed a tax which forces individuals'
-000014E4= 0D 0A                    379                  DC.B    $0D,$0A
-000014E6= 6F 66 20 74 68 65 ...    380                  DC.B    'of the kingdom to pay based on their C02 output.', 0
-00001517                           381  
-00001517= 59 6F 75 20 61 72 ...    382  intro_story_string_3:   DC.B    'You are not sure why he has imposed a tax on CO2'
-00001547= 0D 0A                    383                  DC.B    $0D,$0A
-00001549= 69 66 20 69 74 20 ...    384                  DC.B    'if it is what everybody breath out!', 0
-0000156D                           385  
-0000156D= 59 6F 75 20 64 65 ...    386  intro_story_string_4:   DC.B    'You decide to make a plan to solve this problem.',0
-0000159E                           387  
-0000159E= 44 6F 20 79 6F 75 ...    388  story_string_3: DC.B    'Do you want to go and ask the King why he has imposed'
-000015D3= 61 20 74 61 78 20 ...    389                  DC.B    'a tax on CO2?'
-000015E0= 0D 0A                    390                  DC.B    $0D,$0A
-000015E2= 0D 09                    391                  DC.B    $0D,$09
-000015E4= 31 29 20 59 65 73 21     392                  DC.B    '1) Yes!'
-000015EB= 0D 09                    393                  DC.B    $0D,$09
-000015ED= 32 29 20 4E 6F 20 ...    394                  DC.B    '2) No way!', 0
-000015F8                           395  
-000015F8= 3D 3D 3D 3D 3D 3D ...    396  line            DC.B    '================================================================================'
-00001648= 0D 0A                    397                  DC.B    $0D,$0A
-0000164A= 0D 09 00                 398                  DC.B    $0D,$09, 0
-0000164D                           399                  
-0000164D= 2E 00                    400  Dot             DC.B    '.',0
-0000164F                           401  
-0000164F= 54 4F 44 4F 3A 20 ...    402  mainChoice      DC.B    'TODO: EVENT OR CITY', 0
-00001663= 54 4F 44 4F 3A 20 ...    403  cityChoice      DC.B    'TODO: CITY ||| 1 LEAVE; 2 SHOP; 3 EXPLORE;4 MANAGE',0
-00001696= 54 4F 44 4F 3A 20 ...    404  shopChoice      DC.B    'TODO: SHOP', 0
-000016A1= 54 4F 44 4F 3A 20 ...    405  exploreChoice   DC.B    'TODO: EXPLORE', 0
-000016AF= 54 4F 44 4F 3A 20 ...    406  manageChoice    DC.B    'TODO: MANAGE', 0
-000016BC= 54 4F 44 4F 3A 20 ...    407  eventText       DC.B    'TODO: EVENT', 0 
-000016C8= 54 4F 44 4F 3A 20 ...    408  display         DC.B    'TODO: DISPLAY', 0
-000016D6= 50 72 65 73 73 20 ...    409  PAUSE           DC.B    'Press any key to continue . . .', 0
-000016F6                           410  
-000016F6= 30 30 00                 411  hundred_text    DC.B    '00', 0
-000016F9                           412  
-000016FA                           413  MONEY:          DS.W    1    PLAYER MONEY in hundreds
-000016FC                           414  NAME:           DS.W    1
-000016FE                           415  
-000016FE                           416  *-------------------------------------------------------
-000016FE                           417  *VALIDATION VALUES TO BE USED
-000016FE                           418  *-------------------------------------------------------
-000016FE  =00000000                419  EXIT        EQU 0     USED TO EXIT ASSEMBLY PROGRAM
-000016FE  =00000181                420  SALARY    EQU 385
-000016FE  =00002710                421  MILLION  EQU 10000
-000016FE  =000003E8                422  HUNDREDTHOUSAND EQU 1000
-000016FE  =00000064                423  SECOND  EQU 100
-000016FE                           424  
-000016FE                           425      END START
+00001102  43F9 00001632            118      LEA     LINE, A1
+00001108  6100 0158                119      BSR     PRINT
+0000110C                           120      
+0000110C  6100 0184                121      BSR     ENDL
+00001110                           122      
+00001110  45F9 00001C78            123      LEA     NAME, A2
+00001116  47F9 000014A0            124      LEA     intro_story_string_1, A3
+0000111C  6100 018A                125      BSR     SPEAK
+00001120                           126      
+00001120  6100 0170                127      BSR     ENDL
+00001124                           128      
+00001124  6100 0154                129      BSR     SYSTEM_PAUSE
+00001128  6100 012C                130      BSR     CLEAR_SCREEN
+0000112C                           131      
+0000112C  6100 0164                132      BSR     ENDL
+00001130                           133      
+00001130  43F9 000014E1            134      LEA     intro_story_string_2, A1
+00001136  6100 012A                135      BSR     PRINT
+0000113A                           136      
+0000113A  6100 0156                137      BSR     ENDL
+0000113E                           138      
+0000113E  6100 013A                139      BSR     SYSTEM_PAUSE
+00001142  6100 0112                140      BSR     CLEAR_SCREEN
+00001146                           141      
+00001146  6100 014A                142      BSR     ENDL
+0000114A                           143      
+0000114A  43F9 00001551            144      LEA     intro_story_string_3, A1
+00001150  6100 0110                145      BSR     PRINT
+00001154                           146      
+00001154  6100 013C                147      BSR     ENDL
+00001158                           148      
+00001158  6100 0120                149      BSR     SYSTEM_PAUSE
+0000115C  6100 00F8                150      BSR     CLEAR_SCREEN
+00001160                           151  
+00001160  6100 0130                152      BSR     ENDL
+00001164                           153  
+00001164  43F9 000015A7            154      LEA     intro_story_string_4, A1
+0000116A  6100 00F6                155      BSR     PRINT
+0000116E                           156      
+0000116E  6100 0122                157      BSR     ENDL
+00001172                           158      
+00001172  6100 0106                159      BSR     SYSTEM_PAUSE
+00001176  6100 00DE                160      BSR     CLEAR_SCREEN
+0000117A                           161  
+0000117A  4E75                     162      RTS
+0000117C                           163  
+0000117C                           164  
+0000117C                           165  *-------------------------------------------------------
+0000117C                           166  *----------------GAMELOOP (MAIN LOOP)-------------------
+0000117C                           167  *------------------------------------------------------- 
+0000117C                           168  GAMELOOP:
+0000117C  43F9 00001632            169      LEA     LINE, A1   *LOAD LINE
+00001182  6100 00DE                170      BSR     PRINT
+00001186                           171  
+00001186  3239 00001C76            172      MOVE.W  (MONEY), D1
+0000118C  6100 00DC                173      BSR     PRINT_INT
+00001190                           174  
+00001190  6100 0100                175      BSR     ENDL        *NEW LINE
+00001194                           176  
+00001194  43F9 00001BCC            177      LEA     mainChoice, A1   *LOAD MESSAGE
+0000119A  6100 00C6                178      BSR     PRINT
+0000119E  6100 00F2                179      BSR     ENDL        *NEW LINE
+000011A2                           180      
+000011A2  103C 0004                181      MOVE.B  #4, D0
+000011A6  4E4F                     182      TRAP    #15      *ASK FOR INPUT
+000011A8                           183      
+000011A8  B27C 0001                184      CMP.W   #1,D1      *SHOP IF (D2 == #1)
+000011AC  6700 0076                185      BEQ     EVENT
+000011B0  B27C 0002                186      CMP.W   #2,D1      *ACTION IF (D2 == #2)
+000011B4  6700 0004                187      BEQ     CITY
+000011B8  60C2                     188      BRA     GAMELOOP    *LOOP FOREVER
+000011BA                           189  
+000011BA                           190  *-------------------------------------------------------
+000011BA                           191  *--------------------CITY SUBROUTINE--------------------
+000011BA                           192  *-------------------------------------------------------
+000011BA                           193  CITY:
+000011BA  6100 0082                194      BSR     DISPLAY_DETAILS
+000011BE                           195      
+000011BE  43F9 00001BE0            196      LEA     cityChoice, A1   *LOAD MESSAGE
+000011C4  6100 009C                197      BSR     PRINT
+000011C8                           198      
+000011C8  6100 00C8                199      BSR     ENDL        *NEW LINE
+000011CC                           200      
+000011CC  103C 0004                201      MOVE.B  #4, D0
+000011D0  4E4F                     202      TRAP    #15      *ASK FOR INPUT
+000011D2                           203      
+000011D2  B27C 0001                204      CMP.W   #1,D1      *LEAVE IF (D2 == #1)
+000011D6  67A4                     205      BEQ     GAMELOOP
+000011D8  B27C 0002                206      CMP.W   #2,D1      *SHOP IF (D2 == #2)
+000011DC  6700 0014                207      BEQ     SHOP
+000011E0  B27C 0003                208      CMP.W   #3,D1      *EXPLORE IF (D2 == #3)
+000011E4  6700 001E                209      BEQ     EXPLORE
+000011E8  B27C 0004                210      CMP.W   #4,D1      *MANAGE IF (D2 == #4)
+000011EC  6700 0026                211      BEQ     MANAGE
+000011F0  60C8                     212      BRA     CITY
+000011F2                           213  
+000011F2                           214  *-------------------------------------------------------
+000011F2                           215  *--------------------SHOP SUBROUTINE--------------------
+000011F2                           216  *-------------------------------------------------------
+000011F2                           217  SHOP:
+000011F2  43F9 00001C13            218      LEA     shopChoice, A1
+000011F8  103C 000E                219      MOVE.B  #14, D0
+000011FC  4E4F                     220      TRAP    #15
+000011FE  6100 0092                221      BSR     ENDL
+00001202  60B6                     222      BRA     CITY
+00001204                           223  
+00001204                           224  *-------------------------------------------------------
+00001204                           225  *--------------------EXPLORE SUBROUTINE-----------------
+00001204                           226  *-------------------------------------------------------
+00001204                           227  EXPLORE:
+00001204  43F9 00001C1E            228      LEA     exploreChoice, A1
+0000120A  6100 0056                229      BSR     PRINT
+0000120E                           230      
+0000120E  6100 006A                231      BSR     SYSTEM_PAUSE
+00001212  60A6                     232      BRA     CITY
+00001214                           233      
+00001214                           234  *-------------------------------------------------------
+00001214                           235  *--------------------MANAGE SUBROUTINE------------------
+00001214                           236  *-------------------------------------------------------
+00001214                           237  MANAGE:
+00001214  43F9 00001C2C            238      LEA     manageChoice, A1
+0000121A  6100 0046                239      BSR     PRINT
+0000121E                           240      
+0000121E  6100 005A                241      BSR     SYSTEM_PAUSE
+00001222  6096                     242      BRA     CITY
+00001224                           243      
+00001224                           244  *-------------------------------------------------------
+00001224                           245  *--------------------EVENT SUBROUTINE-------------------
+00001224                           246  *-------------------------------------------------------
+00001224                           247  EVENT:
+00001224  43F9 00001C39            248      LEA     eventText, A1
+0000122A  6100 0036                249      BSR     PRINT
+0000122E                           250      
+0000122E  0679 0181 00001C76       251      ADD.W   #SALARY, MONEY
+00001236  6100 0042                252      BSR     SYSTEM_PAUSE
+0000123A  6000 FF40                253      BRA     GAMELOOP
+0000123E                           254      
+0000123E                           255  
+0000123E                           256  *-------------------------------------------------------
+0000123E                           257  *--------------------DISPLAY DETAILS SUBROUTINE---------
+0000123E                           258  *-------------------------------------------------------
+0000123E                           259  DISPLAY_DETAILS:
+0000123E  103C 000B                260      MOVE.B  #11,D0
+00001242  323C FF00                261      MOVE.W  #$FF00,D1
+00001246  4E4F                     262      TRAP    #15
+00001248  43F9 00001C45            263      LEA     display,A1
+0000124E  103C 000E                264      MOVE.B  #14,D0
+00001252  4E4F                     265      TRAP    #15
+00001254  4E75                     266      RTS
+00001256                           267  
+00001256                           268  *-------------------------------------------------------
+00001256                           269  *----------------CLEAR SCREEN SUBROUTINE----------------
+00001256                           270  *-------------------------------------------------------
+00001256                           271  CLEAR_SCREEN: 
+00001256  103C 000B                272      MOVE.B  #11,D0    CLEAR SCREEN
+0000125A  323C FF00                273      MOVE.W  #$FF00,D1
+0000125E  4E4F                     274      TRAP    #15
+00001260  4E75                     275      RTS
+00001262                           276      
+00001262                           277  *-------------------------------------------------------
+00001262                           278  *----------------PRINT SUBROUTINE-----------------------
+00001262                           279  *-------------------------------------------------------
+00001262                           280  PRINT:
+00001262  103C 000E                281      MOVE.B  #14,D0
+00001266  4E4F                     282      TRAP    #15
+00001268  4E75                     283      RTS
+0000126A                           284      
+0000126A                           285  *-------------------------------------------------------
+0000126A                           286  *----------------PRINT_INT SUBROUTINE-------------------
+0000126A                           287  *-------------------------------------------------------
+0000126A                           288  PRINT_INT:
+0000126A  103C 0003                289      MOVE.B  #3,D0
+0000126E  4E4F                     290      TRAP    #15
+00001270                           291      
+00001270  43F9 00001C73            292      LEA     hundred_text, A1
+00001276  61EA                     293      BSR     PRINT
+00001278  4E75                     294      RTS
+0000127A                           295      
+0000127A                           296  *-------------------------------------------------------
+0000127A                           297  *----------------SYSTEM PAUSE SUBROUTINE----------------
+0000127A                           298  *-------------------------------------------------------
+0000127A                           299  SYSTEM_PAUSE:
+0000127A  6100 0016                300      BSR      ENDL
+0000127E  43F9 00001C53            301      LEA      PAUSE, A1   *DISPLAY PAUSE MESSAGE
+00001284  61DC                     302      BSR      PRINT        
+00001286  103C 0005                303      MOVE.B  #5,D0      *WAIT FOR SINGLE CHARACTER
+0000128A  4E4F                     304      TRAP    #15
+0000128C  6100 0004                305      BSR     ENDL
+00001290  4E75                     306      RTS
+00001292                           307      
+00001292                           308  *-------------------------------------------------------
+00001292                           309  *--------------------ENDL SUBROUTINE--------------------
+00001292                           310  *-------------------------------------------------------
+00001292                           311  ENDL:
+00001292  48E7 8040                312      MOVEM.L D0/A1,-(A7)
+00001296  303C 000E                313      MOVE    #14,D0
+0000129A  43F9 000012F0            314      LEA     CRLF,A1
+000012A0  4E4F                     315      TRAP    #15
+000012A2  4CDF 0201                316      MOVEM.L (A7)+,D0/A1
+000012A6  4E75                     317      RTS
+000012A8                           318      
+000012A8                           319  *-------------------------------------------------------
+000012A8                           320  *---------------------SPEAK SUBROUTINE------------------
+000012A8                           321  *----------------[A1,name: A2, text: A3]----------------
+000012A8                           322  SPEAK:
+000012A8  324A                     323      MOVE     A2, A1
+000012AA  61B6                     324      BSR     PRINT
+000012AC                           325  
+000012AC  43F9 00001689            326      LEA     TALK_1, A1
+000012B2  61AE                     327      BSR     PRINT
+000012B4                           328      
+000012B4  324B                     329      MOVE    A3, A1
+000012B6  61AA                     330      BSR     PRINT
+000012B8                           331      
+000012B8  43F9 0000168C            332      LEA     TALK_2, A1
+000012BE  61A2                     333      BSR     PRINT
+000012C0                           334      
+000012C0  4E75                     335      RTS
+000012C2                           336  
+000012C2                           337  *-------------------------------------------------------
+000012C2                           338  *----------------TIMED PRINT DOT SUBROUTINE-------------
+000012C2                           339  *-------------------[D1,D2,D3,input: D4]----------------
+000012C2                           340  PRINT_DOTS:
+000012C2  43F9 00001687            341      LEA     Dot,A1
+000012C8                           342  DOT_NEXT_PRINT:
+000012C8  6198                     343      BSR     PRINT
+000012CA  6100 001C                344      BSR     GET_MILLISECONDS
+000012CE  2401                     345      MOVE.L  D1,D2
+000012D0                           346  DOT_NEXT: 
+000012D0  6100 0016                347      BSR     GET_MILLISECONDS
+000012D4                           348      
+000012D4  3602                     349      MOVE    D2,D3
+000012D6  9243                     350      SUB     D3,D1
+000012D8                           351      
+000012D8  B27C 0064                352      CMP     #SECOND,D1
+000012DC  63F2                     353      BLS     DOT_NEXT
+000012DE                           354      
+000012DE  5344                     355      SUB     #1, D4
+000012E0  B87C 0000                356      CMP     #0, D4
+000012E4  66E2                     357      BNE     DOT_NEXT_PRINT
+000012E6  4E75                     358      RTS
+000012E8                           359      
+000012E8                           360  GET_MILLISECONDS:
+000012E8  103C 0008                361      MOVE.B #8, D0 # Load
+000012EC  4E4F                     362      TRAP #15  #Time in D1
+000012EE  4E75                     363      RTS
+000012F0                           364  
+000012F0                           365  
+000012F0                           366  
+000012F0                           367  *-------------------------------------------------------
+000012F0                           368  *-------------------DATA DELARATIONS--------------------
+000012F0                           369  *-------------------------------------------------------
+000012F0                           370  
+000012F0= 0D 0A 00                 371  CRLF:           DC.B    $0D,$0A,0
+000012F3                           372  
+000012F3= 2A 2A 2A 2A 2A 2A ...    373  splash_string: DC.B '************************************************************'
+0000132F= 0D 0A                    374                  DC.B    $0D,$0A
+00001331= 53 61 76 65 20 74 ...    375                  DC.B    'Save the Earth by defeating the CO2 Dragon!!!'
+0000135E= 0D 0A                    376                  DC.B    $0D,$0A
+00001360= 2A 2A 2A 2A 2A 2A ...    377                  DC.B    '************************************************************'
+0000139C= 0D 0A 00                 378                  DC.B    $0D,$0A,0
+0000139F                           379                  
+0000139F= 50 6C 65 61 73 65 ...    380  enterName       DC.B    'Please enter your name: ',0
+000013B8                           381  
+000013B8= 59 6F 75 72 20 6E ...    382  name_confirmation_1 DC.B    'Your name is ',0
+000013C6= 20 63 6F 72 72 65 ...    383  name_confirmation_2 DC.B    ' correct?'
+000013CF= 0D 0A                    384                      DC.B    $0D,$0A
+000013D1= 0D 09                    385                      DC.B    $0D,$09
+000013D3= 31 29 20 59 65 73        386                      DC.B    '1) Yes'
+000013D9= 0D 0A                    387                      DC.B    $0D,$0A
+000013DB= 0D 09                    388                      DC.B    $0D,$09
+000013DD= 32 29 20 4E 6F           389                      DC.B    '2) No'
+000013E2= 0D 0A                    390                      DC.B    $0D,$0A
+000013E4= 45 6E 74 65 72 20 ...    391                      DC.B    'Enter your choice) ',0
+000013F8                           392  
+000013F8= 50 6C 65 61 73 65 ...    393  name_confirmation_fail  DC.B    'Please type a valid menu option.',0
+00001419                           394  
+00001419= 57 65 6C 63 6F 6D ...    395  welcome_string_1:       DC.B    'Welcome to the Kingdom of Oxeris, ',0
+0000143C                           396  
+0000143C= 59 6F 75 20 68 61 ...    397  welcome_string_2:       DC.B    'You have immigrated to the Kingdom of Oxeris as your hometown'
+00001479= 0D 0A                    398                          DC.B    $0D,$0A
+0000147B= 68 61 73 20 62 65 ...    399                          DC.B    'has been burned down from a conflict',0
+000014A0                           400  
+000014A0                           401  
+000014A0= 49 74 20 68 61 73 ...    402  intro_story_string_1:   DC.B    'It has been 3 years since I immigrated to'
+000014C9= 0D 0A                    403                  DC.B    $0D,$0A
+000014CB= 74 68 65 20 4B 69 ...    404                  DC.B    'the Kingdom of Oxeris', 0
+000014E1                           405                  
+000014E1= 54 68 65 20 6B 69 ...    406  intro_story_string_2:   DC.B    'The king of Oxeris has imposed a tax which forces individuals'
+0000151E= 0D 0A                    407                  DC.B    $0D,$0A
+00001520= 6F 66 20 74 68 65 ...    408                  DC.B    'of the kingdom to pay based on their C02 output.', 0
+00001551                           409  
+00001551= 59 6F 75 20 61 72 ...    410  intro_story_string_3:   DC.B    'You are not sure why he has imposed a tax on CO2'
+00001581= 0D 0A                    411                  DC.B    $0D,$0A
+00001583= 69 66 20 69 74 20 ...    412                  DC.B    'if it is what everybody breath out!', 0
+000015A7                           413  
+000015A7= 59 6F 75 20 64 65 ...    414  intro_story_string_4:   DC.B    'You decide to make a plan to solve this problem.',0
+000015D8                           415  
+000015D8= 44 6F 20 79 6F 75 ...    416  story_string_3: DC.B    'Do you want to go and ask the King why he has imposed'
+0000160D= 61 20 74 61 78 20 ...    417                  DC.B    'a tax on CO2?'
+0000161A= 0D 0A                    418                  DC.B    $0D,$0A
+0000161C= 0D 09                    419                  DC.B    $0D,$09
+0000161E= 31 29 20 59 65 73 21     420                  DC.B    '1) Yes!'
+00001625= 0D 09                    421                  DC.B    $0D,$09
+00001627= 32 29 20 4E 6F 20 ...    422                  DC.B    '2) No way!', 0
+00001632                           423  
+00001632= 3D 3D 3D 3D 3D 3D ...    424  LINE            DC.B    '================================================================================'
+00001682= 0D 0A                    425                  DC.B    $0D,$0A
+00001684= 0D 09 00                 426                  DC.B    $0D,$09, 0
+00001687                           427                  
+00001687= 2E 00                    428  Dot                 DC.B    '.',0
+00001689= 3A 22 00                 429  TALK_1              DC.B    ':"',0
+0000168C= 22 00                    430  TALK_2              DC.B    '"',0
+0000168E                           431  
+0000168E= 20 20 20 20 20 20 ...    432  YOU              DC.B    '             ^JB&@@@@@&&&&BY~.          '
+000016B6= 0D 0A                    433                   DC.B   $0D,$0A
+000016B8= 20 20 20 20 20 20 ...    434                   DC.B    '           7&@&P7^:.....^75#@@#?.       '
+000016E0= 0D 0A                    435                   DC.B   $0D,$0A
+000016E2= 20 20 20 20 20 20 ...    436                   DC.B    '          G@&:               !#@@5      '
+0000170A= 0D 0A                    437                   DC.B   $0D,$0A
+0000170C= 20 20 20 20 20 20 ...    438                   DC.B    '         5@&        :7YPPGBGPP#@@@#Y~.  '
+00001734= 0D 0A                    439                   DC.B   $0D,$0A
+00001736= 20 20 20 20 20 20 ...    440                   DC.B    '        :@@~      7#&B5YJJ???~^~~7YB@&? '
+0000175E= 0D 0A                    441                   DC.B   $0D,$0A
+00001760= 20 20 20 20 20 2E ...    442                   DC.B    '     .:^B@&      ?@&5~:::::::       J&@J'
+00001788= 0D 0A                    443                   DC.B   $0D,$0A
+0000178A= 20 2E 35 23 26 40 ...    444                   DC.B    ' .5#&@@@@@J      B@GYJ!^^::::^^:::::~&&&'
+000017B2= 0D 0A                    445                   DC.B   $0D,$0A
+000017B4= 20 47 40 47 3A 2E ...    446                   DC.B    ' G@G:. !@@:      Y@BYYYY?7!!!~~~!!7?5&@B'
+000017DC= 0D 0A                    447                   DC.B   $0D,$0A
+000017DE= 2E 40 26 20 20 20 ...    448                   DC.B    '.@&    .@@.      :&@#G55YYYYYYY55PGB&&B.'
+00001806= 0D 0A                    449                   DC.B   $0D,$0A
+00001808= 37 40 42 20 20 20 ...    450                   DC.B    '7@B    ^@&        .?B#&&#######&&#B&@P  '
+00001830= 0D 0A                    451                   DC.B   $0D,$0A
+00001832= 47 40 42 20 20 20 ...    452                   DC.B    'G@B    ~@#            .::^~~~^::.  J@P  '
+0000185A= 0D 0A                    453                   DC.B   $0D,$0A
+0000185C= 26 40 47 20 20 20 ...    454                   DC.B    '&@G    ~@&                         ^@B  '
+00001884= 0D 0A                    455                   DC.B   $0D,$0A
+00001886= 40 40 47 20 20 20 ...    456                   DC.B    '@@G    .@&                         7@B  ', 0  
+000018AF                           457             
+000018AF= 20 20 20 20 20 20 ...    458  KING             DC.B    '            P&G:          ..            '
+000018D7= 0D 0A                    459                   DC.B   $0D,$0A
+000018D9= 20 20 20 20 20 20 ...    460                   DC.B    '           :&#&&5.     .!P#G            '
+00001901= 0D 0A                    461                   DC.B   $0D,$0A
+00001903= 20 20 20 20 20 20 ...    462                   DC.B    '           ?&#JP&#?.:?G#&&&7            '
+0000192B= 0D 0A                    463                   DC.B   $0D,$0A
+0000192D= 20 20 20 20 20 20 ...    464                   DC.B    '           B&G..7B&&&#5!P&#.            '
+00001955= 0D 0A                    465                   DC.B   $0D,$0A
+00001957= 20 20 3A 47 47 50 ...    466                   DC.B    '  :GGPPYY?5&&?...:~?!...P&B             '
+0000197F= 0D 0A                    467                   DC.B   $0D,$0A
+00001981= 20 20 20 7E 47 26 ...    468                   DC.B    '   ~G&&&###BG:...      .G&B             '
+000019A9= 0D 0A                    469                   DC.B   $0D,$0A
+000019AB= 20 20 20 20 20 3F ...    470                   DC.B    '     ?#&B55J^....::..:::G&#^.           '
+000019D3= 0D 0A                    471                   DC.B   $0D,$0A
+000019D5= 20 20 20 20 20 20 ...    472                   DC.B    '      :B&#P555PBB#BBBBB##&&@@#Y:        '
+000019FD= 0D 0A                    473                   DC.B   $0D,$0A
+000019FF= 20 20 20 20 20 20 ...    474                   DC.B    '       .B&#B&#5!^.     .::.:J&@@#^      '
+00001A27= 0D 0A                    475                   DC.B   $0D,$0A
+00001A29= 20 20 20 20 20 20 ...    476                   DC.B    '        .B&&5.      .^7JY555YP&@@@5^    '
+00001A51= 0D 0A                    477                   DC.B   $0D,$0A
+00001A53= 20 20 20 20 20 20 ...    478                   DC.B    '        .&@#      !#&&##BGGGGP55PB&@&G: '
+00001A7B= 0D 0A                    479                   DC.B   $0D,$0A
+00001A7D= 20 20 20 20 20 20 ...    480                   DC.B    '        Y@@!     P@@#7::::::.      :G@&^'
+00001AA5= 0D 0A                    481                   DC.B   $0D,$0A
+00001AA7= 20 20 3A 3F 47 23 ...    482                   DC.B    '  :?G#&@@@@     .@@#P?^:::^^^:::....~&@#'
+00001ACF= 0D 0A                    483                   DC.B   $0D,$0A
+00001AD1= 20 3F 40 26 4A 37 ...    484                   DC.B    ' ?@&J77J@@B     .&@#PP5J7~~^^^^^^^~!Y&@&'
+00001AF9= 0D 0A                    485                   DC.B   $0D,$0A
+00001AFB= 20 26 40 2E 20 20 ...    486                   DC.B    ' &@.    @@?      B@&BPPPPPP555555PPG#@@7'
+00001B23= 0D 0A                    487                   DC.B   $0D,$0A
+00001B25= 7E 40 23 20 20 20 ...    488                   DC.B    '~@#    .@@~      .G@@&&#BBBBBB##&&&&@#^ '
+00001B4D= 0D 0A                    489                   DC.B   $0D,$0A
+00001B4F= 35 40 42 20 20 20 ...    490                   DC.B    '5@B    .@@~        .75G##&&&&&#BG5?&@5  '
+00001B77= 0D 0A                    491                   DC.B   $0D,$0A
+00001B79= 23 40 50 20 20 20 ...    492                   DC.B    '#@P    .@@~                        B@G  '
+00001BA1= 0D 0A                    493                   DC.B   $0D,$0A
+00001BA3= 40 40 50 20 20 20 ...    494                   DC.B    '@@P    .@@~                        G@B  ', 0
+00001BCC                           495                   
+00001BCC= 54 4F 44 4F 3A 20 ...    496  mainChoice      DC.B    'TODO: EVENT OR CITY', 0
+00001BE0= 54 4F 44 4F 3A 20 ...    497  cityChoice      DC.B    'TODO: CITY ||| 1 LEAVE; 2 SHOP; 3 EXPLORE;4 MANAGE',0
+00001C13= 54 4F 44 4F 3A 20 ...    498  shopChoice      DC.B    'TODO: SHOP', 0
+00001C1E= 54 4F 44 4F 3A 20 ...    499  exploreChoice   DC.B    'TODO: EXPLORE', 0
+00001C2C= 54 4F 44 4F 3A 20 ...    500  manageChoice    DC.B    'TODO: MANAGE', 0
+00001C39= 54 4F 44 4F 3A 20 ...    501  eventText       DC.B    'TODO: EVENT', 0 
+00001C45= 54 4F 44 4F 3A 20 ...    502  display         DC.B    'TODO: DISPLAY', 0
+00001C53= 50 72 65 73 73 20 ...    503  PAUSE           DC.B    'Press any key to continue . . .', 0
+00001C73                           504  
+00001C73= 30 30 00                 505  hundred_text    DC.B    '00', 0
+00001C76                           506  
+00001C76                           507  MONEY:          DS.W    1    PLAYER MONEY in hundreds
+00001C78                           508  NAME:           DS.W    1
+00001C7A                           509  
+00001C7A                           510  *-------------------------------------------------------
+00001C7A                           511  *VALIDATION VALUES TO BE USED
+00001C7A                           512  *-------------------------------------------------------
+00001C7A  =00000000                513  EXIT        EQU 0     USED TO EXIT ASSEMBLY PROGRAM
+00001C7A  =00000181                514  SALARY    EQU 385
+00001C7A  =00002710                515  MILLION  EQU 10000
+00001C7A  =000003E8                516  HUNDREDTHOUSAND EQU 1000
+00001C7A  =00000064                517  SECOND  EQU 100
+00001C7A                           518  
+00001C7A                           519      END START
 
 No errors detected
 No warnings generated
@@ -435,58 +529,63 @@ No warnings generated
 SYMBOL TABLE INFORMATION
 Symbol-name         Value
 -------------------------
-CITY                1198
-CITYCHOICE          1663
-CLEAR_SCREEN        1234
-CRLF                12B4
-DISPLAY             16C8
-DISPLAY_DETAILS     121C
-DOT                 164D
-DOT_NEXT            1294
-DOT_NEXT_PRINT      128C
+CITY                11BA
+CITYCHOICE          1BE0
+CLEAR_SCREEN        1256
+CRLF                12F0
+DISPLAY             1C45
+DISPLAY_DETAILS     123E
+DOT                 1687
+DOT_NEXT            12D0
+DOT_NEXT_PRINT      12C8
 END                 101C
-ENDL                1270
-ENTERNAME           1363
-EVENT               1202
-EVENTTEXT           16BC
+ENDL                1292
+ENTERNAME           139F
+EVENT               1224
+EVENTTEXT           1C39
 EXIT                0
-EXPLORE             11E2
-EXPLORECHOICE       16A1
-GAMELOOP            115A
-GET_MILLISECONDS    12AC
+EXPLORE             1204
+EXPLORECHOICE       1C1E
+GAMELOOP            117C
+GET_MILLISECONDS    12E8
 HUNDREDTHOUSAND     3E8
-HUNDRED_TEXT        16F6
+HUNDRED_TEXT        1C73
 INPUT_NAME          1038
 INPUT_NAME_ERROR    1092
 INPUT_NAME_LOOP     105A
-INTRO_STORY_STRING_1  1464
-INTRO_STORY_STRING_2  14A7
-INTRO_STORY_STRING_3  1517
-INTRO_STORY_STRING_4  156D
-LINE                15F8
-MAINCHOICE          164F
-MANAGE              11F2
-MANAGECHOICE        16AF
+INTRO_STORY_STRING_1  14A0
+INTRO_STORY_STRING_2  14E1
+INTRO_STORY_STRING_3  1551
+INTRO_STORY_STRING_4  15A7
+KING                18AF
+LINE                1632
+MAINCHOICE          1BCC
+MANAGE              1214
+MANAGECHOICE        1C2C
 MILLION             2710
-MONEY               16FA
-NAME                16FC
-NAME_CONFIRMATION_1  137C
-NAME_CONFIRMATION_2  138A
-NAME_CONFIRMATION_FAIL  13BC
-PAUSE               16D6
-PRINT               1240
-PRINT_DOTS          1286
-PRINT_INT           1248
+MONEY               1C76
+NAME                1C78
+NAME_CONFIRMATION_1  13B8
+NAME_CONFIRMATION_2  13C6
+NAME_CONFIRMATION_FAIL  13F8
+PAUSE               1C53
+PRINT               1262
+PRINT_DOTS          12C2
+PRINT_INT           126A
 SALARY              181
 SECOND              64
-SHOP                11D0
-SHOPCHOICE          1696
+SHOP                11F2
+SHOPCHOICE          1C13
+SPEAK               12A8
 SPLASH              1020
-SPLASH_STRING       12B7
+SPLASH_STRING       12F3
 START               1000
 STORY               10F0
-STORY_STRING_3      159E
-SYSTEM_PAUSE        1258
+STORY_STRING_3      15D8
+SYSTEM_PAUSE        127A
+TALK_1              1689
+TALK_2              168C
 WELCOME             10AA
-WELCOME_STRING_1    13DD
-WELCOME_STRING_2    1400
+WELCOME_STRING_1    1419
+WELCOME_STRING_2    143C
+YOU                 168E

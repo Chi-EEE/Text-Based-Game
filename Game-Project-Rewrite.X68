@@ -110,8 +110,18 @@ WELCOME:
 STORY:
     BSR	 	ENDL
 
-    LEA     intro_story_string_1, A1
+    LEA     YOU, A1
     BSR     PRINT
+    
+    BSR     ENDL
+    
+    LEA 	LINE, A1
+	BSR	 	PRINT
+	
+    BSR     ENDL
+    
+    LEA     intro_story_string_1, A2
+    BSR     SPEAK
     
     BSR	 	ENDL
     
@@ -155,7 +165,7 @@ STORY:
 *----------------GAMELOOP (MAIN LOOP)-------------------
 *------------------------------------------------------- 
 GAMELOOP:
-    LEA 	line, A1   *LOAD LINE
+    LEA 	LINE, A1   *LOAD LINE
 	BSR	 	PRINT
 
     MOVE.W  (MONEY), D1
@@ -305,6 +315,20 @@ ENDL:
 	MOVEM.L (A7)+,D0/A1
 	RTS
 	
+*-------------------------------------------------------
+*---------------------SPEAK SUBROUTINE------------------
+*----------------[A1,name: A2, text: A3]----------------
+SPEAK:
+    LEA     TALK_1, A1
+    BSR     PRINT
+    
+    MOVE    A2, A1
+    BSR     PRINT
+    
+    LEA     TALK_2, A1
+    BSR     PRINT
+    
+    RTS
 
 *-------------------------------------------------------
 *----------------TIMED PRINT DOT SUBROUTINE-------------
@@ -371,7 +395,7 @@ welcome_string_2:       DC.B	'You have immigrated to the Kingdom of Oxeris as yo
                         DC.B	'has been burned down from a conflict',0
 
 
-intro_story_string_1:	DC.B	'It has been 3 years since you immigrated to'
+intro_story_string_1:	DC.B	'It has been 3 years since I immigrated to'
 				DC.B	$0D,$0A
 				DC.B	'the Kingdom of Oxeris', 0
 				
@@ -393,12 +417,78 @@ story_string_3:	DC.B	'Do you want to go and ask the King why he has imposed'
 				DC.B	$0D,$09
                 DC.B	'2) No way!', 0
 
-line            DC.B    '================================================================================'
+LINE            DC.B    '================================================================================'
 				DC.B	$0D,$0A
 				DC.B	$0D,$09, 0
 				
-Dot  		    DC.B	'.',0
+Dot  		        DC.B	'.',0
+TALK_1              DC.B    ':"',0
+TALK_2              DC.B    '"',0
 
+YOU              DC.B    '             ^JB&@@@@@&&&&BY~.          '
+                 DC.B	$0D,$0A
+                 DC.B    '           7&@&P7^:.....^75#@@#?.       '
+                 DC.B	$0D,$0A
+                 DC.B    '          G@&:               !#@@5      '
+                 DC.B	$0D,$0A
+                 DC.B    '         5@&        :7YPPGBGPP#@@@#Y~.  '
+                 DC.B	$0D,$0A
+                 DC.B    '        :@@~      7#&B5YJJ???~^~~7YB@&? '
+                 DC.B	$0D,$0A
+                 DC.B    '     .:^B@&      ?@&5~:::::::       J&@J'
+                 DC.B	$0D,$0A
+                 DC.B    ' .5#&@@@@@J      B@GYJ!^^::::^^:::::~&&&'
+                 DC.B	$0D,$0A
+                 DC.B    ' G@G:. !@@:      Y@BYYYY?7!!!~~~!!7?5&@B'
+                 DC.B	$0D,$0A
+                 DC.B    '.@&    .@@.      :&@#G55YYYYYYY55PGB&&B.'
+                 DC.B	$0D,$0A
+                 DC.B    '7@B    ^@&        .?B#&&#######&&#B&@P  '
+                 DC.B	$0D,$0A
+                 DC.B    'G@B    ~@#            .::^~~~^::.  J@P  '
+                 DC.B	$0D,$0A
+                 DC.B    '&@G    ~@&                         ^@B  '
+                 DC.B	$0D,$0A
+                 DC.B    '@@G    .@&                         7@B  ', 0  
+           
+KING             DC.B    '            P&G:          ..            '
+                 DC.B	$0D,$0A
+                 DC.B    '           :&#&&5.     .!P#G            '
+                 DC.B	$0D,$0A
+                 DC.B    '           ?&#JP&#?.:?G#&&&7            '
+                 DC.B	$0D,$0A
+                 DC.B    '           B&G..7B&&&#5!P&#.            '
+                 DC.B	$0D,$0A
+                 DC.B    '  :GGPPYY?5&&?...:~?!...P&B             '
+                 DC.B	$0D,$0A
+                 DC.B    '   ~G&&&###BG:...      .G&B             '
+                 DC.B	$0D,$0A
+                 DC.B    '     ?#&B55J^....::..:::G&#^.           '
+                 DC.B	$0D,$0A
+                 DC.B    '      :B&#P555PBB#BBBBB##&&@@#Y:        '
+                 DC.B	$0D,$0A
+                 DC.B    '       .B&#B&#5!^.     .::.:J&@@#^      '
+                 DC.B	$0D,$0A
+                 DC.B    '        .B&&5.      .^7JY555YP&@@@5^    '
+                 DC.B	$0D,$0A
+                 DC.B    '        .&@#      !#&&##BGGGGP55PB&@&G: '
+                 DC.B	$0D,$0A
+                 DC.B    '        Y@@!     P@@#7::::::.      :G@&^'
+                 DC.B	$0D,$0A
+                 DC.B    '  :?G#&@@@@     .@@#P?^:::^^^:::....~&@#'
+                 DC.B	$0D,$0A
+                 DC.B    ' ?@&J77J@@B     .&@#PP5J7~~^^^^^^^~!Y&@&'
+                 DC.B	$0D,$0A
+                 DC.B    ' &@.    @@?      B@&BPPPPPP555555PPG#@@7'
+                 DC.B	$0D,$0A
+                 DC.B    '~@#    .@@~      .G@@&&#BBBBBB##&&&&@#^ '
+                 DC.B	$0D,$0A
+                 DC.B    '5@B    .@@~        .75G##&&&&&#BG5?&@5  '
+                 DC.B	$0D,$0A
+                 DC.B    '#@P    .@@~                        B@G  '
+                 DC.B	$0D,$0A
+                 DC.B    '@@P    .@@~                        G@B  ', 0
+                 
 mainChoice   	DC.B	'TODO: EVENT OR CITY', 0
 cityChoice		DC.B	'TODO: CITY ||| 1 LEAVE; 2 SHOP; 3 EXPLORE;4 MANAGE',0
 shopChoice	 	DC.B	'TODO: SHOP', 0
@@ -423,6 +513,8 @@ HUNDREDTHOUSAND EQU 1000
 SECOND  EQU 100
 
 	END	START
+
+
 
 
 
