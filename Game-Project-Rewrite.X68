@@ -12,7 +12,7 @@ START:
 	BSR	 	WELCOME
 	BSR     STORY
 	BSR     GUIDE_1
-	BRA	 	GAMELOOP
+	BRA	 	GAME_LOOP
 	
 END:
 	SIMHALT
@@ -23,6 +23,10 @@ END:
 INITIALIZE:
 	MOVE.W  #SALARY,MONEY
 	MOVE.W  #1,     DAY
+	
+	MOVE.W  #3,     DEFAULT_D_COUNTER 
+	MOVE.W  #3,     DAY_COUNTER    
+	
     MOVE.W  #15,    TEMPERATURE
     MOVE.W  #40,    CO2_LEVEL
 	RTS
@@ -184,7 +188,6 @@ GUIDE_1:
     LEA     GUIDE,      A4
     
     BSR     SPEAKING_ASCII
-    BSR     ENDL
     
     * INTRODUCE
     BSR     SHOW_ASCII
@@ -212,16 +215,16 @@ GUIDE_1:
     
     * NEXT
 	BSR	 	SYSTEM_PAUSE
-    BSR	 	CLEAR_SCREEN
-    *
 
     RTS
-*-------------------------------------------------------
-*----------------GAMELOOP (MAIN LOOP)-------------------
-*------------------------------------------------------- 
-GAMELOOP:
-    BSR     CLEAR_SCREEN
     
+END_DAY:
+    ADD.W   #1, DAY
+*-------------------------------------------------------
+*----------------GAME_LOOP (MAIN LOOP)-------------------
+*------------------------------------------------------- 
+GAME_LOOP:
+    BSR     CLEAR_SCREEN
     BSR     DISPLAY	
 
 	LEA 	mainChoice, A1   *LOAD MESSAGE
@@ -232,11 +235,11 @@ GAMELOOP:
 	TRAP	#15		 *ASK FOR INPUT
 	
 	CMP.W   #1,D1	   *SHOP IF (D2 == #1)
-	BEQ	 	EVENT
+	BEQ	 	WORK
 	CMP.W   #2,D1	   *ACTION IF (D2 == #2)
 	BEQ	 	CITY
 	
-	BRA	 	GAMELOOP	*LOOP FOREVER
+	BRA	 	GAME_LOOP	*LOOP FOREVER
 
 *-------------------------------------------------------
 *-------------------DISPLAY SUBROUTINE------------------
@@ -299,21 +302,48 @@ DISPLAY:
 	RTS
 
 *-------------------------------------------------------
-*--------------------JOB SUBROUTINE---------------------
+*--------------------WORK SUBROUTINE--------------------
 *-------------------------------------------------------
-EVENT:
+WORK:
     BSR     CLEAR_SCREEN
-	LEA 	eventText, A1
+	
+	*if (day_counter - 2 < 0) = tired
+	MOVE.W  (DAY_COUNTER),  D1
+	SUB     #2, D1
+	BMI     TIRED_WORK
+
+	CMP     #0, D1
+    BLS     TIRED_WORK
+
+	MOVE.W  D1, DAY_COUNTER
+    BSR     PRINT_INT
+
+    LEA 	eventText, A1
 	BSR	 	PRINT
 	
 	ADD.W   #SALARY, MONEY
-	BSR	 	SYSTEM_PAUSE
-	BRA	 	GAMELOOP
+	MOVE.B  #3,     D4
+	BSR     PRINT_DOTS
 	
+	BSR	 	SYSTEM_PAUSE
+	
+	
+    BRA GAME_LOOP
+TIRED_WORK:
+    BSR     ENDL
+
+    LEA 	work_tired_string, A1
+	BSR	 	PRINT
+	
+	BSR     SYSTEM_PAUSE
+    BRA     GAME_LOOP
 *-------------------------------------------------------
 *--------------------CITY SUBROUTINE--------------------
 *-------------------------------------------------------
-CITY:	
+CITY:
+    BSR     CLEAR_SCREEN
+    BSR     DISPLAY	
+	
 	LEA 	cityChoice, A1   *LOAD MESSAGE
 	BSR	 	PRINT
 	
@@ -323,7 +353,7 @@ CITY:
 	TRAP	#15		 *ASK FOR INPUT
 	
 	CMP.W   #1,D1	   *LEAVE IF (D2 == #1)
-	BEQ	 	GAMELOOP
+	BEQ	 	GAME_LOOP
 	CMP.W   #2,D1	   *SHOP IF (D2 == #2)
 	BEQ	 	SHOP
 	CMP.W   #3,D1	   *EXPLORE IF (D2 == #3)
@@ -410,8 +440,8 @@ SYSTEM_PAUSE:
 	BSR		 ENDL
 	LEA		 PAUSE, A1   *DISPLAY PAUSE MESSAGE
 	BSR		 PRINT		  
-	MOVE.B  #5,D0	   *WAIT FOR SINGLE CHARACTER
-	TRAP	#15
+	MOVE.B  #4, D0
+	TRAP	#15		 *ASK FOR NUMBER
 	BSR		ENDL
 	RTS
 	
@@ -680,21 +710,40 @@ KING             DC.B    '            P&G:          ..            '
                  DC.B	$0D,$0A
                  DC.B    '@@P    .@@~                        G@B  ', 0
                  
-mainChoice   	DC.B	'TODO: JOB OR TOWN', 0
-cityChoice		DC.B	'TODO: CITY ||| 1 LEAVE; 2 SHOP; 3 EXPLORE;4 MANAGE',0
+mainChoice   	DC.B	'What would you like to do?'
+                DC.B	$0D,$0A
+                DC.B	'1) Go to work to earn money'
+                DC.B	$0D,$0A
+                DC.B	'2) Enter the city',0
+
+cityChoice		DC.B	'What would you like to do in the city?'
+                DC.B	$0D,$0A
+                DC.B	'1) Visit the Building Shop'
+                DC.B	$0D,$0A
+                DC.B	'2) Explore the City'
+                DC.B	$0D,$0A
+                DC.B	'3) Manage your Buildings',0
+
 shopChoice	 	DC.B	'TODO: SHOP', 0
 exploreChoice	DC.B    'TODO: EXPLORE', 0
 manageChoice 	DC.B	'TODO: MANAGE', 0
-eventText	   	DC.B	'TODO: EVENT', 0 
-PAUSE		  	DC.B	'Press any key to continue . . .', 0
+eventText	   	DC.B	'Working', 0 
+work_tired_string   DC.B    'You are too tired to work right now',0
+PAUSE		  	DC.B	'Press enter to continue . . .', 0
 
 hundred_text	DC.B	'00', 0
 
 NAME	 		DS.W	30  *Max length of name can be 30
 MONEY 			DS.W	1	*PLAYER MONEY in hundreds
 DAY             DS.W    1   *DAYS PASSED
+
+DEFAULT_D_COUNTER DS.W    1
+DAY_COUNTER     DS.W    1   *INCREASED FROM 3 TO 4 IF ALARM
+
 TEMPERATURE     DS.W    1
 CO2_LEVEL       DS.W    1
+
+
 
 JOB_TYPE        DS.B    1
 JOB_LEVEL       DS.B    1
