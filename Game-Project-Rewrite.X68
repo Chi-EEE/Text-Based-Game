@@ -5,7 +5,7 @@
 	ORG $1000
 
 START:
-	MOVE.W  #SALARY,MONEY
+	BSR     INITIALIZE
 	
 	BSR     SPLASH
 	BSR	 	INPUT_NAME
@@ -17,6 +17,15 @@ START:
 END:
 	SIMHALT
 
+*-------------------------------------------------------
+*------------------INITIALIZE SUBROUTINE----------------
+*-------------------------------------------------------
+INITIALIZE:
+	MOVE.W  #SALARY,MONEY
+    MOVE.W  #0,     DAY
+    MOVE.W  #15,    TEMPERATURE
+    MOVE.W  #40,    CO2_LEVEL
+	RTS
 
 *-------------------------------------------------------
 *-------------------SPLASH SUBROUTINE------------------
@@ -90,7 +99,21 @@ INPUT_NAME_MENU_ERROR:
     LEA     name_confirmation_fail, A1
     BSR     PRINT
 
+    BSR	 	ENDL
     BSR	 	SYSTEM_PAUSE
+    
+    BSR     CLEAR_SCREEN
+    
+    BSR	 	ENDL
+    LEA	 	enterName,A1
+	BSR	 	PRINT
+	BSR	 	ENDL
+	
+	LEA	 	NAME, A1
+	BSR     PRINT
+	
+    BSR	 	ENDL
+    BSR	 	ENDL
     
     BRA     INPUT_NAME_LOOP
 
@@ -119,6 +142,7 @@ WELCOME:
 	BSR	 	SYSTEM_PAUSE
 	BSR	 	CLEAR_SCREEN
 	
+	BSR	 	ENDL
 	LEA     welcome_string_3,A1
 	BSR     PRINT
 	
@@ -133,18 +157,19 @@ WELCOME:
 *-------------------------------------------------------
 STORY:
     LEA     NAME, A2    *Load name for SPEAKING_ASCII
+    LEA     YOU,  A4    *Load Ascii for You
     
     LEA     intro_story_string_1, A3
-    BSR     YOU_SPEAKING_ASCII
+    BSR     SPEAKING_ASCII
     
     LEA     intro_story_string_2, A3
-    BSR     YOU_SPEAKING_ASCII
+    BSR     SPEAKING_ASCII
     
     LEA     intro_story_string_3, A3
-    BSR     YOU_SPEAKING_ASCII
+    BSR     SPEAKING_ASCII
     
     LEA     intro_story_string_4, A3
-    BSR     YOU_SPEAKING_ASCII
+    BSR     SPEAKING_ASCII
     RTS
 
 *-------------------------------------------------------
@@ -152,40 +177,49 @@ STORY:
 *-------------------------------------------------------
 GUIDE_1:
     LEA     GUIDE_NAME, A2
+    LEA     guide_1_string_1, A3
+    LEA     GUIDE,      A4
     
-    * SHOW ASCII OF SELF
+    BSR     SPEAKING_ASCII
+    BSR     ENDL
+    
+    * INTRODUCE
+    BSR     SHOW_ASCII
     BSR	 	ENDL
-    LEA     YOU, A1
+    
+    LEA     GUIDE_NAME, A1
     BSR     PRINT
-    BSR     ENDL
-    LEA 	LINE, A1
-	BSR	 	PRINT
-	*
     
-    * TALK ABOUT STORY
-    BSR     ENDL
-    BSR     SPEAK
+    LEA     TALK_1, A1
+    BSR     PRINT
+    
+    LEA     guide_1_string_2, A1
+    BSR     PRINT
+    
+    LEA     GUIDE_NAME, A1
+    BSR     PRINT
+    
+    LEA     guide_1_string_3, A1
+    BSR     PRINT
+    
+    LEA     TALK_2, A1
+    BSR     PRINT
+    
     BSR	 	ENDL
-    *
     
     * NEXT
 	BSR	 	SYSTEM_PAUSE
     BSR	 	CLEAR_SCREEN
     *
 
-    
     RTS
 *-------------------------------------------------------
 *----------------GAMELOOP (MAIN LOOP)-------------------
 *------------------------------------------------------- 
 GAMELOOP:
-    LEA 	GAME_LINES, A1   *LOAD LINES
-	BSR	 	PRINT
-
-    MOVE.W  (MONEY), D1
-	BSR	 	PRINT_INT
-
-    BSR	 	ENDL		*NEW LINE
+    BSR     CLEAR_SCREEN
+    
+    BSR     DISPLAY	
 
 	LEA 	mainChoice, A1   *LOAD MESSAGE
 	BSR	 	PRINT
@@ -198,14 +232,87 @@ GAMELOOP:
 	BEQ	 	EVENT
 	CMP.W   #2,D1	   *ACTION IF (D2 == #2)
 	BEQ	 	CITY
+	
 	BRA	 	GAMELOOP	*LOOP FOREVER
 
 *-------------------------------------------------------
+*-------------------DISPLAY SUBROUTINE------------------
+*-------------------------------------------------------
+DISPLAY:
+    LEA 	GAME_LINES, A1
+	BSR	 	PRINT
+	
+	
+	
+	MOVE.W  #$0201,  D1  *Move text cursor to pos
+	MOVE    #11,    D0
+	TRAP    #15
+	
+	* Display Name
+	LEA     NAME_LABEL, A1
+	BSR     PRINT
+	LEA     NAME, A1
+	BSR     PRINT
+	* ----------
+	BSR	 	ENDL
+	
+	MOVE.W  #$0202,  D1  *Move text cursor to pos
+	MOVE    #11,    D0
+	TRAP    #15
+
+	* Display MONEY
+	LEA     MONEY_LABEL, A1
+	BSR     PRINT
+	MOVE.W  (MONEY), D1
+	BSR     PRINT_MONEY
+	* ----------
+	
+	MOVE.W  #$3501,  D1  *Move text cursor to pos
+	MOVE    #11,    D0
+	TRAP    #15
+	
+	* Display Day
+	LEA     DAY_LABEL, A1
+	BSR     PRINT
+	MOVE.W  (DAY), D1
+	BSR     PRINT_INT
+	* ----------
+    BSR	 	ENDL
+
+	MOVE.W  #$3502,  D1  *Move text cursor to pos
+	MOVE    #11,    D0
+	TRAP    #15
+	
+    * Display Temperature
+	LEA     TEMPERATURE_LABEL, A1
+	BSR     PRINT
+	MOVE.W  (TEMPERATURE), D1
+	BSR     PRINT_INT
+	* ----------
+
+    * Reset cursor pos back to normal
+    MOVE.W  #$0004,  D1  *Move text cursor to pos
+	MOVE    #11,    D0
+	TRAP    #15
+
+	RTS
+
+*-------------------------------------------------------
+*--------------------JOB SUBROUTINE---------------------
+*-------------------------------------------------------
+EVENT:
+    BSR     CLEAR_SCREEN
+	LEA 	eventText, A1
+	BSR	 	PRINT
+	
+	ADD.W   #SALARY, MONEY
+	BSR	 	SYSTEM_PAUSE
+	BRA	 	GAMELOOP
+	
+*-------------------------------------------------------
 *--------------------CITY SUBROUTINE--------------------
 *-------------------------------------------------------
-CITY:
-	BSR	 	DISPLAY_DETAILS
-	
+CITY:	
 	LEA 	cityChoice, A1   *LOAD MESSAGE
 	BSR	 	PRINT
 	
@@ -253,30 +360,6 @@ MANAGE:
 	
 	BSR	 	SYSTEM_PAUSE
 	BRA	 	CITY
-	
-*-------------------------------------------------------
-*--------------------EVENT SUBROUTINE-------------------
-*-------------------------------------------------------
-EVENT:
-	LEA 	eventText, A1
-	BSR	 	PRINT
-	
-	ADD.W   #SALARY, MONEY
-	BSR	 	SYSTEM_PAUSE
-	BRA	 	GAMELOOP
-	
-
-*-------------------------------------------------------
-*----------------DISPLAY DETAILS SUBROUTINE-------------
-*-------------------------------------------------------
-DISPLAY_DETAILS:
-	MOVE.B  #11,D0
-	MOVE.W  #$FF00,D1
-	TRAP	#15
-	LEA	 	display,A1
-	MOVE.B  #14,D0
-	TRAP	#15
-	RTS
 
 *-------------------------------------------------------
 *----------------CLEAR SCREEN SUBROUTINE----------------
@@ -301,11 +384,17 @@ PRINT:
 PRINT_INT:
 	MOVE.B  #3,D0
 	TRAP	#15
+	RTS
 	
+*-------------------------------------------------------
+*----------------PRINT_MONEY SUBROUTINE-----------------
+*-------------------------------------------------------
+PRINT_MONEY:
+	BSR     PRINT_INT
 	LEA     hundred_text, A1
 	BSR     PRINT
 	RTS
-
+	
 *-------------------------------------------------------
 *----------------INPUT_NUM SUBROUTINE-------------------
 *-------------------------------------------------------
@@ -337,18 +426,10 @@ ENDL:
 	RTS
 	
 *-------------------------------------------------------
-*---------------YOU_SPEAKING_ASCII SUBROUTINE-----------
-*----------------[A1,name: A2, text: A3]----------------
-YOU_SPEAKING_ASCII:
-* SHOW ASCII OF SELF
-    BSR	 	ENDL
-    LEA     YOU, A1
-    BSR     PRINT
-    BSR     ENDL
-    LEA 	LINE, A1
-	BSR	 	PRINT
-	*
-    
+*--------------SPEAKING_ASCII SUBROUTINE----------------
+*---------[A1,name: A2, text: A3, ascii: A4]------------
+SPEAKING_ASCII:
+    BSR     SHOW_ASCII
     * TALK ABOUT STORY
     BSR     ENDL
     BSR     SPEAK
@@ -360,7 +441,17 @@ YOU_SPEAKING_ASCII:
     BSR	 	CLEAR_SCREEN
     *
     RTS
-
+*-------------------------------------------------------
+*---------------SHOW_ASCII SUBROUTINE-------------------
+*------------------[A1, ascii: A4]----------------------
+SHOW_ASCII:
+    BSR	 	ENDL
+    MOVE    A4, A1
+    BSR     PRINT
+    BSR     ENDL
+    LEA 	LINE, A1
+	BSR	 	PRINT
+    RTS
 *-------------------------------------------------------
 *---------------------SPEAK SUBROUTINE------------------
 *----------------[A1,name: A2, text: A3]----------------
@@ -381,7 +472,7 @@ SPEAK:
 
 *-------------------------------------------------------
 *----------------TIMED PRINT DOT SUBROUTINE-------------
-*-------------------[D1,D2,D3,input: D4]----------------
+*-------------------[D1,D2,D3,number: D4]---------------
 PRINT_DOTS:
     LEA     Dot,A1
 DOT_NEXT_PRINT:
@@ -468,17 +559,9 @@ intro_story_string_3 	DC.B	'I am unsure why he has imposed a tax on CO2'
 
 intro_story_string_4 	DC.B	'I should make a plan to solve this problem.',0
 
-story_string_3 	DC.B	'Do you want to go and ask the King why he has imposed'
-                DC.B    'a tax on CO2?'
-				DC.B	$0D,$0A
-				DC.B	$0D,$09
-                DC.B	'1) Yes!'
-				DC.B	$0D,$09
-                DC.B	'2) No way!', 0
-
-guide_1_string_1        DC.B    'Welcome to the Kingdom of Oxeris, ',0
-guide_1_string_2        DC.B    'Theres was a lot ',0
-
+guide_1_string_1        DC.B    'Welcome to the Kingdom of Oxeris, fellow adventurer.',0
+guide_1_string_2        DC.B    'I am ',0
+guide_1_string_3        DC.B    ' and I am going to help you begin your adventure!',0
 
 LINE            DC.B    '================================================================================',0
 
@@ -487,7 +570,12 @@ GAME_LINES      DC.B    '=======================================================
 				DC.B	$0D,$0A
 				DC.B	$0D,$0A
 				DC.B	'================================================================================', 0
-				    
+
+NAME_LABEL          DC.B    'Name: ',0
+MONEY_LABEL          DC.B    'Money: ',0
+DAY_LABEL           DC.B    'Day: ',0
+TEMPERATURE_LABEL   DC.B    'Temperature: ',0
+	    
 Dot  		        DC.B	'.',0
 TALK_1              DC.B    ': "',0
 TALK_2              DC.B    '"',0
@@ -552,7 +640,7 @@ GUIDE            DC.B    '                .!5B&&&@&&#B5?!^             '
                  DC.B    '  B@?    B@?                       Y@Y       '
                  DC.B	$0D,$0A
                  DC.B    '  &@?    P@J                       J@Y       ', 0
-           
+         
 KING             DC.B    '            P&G:          ..            '
                  DC.B	$0D,$0A
                  DC.B    '           :&#&&5.     .!P#G            '
@@ -591,31 +679,35 @@ KING             DC.B    '            P&G:          ..            '
                  DC.B	$0D,$0A
                  DC.B    '@@P    .@@~                        G@B  ', 0
                  
-mainChoice   	DC.B	'TODO: EVENT OR CITY', 0
+mainChoice   	DC.B	'TODO: JOB OR TOWN', 0
 cityChoice		DC.B	'TODO: CITY ||| 1 LEAVE; 2 SHOP; 3 EXPLORE;4 MANAGE',0
 shopChoice	 	DC.B	'TODO: SHOP', 0
 exploreChoice	DC.B    'TODO: EXPLORE', 0
 manageChoice 	DC.B	'TODO: MANAGE', 0
 eventText	   	DC.B	'TODO: EVENT', 0 
-display	  		DC.B	'TODO: DISPLAY', 0
 PAUSE		  	DC.B	'Press any key to continue . . .', 0
 
 hundred_text	DC.B	'00', 0
 
-MONEY:			DS.W	1	 PLAYER MONEY in hundreds
-NAME:	 		DS.W	1
-DAY:            DS.B    1   DAYS PASSED
+MONEY 			DS.W	1	 PLAYER MONEY in hundreds
+NAME	 		DS.W	1
+DAY             DS.W    1   DAYS PASSED
+TEMPERATURE     DS.W    1
+CO2_LEVEL       DS.W    1
+
+JOB_TYPE        DS.B    1
+JOB_LEVEL       DS.B    1
 
 *-------------------------------------------------------
 *VALIDATION VALUES TO BE USED
 *-------------------------------------------------------
-EXIT		EQU 0	  USED TO EXIT ASSEMBLY PROGRAM
 SALARY	  EQU 385
 MILLION	 EQU 10000
 HUNDREDTHOUSAND EQU 1000
 SECOND  EQU 100
 
 	END	START
+
 
 
 
