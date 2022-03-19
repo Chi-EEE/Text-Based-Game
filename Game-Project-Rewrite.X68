@@ -22,7 +22,7 @@ END:
 *-------------------------------------------------------
 INITIALIZE:
 	MOVE.W  #SALARY,MONEY
-    MOVE.W  #0,     DAY
+	MOVE.W  #1,     DAY
     MOVE.W  #15,    TEMPERATURE
     MOVE.W  #40,    CO2_LEVEL
 	RTS
@@ -149,6 +149,9 @@ WELCOME:
 	MOVE    #3, D4      *Loop for 3 seconds for dots
 	BSR     PRINT_DOTS
 	
+	BSR	 	ENDL
+	
+	BSR	 	SYSTEM_PAUSE
 	BSR	 	CLEAR_SCREEN
 	
 	RTS
@@ -241,8 +244,6 @@ GAMELOOP:
 DISPLAY:
     LEA 	GAME_LINES, A1
 	BSR	 	PRINT
-	
-	
 	
 	MOVE.W  #$0201,  D1  *Move text cursor to pos
 	MOVE    #11,    D0
@@ -689,14 +690,16 @@ PAUSE		  	DC.B	'Press any key to continue . . .', 0
 
 hundred_text	DC.B	'00', 0
 
-MONEY 			DS.W	1	 PLAYER MONEY in hundreds
-NAME	 		DS.W	1
-DAY             DS.W    1   DAYS PASSED
+NAME	 		DS.W	30  *Max length of name can be 30
+MONEY 			DS.W	1	*PLAYER MONEY in hundreds
+DAY             DS.W    1   *DAYS PASSED
 TEMPERATURE     DS.W    1
 CO2_LEVEL       DS.W    1
 
 JOB_TYPE        DS.B    1
 JOB_LEVEL       DS.B    1
+
+
 
 *-------------------------------------------------------
 *VALIDATION VALUES TO BE USED
