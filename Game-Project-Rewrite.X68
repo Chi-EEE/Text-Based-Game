@@ -220,6 +220,7 @@ GUIDE_1:
     
 END_DAY:
     ADD.W   #1, DAY
+    MOVE.W  (DEFAULT_D_COUNTER), DAY_COUNTER
 *-------------------------------------------------------
 *----------------GAME_LOOP (MAIN LOOP)-------------------
 *------------------------------------------------------- 
@@ -238,6 +239,8 @@ GAME_LOOP:
 	BEQ	 	WORK
 	CMP.W   #2,D1	   *ACTION IF (D2 == #2)
 	BEQ	 	CITY
+	CMP.W   #3,D1	   *SLEEP IF (D2 == #3)
+	BEQ	 	END_DAY
 	
 	BRA	 	GAME_LOOP	*LOOP FOREVER
 
@@ -370,6 +373,8 @@ SHOP:
 	MOVE.B 	#14, D0
 	TRAP 	#15
 	BSR	 	ENDL
+	
+	BSR	 	SYSTEM_PAUSE
 	BRA	 	CITY
 
 *-------------------------------------------------------
@@ -714,15 +719,19 @@ mainChoice   	DC.B	'What would you like to do?'
                 DC.B	$0D,$0A
                 DC.B	'1) Go to work to earn money'
                 DC.B	$0D,$0A
-                DC.B	'2) Enter the city',0
+                DC.B	'2) Enter the Town'
+                DC.B	$0D,$0A
+                DC.B	'3) Sleep and end the day',0
 
-cityChoice		DC.B	'What would you like to do in the city?'
+cityChoice		DC.B	'What would you like to do in the town?'
                 DC.B	$0D,$0A
-                DC.B	'1) Visit the Building Shop'
+                DC.B	'1) Exit the Town'
                 DC.B	$0D,$0A
-                DC.B	'2) Explore the City'
+                DC.B	'2) Visit the Building Shop'
                 DC.B	$0D,$0A
-                DC.B	'3) Manage your Buildings',0
+                DC.B	'3) Explore the Town'
+                DC.B	$0D,$0A
+                DC.B	'4) Manage your Buildings',0
 
 shopChoice	 	DC.B	'TODO: SHOP', 0
 exploreChoice	DC.B    'TODO: EXPLORE', 0
@@ -759,6 +768,7 @@ HUNDREDTHOUSAND EQU 1000
 SECOND  EQU 100
 
 	END	START
+
 
 
 
