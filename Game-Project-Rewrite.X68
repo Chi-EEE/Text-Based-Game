@@ -21,15 +21,17 @@ END:
 *------------------INITIALIZE SUBROUTINE----------------
 *-------------------------------------------------------
 INITIALIZE:
-	MOVE.W  #SALARY,MONEY
+	MOVE.W  #STARTING_CASH,MONEY
 	MOVE.W  #1,     DAY
 	
-	MOVE.W  #3,     DEFAULT_D_COUNTER 
 	MOVE.W  #3,     DAY_COUNTER    
 	
     MOVE.W  #15,    TEMPERATURE
     MOVE.W  #40,    CO2_LEVEL
-	RTS
+    
+    MOVE.B  #0,     VISITED_SHOP
+	MOVE.B  #0,     HAS_ALARM
+    RTS
 
 *-------------------------------------------------------
 *-------------------SPLASH SUBROUTINE------------------
@@ -217,10 +219,30 @@ GUIDE_1:
 	BSR	 	SYSTEM_PAUSE
 
     RTS
-    
 END_DAY:
-    ADD.W   #1, DAY
-    MOVE.W  (DEFAULT_D_COUNTER), DAY_COUNTER
+    BSR     CLEAR_SCREEN
+    ADD.W   #1, DAY     *Increase day by 1
+    
+    MOVE.W  #DEFAULT_DAY_COUNTER,DAY_COUNTER  *Increase reset day counter
+    
+    MOVE.B  (HAS_ALARM), D1
+    CMP     #1,     D1 * Has alarm
+    BNE     DISPLAY_END_DAY * No = skip increase day counter
+    ADD.W   #1, DAY_COUNTER
+DISPLAY_END_DAY:
+    LEA     YOU,  A4    *Load Ascii for Shop keeper
+    BSR     SHOW_ASCII
+    BSR	 	ENDL
+    
+    LEA     sleep_string,   A1
+    BSR     PRINT
+    
+	MOVE.B  #5,     D4
+	BSR     PRINT_DOTS
+	
+	BSR     ENDL
+	
+	BSR	 	SYSTEM_PAUSE
 *-------------------------------------------------------
 *----------------GAME_LOOP (MAIN LOOP)-------------------
 *------------------------------------------------------- 
@@ -230,7 +252,6 @@ GAME_LOOP:
 
 	LEA 	mainChoice, A1   *LOAD MESSAGE
 	BSR	 	PRINT
-	BSR	 	ENDL		*NEW LINE
 	
 	MOVE.B  #4, D0
 	TRAP	#15		 *ASK FOR INPUT
@@ -271,7 +292,7 @@ DISPLAY:
 	LEA     MONEY_LABEL, A1
 	BSR     PRINT
 	MOVE.W  (MONEY), D1
-	BSR     PRINT_MONEY
+	BSR     PRINT_INT
 	* ----------
 	
 	MOVE.W  #$3501,  D1  *Move text cursor to pos
@@ -350,8 +371,6 @@ CITY:
 	LEA 	cityChoice, A1   *LOAD MESSAGE
 	BSR	 	PRINT
 	
-	BSR	 	ENDL		*NEW LINE
-	
 	MOVE.B  #4, D0
 	TRAP	#15		 *ASK FOR INPUT
 	
@@ -369,14 +388,171 @@ CITY:
 *--------------------SHOP SUBROUTINE--------------------
 *-------------------------------------------------------
 SHOP:
-	LEA 	shopChoice, A1
-	MOVE.B 	#14, D0
-	TRAP 	#15
-	BSR	 	ENDL
-	
-	BSR	 	SYSTEM_PAUSE
-	BRA	 	CITY
+    BSR     CLEAR_SCREEN
+    
+    CMP.B   #0,   VISITED_SHOP
+    BEQ     FIRST_TIME_SHOP
 
+    LEA     SHOP_KEEPER,      A4
+    
+    BSR     SHOW_ASCII
+    BSR	 	ENDL
+    
+    LEA     SHOP_KEEPER_NAME, A1
+    BSR     PRINT
+
+    LEA     TALK_1, A1
+    BSR     PRINT
+    
+    LEA     shop_string_1, A1
+    BSR     PRINT
+    
+    LEA     NAME, A1
+    BSR     PRINT
+    
+    LEA     TALK_2, A1
+    BSR     PRINT
+    
+    LEA     shop_string_2,  A1
+    BSR     PRINT
+    
+	MOVE.B  #4, D0
+	TRAP	#15		 *ASK FOR INPUT
+	
+	CMP.W   #1,D1	   *LEAVE IF (D1 == #1)
+	BEQ	 	CITY
+	CMP.W   #2,D1	   *BROWSE_SHOP IF (D1 == #2)
+	BEQ	 	BROWSE_SHOP
+	CMP.W   #3,D1	   *EXPLORE IF (D1 == #3)
+	BEQ	 	EXPLORE
+	
+	BRA	 	SHOP
+FIRST_TIME_SHOP:
+    MOVE.B    #1, VISITED_SHOP
+
+    *INTRODUCE
+    LEA     SHOP_KEEPER,  A4    *Load Ascii for Shop keeper
+   
+    BSR     SHOW_ASCII
+    BSR	 	ENDL
+
+    LEA     SHOP_KEEPER_NAME, A1
+    BSR     PRINT
+
+    LEA     TALK_1, A1
+    BSR     PRINT
+    
+    LEA     shop_intro_string_1, A1
+    BSR     PRINT
+    
+    LEA     SHOP_KEEPER_NAME, A1
+    BSR     PRINT
+    
+    LEA     shop_intro_string_2,  A1
+    BSR     PRINT
+    
+    LEA     TALK_2, A1
+    BSR     PRINT
+    
+    BSR     ENDL
+    
+    BSR     SYSTEM_PAUSE
+    *
+    BRA     SHOP
+*-------------------------------------------------------
+*-------------------UNABLE_BUY SUBROUTINE---------------
+*----------------------[D2: need_money]-----------------
+UNABLE_BUY:
+    LEA     shop_unable_buy_string_1, A1
+    BSR     PRINT
+    
+    MOVE.W  (MONEY),    D1
+    BSR     PRINT_INT
+    
+    LEA     shop_unable_buy_string_2, A1
+    BSR     PRINT
+    
+    SUB     D1, D2
+    MOVE    D2, D1
+    BSR     PRINT_INT
+
+    LEA     shop_unable_buy_string_3, A1
+    BSR     PRINT
+    
+    BSR     SYSTEM_PAUSE
+    BSR     CLEAR_SCREEN
+BROWSE_SHOP:  
+    BSR     CLEAR_SCREEN
+    
+    LEA     SHOP_KEEPER,  A4    *Load Ascii for Shop keeper
+   
+    BSR     SHOW_ASCII
+    BSR	 	ENDL
+    
+    LEA     shop_browse_string, A1
+    BSR     PRINT
+    
+	MOVE.B  #4, D0
+	TRAP	#15		 *ASK FOR INPUT
+	
+	CMP.W   #1,D1	   *Alarm Clock IF (D1 == #1)
+	BEQ	 	ALARM_CLOCK
+	CMP.W   #2,D1	   *Small Water Mill IF (D1 == #2)
+	BEQ	 	WATER_MILL
+	CMP.W   #3,D1	   *Solar Panel IF (D1 == #3)
+	BEQ	 	SOLAR_PANEL
+	CMP.W   #4,D1	   *Sword IF (D1 == #1)
+	BEQ	 	SWORD
+	CMP.W   #5,D1	   *Coffee IF (D1 == #2)
+	BEQ	 	COFFEE
+	CMP.W   #6,D1	   *Exit Browse IF (D1 == #3)
+	BEQ	 	SHOP
+	
+    BRA     BROWSE_SHOP
+ALARM_CLOCK:
+    BSR     CLEAR_SCREEN
+    BSR     ENDL
+    
+    MOVE.B  (HAS_ALARM), D1
+    CMP     #0, D1
+    BEQ     ATTEMPT_BUY_ALARM_CLOCK
+    
+    LEA     shop_already_have_string,   A1
+    BSR     PRINT
+    
+    BSR     SYSTEM_PAUSE
+    BSR     CLEAR_SCREEN
+    BRA     BROWSE_SHOP
+ATTEMPT_BUY_ALARM_CLOCK:
+    MOVE.W  (MONEY),  D1
+    MOVE.W  #20, D2
+	SUB.W   D2, D1
+	BMI     UNABLE_BUY
+	
+    MOVE.W  D1, MONEY
+    MOVE.B  #1,     HAS_ALARM
+    
+    LEA     SHOP_KEEPER_NAME, A2
+    LEA     shop_thank_string, A3
+    LEA     SHOP_KEEPER, A4
+
+    BSR     SPEAKING_ASCII
+    
+    BSR     SYSTEM_PAUSE
+    BSR     CLEAR_SCREEN
+    
+    BRA     BROWSE_SHOP
+WATER_MILL:
+    
+SOLAR_PANEL:
+
+SWORD:
+
+COFFEE:
+
+SELL_ITEM_SHOP:
+
+    BRA     SELL_ITEM_SHOP
 *-------------------------------------------------------
 *--------------------EXPLORE SUBROUTINE-----------------
 *-------------------------------------------------------
@@ -420,15 +596,6 @@ PRINT:
 PRINT_INT:
 	MOVE.B  #3,D0
 	TRAP	#15
-	RTS
-	
-*-------------------------------------------------------
-*----------------PRINT_MONEY SUBROUTINE-----------------
-*-------------------------------------------------------
-PRINT_MONEY:
-	BSR     PRINT_INT
-	LEA     hundred_text, A1
-	BSR     PRINT
 	RTS
 	
 *-------------------------------------------------------
@@ -714,14 +881,67 @@ KING             DC.B    '            P&G:          ..            '
                  DC.B    '#@P    .@@~                        B@G  '
                  DC.B	$0D,$0A
                  DC.B    '@@P    .@@~                        G@B  ', 0
-                 
+
+SHOP_KEEPER_NAME DC.B   'Shop Keeper Sam',0
+SHOP_KEEPER      DC.B    '             .^JG&@@@@@@@@&BJ.               '
+                 DC.B	$0D,$0A
+                 DC.B    '         .7G&@@@@#PYJ??JYG#@@@7              '
+                 DC.B	$0D,$0A
+                 DC.B    '        J@@@&P!.  .YY??JJ?J#&&&B^            '
+                 DC.B	$0D,$0A
+                 DC.B    '       .@@@7     :##?^^:^^~:^^5&#            '
+                 DC.B	$0D,$0A
+                 DC.B    '        P@@5     G&5^..    ..:~#&7           '
+                 DC.B	$0D,$0A
+                 DC.B    '        ^@@&     !&B!:..   ...:Y&#           '
+                 DC.B	$0D,$0A
+                 DC.B    '         @@@.     #&?^:: ..    ^#&7          '
+                 DC.B	$0D,$0A
+                 DC.B    '         &@@.     Y&P???J?!::::^P&B          '
+                 DC.B	$0D,$0A
+                 DC.B    '         #@@?!YPB#@@@@@@@@@@@@@@@@@&B57:     '
+                 DC.B	$0D,$0A
+                 DC.B    '      .7P@@@@@@&BG55YJ?77~~^^~~~7JYPB&@@@P.  '
+                 DC.B	$0D,$0A
+                 DC.B    '   .Y&@@@&G7: .^JG#&&@@@@&@&&B5!:      ^@@&  '
+                 DC.B	$0D,$0A
+                 DC.B    '  !@@@G^.    Y&@@&BJ!~:::^~75#@@@@B~   .@@@  '
+                 DC.B	$0D,$0A
+                 DC.B    ' ~@@@~     .&@@Y.              .?#@@&7!@@@!  '
+                 DC.B	$0D,$0A
+                 DC.B    ' ~@@@G!.  .&@@:        .:~7?55YYY5&@@@@@#:   '
+                 DC.B	$0D,$0A
+                 DC.B    '  .?#@@@@&&@@!       7B&@&&&&########&&@&B7  '
+                 DC.B	$0D,$0A
+                 DC.B    '      .^7B@@#      .#@@#J~^^^^^^.     .^5@@B.'
+                 DC.B	$0D,$0A
+                 DC.B    '    .:~7?#@@7      B@&B5^::^^^^^:...    .5@@G'
+                 DC.B	$0D,$0A
+                 DC.B    '  Y&@@@@@@@@.      &@&PPY!^^::::^^^^^::::J@@&'
+                 DC.B	$0D,$0A
+                 DC.B    ' ?@&^.  .@@#       B@&GPPPPY?7!!~~~~!!7?YG&@&'
+                 DC.B	$0D,$0A
+                 DC.B    ' &@~    .@@P       ~@@&BGPPPPPPPPPPPPPGG#&@&~'
+                 DC.B	$0D,$0A
+                 DC.B    '^@@.    .@@?        !#@@&&##BBBBBB##&&&@@@P. '
+                 DC.B	$0D,$0A
+                 DC.B    'J@@.    ^@@!          ^?PB#&&&&&&&&#BPJY@@7  '
+                 DC.B	$0D,$0A
+                 DC.B    'B@@     ^@@!                           .@@?  '
+                 DC.B	$0D,$0A
+                 DC.B    '&@@     ^@@!                            @@Y  ', 0
+    
 mainChoice   	DC.B	'What would you like to do?'
                 DC.B	$0D,$0A
                 DC.B	'1) Go to work to earn money'
                 DC.B	$0D,$0A
                 DC.B	'2) Enter the Town'
                 DC.B	$0D,$0A
-                DC.B	'3) Sleep and end the day',0
+                DC.B	'3) Sleep and end the day'
+                DC.B	$0D,$0A
+                DC.B	'Enter your choice) ',0
+
+sleep_string    DC.B    'ZzZzZzZzZz',0
 
 cityChoice		DC.B	'What would you like to do in the town?'
                 DC.B	$0D,$0A
@@ -731,28 +951,74 @@ cityChoice		DC.B	'What would you like to do in the town?'
                 DC.B	$0D,$0A
                 DC.B	'3) Explore the Town'
                 DC.B	$0D,$0A
-                DC.B	'4) Manage your Buildings',0
+                DC.B	'4) Manage your Buildings'
+                DC.B	$0D,$0A
+                DC.B	'Enter your choice) ',0
 
-shopChoice	 	DC.B	'TODO: SHOP', 0
+
+shop_string_1           DC.B    'Welcome back ',0
+shop_string_2           DC.B	$0D,$0A
+                        DC.B	'1) Exit the Shop'
+                        DC.B	$0D,$0A
+                        DC.B	'2) Browse around the shop'
+                        DC.B	$0D,$0A
+                        DC.B	'3) Sell items to the shop'
+                        DC.B	$0D,$0A
+                        DC.B	'Enter your choice) ',0
+
+                        
+shop_browse_string      DC.B    'There is a selection of items that caught your interest:'
+                        DC.B	$0D,$0A
+                        DC.B    '1) Alarm Clock'
+                        DC.B	$0D,$0A
+                        DC.B    '2) Small Water Mill'
+                        DC.B	$0D,$0A
+                        DC.B    '3) Solar Panel'
+                        DC.B	$0D,$0A
+                        DC.B    '4) Sword'
+                        DC.B	$0D,$0A
+                        DC.B    '5) Coffee'
+                        DC.B	$0D,$0A
+                        DC.B    '6) Exit Browse'
+                        DC.B	$0D,$0A
+                        DC.B	'Enter your choice) ',0
+
+
+shop_unable_buy_string_1: DC.B    'You have ',0
+shop_unable_buy_string_2: DC.B    ' cash. You need ',0
+shop_unable_buy_string_3: DC.B    ' more cash to purchase this item.',0
+
+shop_already_have_string:  DC.B    'You already have this item.',0
+
+shop_intro_string_1           DC.B    'Welcome to my Shop, my name is ',0
+shop_intro_string_2           DC.B    '!' 
+                              DC.B    $0D,$0A
+                              DC.B    'I sell items that could be used to reduce your CO2 output.',0
+
+shop_thank_string   DC.B    'Thank you for buying this item!',0
+
 exploreChoice	DC.B    'TODO: EXPLORE', 0
 manageChoice 	DC.B	'TODO: MANAGE', 0
 eventText	   	DC.B	'Working', 0 
 work_tired_string   DC.B    'You are too tired to work right now',0
 PAUSE		  	DC.B	'Press enter to continue . . .', 0
 
-hundred_text	DC.B	'00', 0
-
 NAME	 		DS.W	30  *Max length of name can be 30
 MONEY 			DS.W	1	*PLAYER MONEY in hundreds
 DAY             DS.W    1   *DAYS PASSED
 
-DEFAULT_D_COUNTER DS.W    1
 DAY_COUNTER     DS.W    1   *INCREASED FROM 3 TO 4 IF ALARM
 
 TEMPERATURE     DS.W    1
 CO2_LEVEL       DS.W    1
 
-
+* Amount
+WATER_MILL_COUNT    DS.B    1
+SOLAR_PANEL_COUNT   DS.B    1
+* Booleans
+VISITED_SHOP    DS.B    1   *Check if you visited shop before
+HAS_ALARM       DS.B    1
+*
 
 JOB_TYPE        DS.B    1
 JOB_LEVEL       DS.B    1
@@ -762,12 +1028,15 @@ JOB_LEVEL       DS.B    1
 *-------------------------------------------------------
 *VALIDATION VALUES TO BE USED
 *-------------------------------------------------------
-SALARY	  EQU 385
+SALARY	  EQU 2
+STARTING_CASH	  EQU 200
 MILLION	 EQU 10000
 HUNDREDTHOUSAND EQU 1000
 SECOND  EQU 100
+DEFAULT_DAY_COUNTER EQU 3
 
 	END	START
+
 
 
 
