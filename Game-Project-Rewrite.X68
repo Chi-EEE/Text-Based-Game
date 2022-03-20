@@ -377,14 +377,14 @@ CITY:
 	MOVE.B  #4, D0
 	TRAP	#15		 *ASK FOR INPUT
 	
-	CMP.W   #1,D1	   *LEAVE IF (D2 == #1)
-	BEQ	 	GAME_LOOP
-	CMP.W   #2,D1	   *SHOP IF (D2 == #2)
+	CMP.W   #1,D1	   *SHOP IF (D2 == #1)
 	BEQ	 	SHOP
-	CMP.W   #3,D1	   *EXPLORE IF (D2 == #3)
+	CMP.W   #2,D1	   *EXPLORE IF (D2 == #2)
 	BEQ	 	EXPLORE
-	CMP.W   #4,D1	   *MANAGE IF (D2 == #4)
+	CMP.W   #3,D1	   *MANAGE IF (D2 == #3)
 	BEQ	 	MANAGE
+	CMP.W   #4,D1	   *LEAVE IF (D2 == #4)
+	BEQ	 	GAME_LOOP
 	BRA	 	CITY
 
 *-------------------------------------------------------
@@ -422,12 +422,12 @@ SHOP:
 	MOVE.B  #4, D0
 	TRAP	#15		 *ASK FOR INPUT
 	
-	CMP.W   #1,D1	   *LEAVE IF (D1 == #1)
-	BEQ	 	CITY
-	CMP.W   #2,D1	   *BROWSE_SHOP IF (D1 == #2)
+	CMP.W   #1,D1	   *BROWSE_SHOP IF (D1 == #1)
 	BEQ	 	BROWSE_SHOP
-	CMP.W   #3,D1	   *EXPLORE IF (D1 == #3)
-	BEQ	 	EXPLORE
+	CMP.W   #2,D1	   *SELL_ITEM_SHOP IF (D1 == #2)
+	BEQ	 	SELL_ITEM_SHOP
+	CMP.W   #3,D1	   *CITY IF (D1 == #3)
+	BEQ	 	CITY
 	
 	BRA	 	SHOP
 FIRST_TIME_SHOP:
@@ -1015,39 +1015,39 @@ sleep_string    DC.B    'ZzZzZzZzZz',0
 
 cityChoice		DC.B	'What would you like to do in the town?'
                 DC.B	$0D,$0A
-                DC.B	'1) Exit the Town'
+                DC.B	'1) Visit the Building Shop'
                 DC.B	$0D,$0A
-                DC.B	'2) Visit the Building Shop'
+                DC.B	'2) Explore the Town'
                 DC.B	$0D,$0A
-                DC.B	'3) Explore the Town'
+                DC.B	'3) Manage your Buildings'
                 DC.B	$0D,$0A
-                DC.B	'4) Manage your Buildings'
+                DC.B	'4) Exit the Town'
                 DC.B	$0D,$0A
                 DC.B	'Enter your choice) ',0
 
 
 shop_string_1           DC.B    'Welcome back ',0
 shop_string_2           DC.B	$0D,$0A
-                        DC.B	'1) Exit the Shop'
+                        DC.B	'1) Browse around the shop'
                         DC.B	$0D,$0A
-                        DC.B	'2) Browse around the shop'
+                        DC.B	'2) Sell items to the shop'
                         DC.B	$0D,$0A
-                        DC.B	'3) Sell items to the shop'
+                        DC.B	'3) Exit the Shop'
                         DC.B	$0D,$0A
                         DC.B	'Enter your choice) ',0
 
                         
 shop_browse_string      DC.B    'There is a selection of items that caught your interest:'
                         DC.B	$0D,$0A
-                        DC.B    '1) Alarm Clock'
+                        DC.B    '1) Alarm Clock : €20'
                         DC.B	$0D,$0A
-                        DC.B    '2) Small Water Mill'
+                        DC.B    '2) Water Mill : €50'
                         DC.B	$0D,$0A
-                        DC.B    '3) Solar Panel'
+                        DC.B    '3) Solar Panel : €100'
                         DC.B	$0D,$0A
-                        DC.B    '4) Sword'
+                        DC.B    '4) Sword : €50'
                         DC.B	$0D,$0A
-                        DC.B    '5) Coffee'
+                        DC.B    '5) Coffee : €10'
                         DC.B	$0D,$0A
                         DC.B    '6) Exit Browse'
                         DC.B	$0D,$0A
@@ -1120,6 +1120,7 @@ WATER_MILL_COST     EQU 50
 SOLAR_PANEL_COST    EQU 100
 
 	END	START
+
 
 
 
