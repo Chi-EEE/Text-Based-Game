@@ -28,7 +28,7 @@ INITIALIZE:
 	
 	* Initalize game
     MOVE.W  #15,    TEMPERATURE
-    MOVE.W  #40,    CO2_LEVEL
+    MOVE.W  #400,    CO2_LEVEL
     
     * Initalize booleans
     MOVE.B  #0,     VISITED_SHOP
@@ -229,6 +229,14 @@ GUIDE_1:
 END_DAY:
     BSR     CLEAR_SCREEN
     ADD.W   #1, DAY     *Increase day by 1
+    ADD.W   #12, CO2_LEVEL  * Increase CO2 level by 12 so harder and faster
+    
+    * Equ to get temp : co2 * 0.0375
+    MOVE.L  #375, D1
+    MULU.W  (CO2_LEVEL), D1
+
+    DIVU.W  #10000, D1
+    MOVE.W  D1, TEMPERATURE
     
     MOVE.W  #DEFAULT_DAY_COUNTER,DAY_COUNTER  *Increase reset day counter
     
@@ -1023,7 +1031,7 @@ SHOP_KEEPER      DC.B    '             .^JG&@@@@@@@@&BJ.               '
     
 mainChoice   	DC.B	'What would you like to do?'
                 DC.B	$0D,$0A
-                DC.B	'1) Go to work to earn money'
+                DC.B	'1) Go to work and earn $20'
                 DC.B	$0D,$0A
                 DC.B	'2) Enter the Town'
                 DC.B	$0D,$0A
@@ -1108,8 +1116,8 @@ DAY             DS.W    1   *DAYS PASSED
 
 DAY_COUNTER     DS.W    1   *INCREASED FROM 3 TO 4 IF ALARM
 
-TEMPERATURE     DS.W    1
-CO2_LEVEL       DS.W    1
+TEMPERATURE     DS.W    1   * Default = 15 C
+CO2_LEVEL       DS.W    1   * Default = 400 ppm or 0.0375 per CO2
 
 * Amount
 WATER_MILL_COUNT    DS.W    1
@@ -1129,7 +1137,7 @@ JOB_LEVEL       DS.B    1
 *VALIDATION VALUES TO BE USED
 *-------------------------------------------------------
 SALARY	  EQU 20
-STARTING_CASH	  EQU 200
+STARTING_CASH	  EQU 50
 MILLION	 EQU 10000
 HUNDREDTHOUSAND EQU 1000
 SECOND  EQU 100
