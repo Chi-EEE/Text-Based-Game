@@ -24,14 +24,18 @@ INITIALIZE:
 	MOVE.W  #STARTING_CASH,MONEY
 	MOVE.W  #1,     DAY
 	
-	MOVE.W  #3,     DAY_COUNTER    
+	MOVE.W  #DEFAULT_DAY_COUNTER,     DAY_COUNTER    
 	
+	* Initalize game
     MOVE.W  #15,    TEMPERATURE
     MOVE.W  #40,    CO2_LEVEL
     
+    * Initalize booleans
     MOVE.B  #0,     VISITED_SHOP
 	MOVE.B  #0,     HAS_ALARM
+	MOVE.B  #0,     HAS_SWORD
 	
+	* Initalize counts
 	MOVE.W  #0,     WATER_MILL_COUNT
 	MOVE.W  #0,     SOLAR_PANEL_COUNT
     RTS
@@ -492,6 +496,8 @@ BROWSE_SHOP:
     LEA     SHOP_KEEPER,  A4    *Load Ascii for Shop keeper
     BSR     SHOW_ASCII
     
+    BSR     ENDL
+    
     LEA     shop_browse_string, A1
     BSR     PRINT
     
@@ -551,6 +557,33 @@ PURCHASED_ITEM_SHOP:
     
     BSR     CLEAR_SCREEN
     RTS
+*-------------------------------------------------------
+*------------ATTEMPT_BUY_SINGLE_ITEM SUBROUTINE---------
+*----------------[D2:cost, A1: boolean]-----------------
+*           Used for purchasing boolean items
+ATTEMPT_BUY_SINGLE_ITEM:
+    * If (!boolean) { return already_have_item(); }
+    MOVE.B  (A1), D1
+    CMP.B   #0, D1
+    BNE     ALREADY_HAVE_ITEM
+
+    MOVE.W  (MONEY),  D1
+	SUB.W   D2, D1
+	BMI     UNABLE_BUY
+	
+    MOVE.W  D1, MONEY
+    MOVE.B  #1, (A1)
+   
+    BSR     PURCHASED_ITEM_SHOP
+    
+    BRA     BROWSE_SHOP
+ALREADY_HAVE_ITEM:
+    LEA     shop_already_have_string,   A1
+    BSR     PRINT
+    
+    BSR     SYSTEM_PAUSE
+    BSR     CLEAR_SCREEN
+    BRA     BROWSE_SHOP
 ALARM_CLOCK:
     BSR     CLEAR_SCREEN
     BSR     ENDL
@@ -558,29 +591,8 @@ ALARM_CLOCK:
     MOVE.W  #ALARM_COST, D2
     BSR     CONFIRM_SHOP
     
-    * if (!hasAlarm) { return ATTEMPT_BUY_ALARM_CLOCK() }
-    MOVE.B  (HAS_ALARM), D1
-    CMP.B   #0, D1
-    BEQ     ATTEMPT_BUY_ALARM_CLOCK
-    
-    LEA     shop_already_have_string,   A1
-    BSR     PRINT
-    
-    BSR     SYSTEM_PAUSE
-    BSR     CLEAR_SCREEN
-    BRA     BROWSE_SHOP
-ATTEMPT_BUY_ALARM_CLOCK:
-    MOVE.W  (MONEY),  D1
-    MOVE.W  #ALARM_COST, D2
-	SUB.W   D2, D1
-	BMI     UNABLE_BUY
-	
-    MOVE.W  D1, MONEY
-    MOVE.B  #1, HAS_ALARM
-   
-    BSR     PURCHASED_ITEM_SHOP
-    
-    BRA     BROWSE_SHOP
+    LEA     HAS_ALARM, A1
+    BRA     ATTEMPT_BUY_SINGLE_ITEM
 WATER_MILL:
     BSR     CLEAR_SCREEN
     BSR     ENDL
@@ -617,7 +629,15 @@ SOLAR_PANEL:
     
     BRA     BROWSE_SHOP
 SWORD:
-
+    BSR     CLEAR_SCREEN
+    BSR     ENDL
+    
+    * Confirm if player wants to buy sword
+    MOVE.W  #SWORD_COST, D2
+    BSR     CONFIRM_SHOP
+   
+    LEA     HAS_SWORD, A1
+    BRA     ATTEMPT_BUY_SINGLE_ITEM
 COFFEE:
 
 SELL_ITEM_SHOP:
@@ -1039,15 +1059,15 @@ shop_string_2           DC.B	$0D,$0A
                         
 shop_browse_string      DC.B    'There is a selection of items that caught your interest:'
                         DC.B	$0D,$0A
-                        DC.B    '1) Alarm Clock : €20'
+                        DC.B    '1) Alarm Clock : $20'
                         DC.B	$0D,$0A
-                        DC.B    '2) Water Mill : €50'
+                        DC.B    '2) Water Mill : $50'
                         DC.B	$0D,$0A
-                        DC.B    '3) Solar Panel : €100'
+                        DC.B    '3) Solar Panel : $100'
                         DC.B	$0D,$0A
-                        DC.B    '4) Sword : €50'
+                        DC.B    '4) Sword : $50'
                         DC.B	$0D,$0A
-                        DC.B    '5) Coffee : €10'
+                        DC.B    '5) Coffee : $10'
                         DC.B	$0D,$0A
                         DC.B    '6) Exit Browse'
                         DC.B	$0D,$0A
@@ -1065,7 +1085,7 @@ shop_intro_string_2           DC.B    '!'
                               DC.B    $0D,$0A
                               DC.B    'I sell items that could be used to reduce your CO2 output.',0
 
-shop_confirm_string DC.B    'Are you sure that you want to buy this item for ',0
+shop_confirm_string DC.B    'Are you sure that you want to buy this item for $',0
 YES_NO              DC.B	$0D,$0A
                     DC.B	$0D,$09
                     DC.B	'1) Yes'
@@ -1097,6 +1117,7 @@ SOLAR_PANEL_COUNT   DS.W    1
 * Booleans
 VISITED_SHOP    DS.B    1   *Check if you visited shop before
 HAS_ALARM       DS.B    1
+HAS_SWORD       DS.B    1
 *
 
 JOB_TYPE        DS.B    1
@@ -1107,7 +1128,7 @@ JOB_LEVEL       DS.B    1
 *-------------------------------------------------------
 *VALIDATION VALUES TO BE USED
 *-------------------------------------------------------
-SALARY	  EQU 2
+SALARY	  EQU 20
 STARTING_CASH	  EQU 200
 MILLION	 EQU 10000
 HUNDREDTHOUSAND EQU 1000
@@ -1118,7 +1139,7 @@ DEFAULT_DAY_COUNTER EQU 3
 ALARM_COST          EQU 20
 WATER_MILL_COST     EQU 50
 SOLAR_PANEL_COST    EQU 100
-
+SWORD_COST          EQU 50
 	END	START
 
 
