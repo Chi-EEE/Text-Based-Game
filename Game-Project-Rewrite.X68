@@ -31,6 +31,9 @@ INITIALIZE:
     
     MOVE.B  #0,     VISITED_SHOP
 	MOVE.B  #0,     HAS_ALARM
+	
+	MOVE.W  #0,     WATER_MILL_COUNT
+	MOVE.W  #0,     SOLAR_PANEL_COUNT
     RTS
 
 *-------------------------------------------------------
@@ -484,10 +487,10 @@ UNABLE_BUY:
 BROWSE_SHOP:  
     BSR     CLEAR_SCREEN
     
+    BSR     DISPLAY
+    
     LEA     SHOP_KEEPER,  A4    *Load Ascii for Shop keeper
-   
     BSR     SHOW_ASCII
-    BSR	 	ENDL
     
     LEA     shop_browse_string, A1
     BSR     PRINT
@@ -509,12 +512,55 @@ BROWSE_SHOP:
 	BEQ	 	SHOP
 	
     BRA     BROWSE_SHOP
+*-------------------------------------------------------
+*---------------CONFIRM_SHOP SUBROUTINE-----------------
+*   Check if player wants to actually buy the item
+*                 [D0,D1,D2: cost]
+CONFIRM_SHOP:       
+    BSR CLEAR_SCREEN
+    BSR DISPLAY
+
+    LEA shop_confirm_string, A1
+    BSR PRINT
+    
+    MOVE.W  D2, D1
+    BSR PRINT_INT
+    
+    LEA YES_NO, A1
+    BSR PRINT
+    
+    MOVE.B  #4, D0
+	TRAP	#15		 *ASK FOR INPUT
+	
+	CMP.W   #2,D1	   *No Clock IF (D1 == #2)
+	BEQ	 	BROWSE_SHOP
+	CMP.W   #1,D1	   *Repeat choice IF (D1 != #1)
+	BNE	 	CONFIRM_SHOP
+	RTS
+*-------------------------------------------------------
+*-----------PURCHASED_ITEM_SHOP SUBROUTINE--------------
+*-------------------------------------------------------
+PURCHASED_ITEM_SHOP:
+    BSR     CLEAR_SCREEN
+    
+    LEA     SHOP_KEEPER_NAME, A2
+    LEA     shop_thank_string, A3
+    LEA     SHOP_KEEPER, A4
+
+    BSR     SPEAKING_ASCII
+    
+    BSR     CLEAR_SCREEN
+    RTS
 ALARM_CLOCK:
     BSR     CLEAR_SCREEN
     BSR     ENDL
     
+    MOVE.W  #ALARM_COST, D2
+    BSR     CONFIRM_SHOP
+    
+    * if (!hasAlarm) { return ATTEMPT_BUY_ALARM_CLOCK() }
     MOVE.B  (HAS_ALARM), D1
-    CMP     #0, D1
+    CMP.B   #0, D1
     BEQ     ATTEMPT_BUY_ALARM_CLOCK
     
     LEA     shop_already_have_string,   A1
@@ -525,27 +571,51 @@ ALARM_CLOCK:
     BRA     BROWSE_SHOP
 ATTEMPT_BUY_ALARM_CLOCK:
     MOVE.W  (MONEY),  D1
-    MOVE.W  #20, D2
+    MOVE.W  #ALARM_COST, D2
 	SUB.W   D2, D1
 	BMI     UNABLE_BUY
 	
     MOVE.W  D1, MONEY
-    MOVE.B  #1,     HAS_ALARM
-    
-    LEA     SHOP_KEEPER_NAME, A2
-    LEA     shop_thank_string, A3
-    LEA     SHOP_KEEPER, A4
-
-    BSR     SPEAKING_ASCII
-    
-    BSR     SYSTEM_PAUSE
-    BSR     CLEAR_SCREEN
+    MOVE.B  #1, HAS_ALARM
+   
+    BSR     PURCHASED_ITEM_SHOP
     
     BRA     BROWSE_SHOP
 WATER_MILL:
+    BSR     CLEAR_SCREEN
+    BSR     ENDL
     
+    MOVE.W  #WATER_MILL_COST, D2
+    BSR     CONFIRM_SHOP
+    
+    MOVE.W  (MONEY),  D1
+	SUB.W   D2, D1
+	BMI     UNABLE_BUY
+	
+    MOVE.W  D1, MONEY
+    ADD.W   #1, WATER_MILL_COUNT
+   
+    BSR     PURCHASED_ITEM_SHOP
+    
+    BRA     BROWSE_SHOP
 SOLAR_PANEL:
-
+    BSR     CLEAR_SCREEN
+    BSR     ENDL
+    
+    MOVE.W  #SOLAR_PANEL_COST, D2
+    BSR     CONFIRM_SHOP
+    
+    MOVE.W  (MONEY),  D1
+    MOVE.W  #SOLAR_PANEL_COST, D2
+	SUB.W   D2, D1
+	BMI     UNABLE_BUY
+	
+    MOVE.W  D1, MONEY
+    ADD.W  #1,  SOLAR_PANEL_COUNT
+    
+    BSR     PURCHASED_ITEM_SHOP
+    
+    BRA     BROWSE_SHOP
 SWORD:
 
 COFFEE:
@@ -584,7 +654,7 @@ CLEAR_SCREEN:
 	
 *-------------------------------------------------------
 *----------------PRINT SUBROUTINE-----------------------
-*-------------------------------------------------------
+*--------------------[D0, D1]---------------------------
 PRINT:
 	MOVE.B  #14,D0
 	TRAP	#15
@@ -592,7 +662,7 @@ PRINT:
 	
 *-------------------------------------------------------
 *----------------PRINT_INT SUBROUTINE-------------------
-*-------------------------------------------------------
+*--------------------[D0,D1:input]----------------------
 PRINT_INT:
 	MOVE.B  #3,D0
 	TRAP	#15
@@ -600,14 +670,14 @@ PRINT_INT:
 	
 *-------------------------------------------------------
 *----------------INPUT_NUM SUBROUTINE-------------------
-*-------------------------------------------------------
+*-------------------[D0,D1:output]----------------------
 INPUT_NUM:
     MOVE.B  #4,D0
 	TRAP	#15
     RTS
 *-------------------------------------------------------
 *----------------SYSTEM PAUSE SUBROUTINE----------------
-*-------------------------------------------------------
+*-----------------------[D0,A1]-------------------------
 SYSTEM_PAUSE:
 	BSR		 ENDL
 	LEA		 PAUSE, A1   *DISPLAY PAUSE MESSAGE
@@ -619,7 +689,7 @@ SYSTEM_PAUSE:
 	
 *-------------------------------------------------------
 *--------------------ENDL SUBROUTINE--------------------
-*-------------------------------------------------------
+*-----------------------[D0,A1]-------------------------
 ENDL:
 	MOVEM.L D0/A1,-(A7)
 	MOVE	#14,D0
@@ -995,6 +1065,15 @@ shop_intro_string_2           DC.B    '!'
                               DC.B    $0D,$0A
                               DC.B    'I sell items that could be used to reduce your CO2 output.',0
 
+shop_confirm_string DC.B    'Are you sure that you want to buy this item for ',0
+YES_NO              DC.B	$0D,$0A
+                    DC.B	$0D,$09
+                    DC.B	'1) Yes'
+                    DC.B	$0D,$0A
+                    DC.B	$0D,$09
+                    DC.B	'2) No'
+                    DC.B	$0D,$0A
+                    DC.B	'Enter your choice) ',0
 shop_thank_string   DC.B    'Thank you for buying this item!',0
 
 exploreChoice	DC.B    'TODO: EXPLORE', 0
@@ -1013,8 +1092,8 @@ TEMPERATURE     DS.W    1
 CO2_LEVEL       DS.W    1
 
 * Amount
-WATER_MILL_COUNT    DS.B    1
-SOLAR_PANEL_COUNT   DS.B    1
+WATER_MILL_COUNT    DS.W    1
+SOLAR_PANEL_COUNT   DS.W    1
 * Booleans
 VISITED_SHOP    DS.B    1   *Check if you visited shop before
 HAS_ALARM       DS.B    1
@@ -1035,7 +1114,13 @@ HUNDREDTHOUSAND EQU 1000
 SECOND  EQU 100
 DEFAULT_DAY_COUNTER EQU 3
 
+* ITEMS
+ALARM_COST          EQU 20
+WATER_MILL_COST     EQU 50
+SOLAR_PANEL_COST    EQU 100
+
 	END	START
+
 
 
 
