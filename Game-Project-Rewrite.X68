@@ -244,9 +244,12 @@ ADD_DAY_COUNTER_END:
 END_DAY:
     BSR     CLEAR_SCREEN
     ADD.W   #1, day     *Increase day by 1
-    BSR     RANDOM_NUMBER   * Get rng num between 0 - 100
+    BSR     RANDOM_NUMBER   * Get rng num between 0 - 10000
     ADD.W   D1, CO2_level   * Add random number to CO2_level
     ADD.W   #CARBON_PRODUCED_DAILY, CO2_level  * Increase CO2 level by CARBON_PRODUCED_DAILY so harder and faster
+    
+    MOVE.W  D1, D3          * Keep track of CO2 produced
+    ADD.W  #CARBON_PRODUCED_DAILY, D3          * Keep track of CO2 produced
     
     * Equation to get temp : co2 * 0.0375
     MOVE.L  #375, D1
@@ -273,13 +276,25 @@ DISPLAY_END_DAY:
     LEA     sleep_string,   A1
     BSR     PRINT
     
-	MOVE.B  #5,     D4
+	MOVE.B  #3,     D4
 	BSR     PRINT_DOTS
 	
 	BSR     ENDL
+	BSR     ENDL
+	BSR	 	SYSTEM_PAUSE
 	
+	LEA sleep_increment_co2_string_1, A1
+	BSR     PRINT
 	
+	MOVE.W  D3, D1
+	BSR     PRINT_INT
 	
+	LEA     sleep_increment_co2_string_2, A1
+	BSR     PRINT
+	
+    BSR     ENDL
+
+	BSR     WAIT
 	BSR     WAIT
 	BSR	 	SYSTEM_PAUSE
 *-------------------------------------------------------
@@ -375,8 +390,10 @@ WORK:
 	SUB     #2, D1
 	BMI     TIRED_WORK
 
-	CMP     #0, D1
+	CMP     #0, D1          * Check if day counter is equal or less than 0
     BLS     TIRED_WORK
+    
+    MOVE.W  D1,  dayCounter * Set day counter to subtracted day counter
 
     BSR     ENDL
 
@@ -455,7 +472,7 @@ SHOP:
     
     LEA     shop_string_3,  A1
     BSR     PRINT
-    
+
 	MOVE.B  #4, D0
 	TRAP	#15		 *ASK FOR INPUT
 	
@@ -531,8 +548,8 @@ BROWSE_SHOP:
     
     LEA     shop_browse_string, A1
     BSR     PRINT
-    
-	MOVE.B  #4, D0
+
+	MOVE.B  #4, D0
 	TRAP	#15		 *ASK FOR INPUT
 	
 	CMP.W   #1,D1	   *Alarm Clock IF (D1 == #1)
@@ -855,15 +872,15 @@ GET_MILLISECONDS:
     MOVE.B #8, D0 # Load
     TRAP #15  #Time in D1
     RTS
-RANDOM_NUMBER:
+RANDOM_NUMBER:     
     BSR GET_MILLISECONDS
-    
+
     AND.L #$5FFFFF, D1 # AND 6 Bits to prevent any overflow
 
     DIVU #100, D1 #Divide by 100, 1000, 10000 depending on Number range required
 
     SWAP D1 #SWAP Higher Order Word and Lower Order Word in D1
-    
+
     ADDQ.W #1, D1 #Add 1 to D1.W so number is at least 1
 
     MOVE.W D1, D2 #Extract the number from D1.W
@@ -1113,7 +1130,8 @@ mainChoice   	DC.B	'What would you like to do?'
                 DC.B	'Enter your choice) ',0
 
 sleep_string    DC.B    'ZzZzZzZzZz',0
-sle
+sleep_increment_co2_string_1 DC.B    'You wake up sensing that theres an extra ',0
+sleep_increment_co2_string_2 DC.B    ' CO2 in the air',0
 
 cityChoice		DC.B	'What would you like to do in the town?'
                 DC.B	$0D,$0A
@@ -1215,7 +1233,7 @@ SECOND  EQU 100
 
 DEFAULT_DAY_COUNTER EQU 3
 
-CARBON_PRODUCED_DAILY EQU 20
+CARBON_PRODUCED_DAILY EQU 100
 
 ALARM_DAY_COUNTER_BUFF EQU 2
 COFFEE_DAY_COUNTER_BUFF EQU 1
