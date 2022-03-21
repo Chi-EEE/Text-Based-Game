@@ -805,7 +805,7 @@ MANAGE_WATER_INPUT:
     * if (waterMillCount < 0) { return; }
     MOVE.W  (waterMillCount), D1
     CMP.W   #0, D1
-    BLS     MANAGE_SOLAR_END
+    BLS     MANAGE
 
     BSR     CLEAR_SCREEN
     
@@ -832,7 +832,7 @@ MANAGE_SOLAR_INPUT:
     * if (solarPanelCount < 0) { return; }
     MOVE.W  (solarPanelCount), D1
     CMP.W   #0, D1
-    BLS     MANAGE_SOLAR_END
+    BLS     MANAGE
 
     BSR     CLEAR_SCREEN
     
