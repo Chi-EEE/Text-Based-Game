@@ -245,7 +245,6 @@ END_DAY:
     BSR     CLEAR_SCREEN
     ADD.W   #1, day     *Increase day by 1
     BSR     RANDOM_NUMBER   * Get rng num between 0 - 10000
-    BSR     PRINT_INT
     ADD.W   D1, CO2_level   * Add random number to CO2_level
     MOVE.W  D1, D5          * Keep track of CO2 produced
     ADD.W   #CARBON_PRODUCED_DAILY, CO2_level  * Increase CO2 level by CARBON_PRODUCED_DAILY so harder and faster
@@ -396,7 +395,7 @@ WORK:
 
     BSR     ENDL
 
-    LEA 	eventText, A1
+    LEA 	work_string, A1
 	BSR	 	PRINT
 	
 	ADD.W   #SALARY, money
@@ -727,11 +726,138 @@ EXPLORE:
 *--------------------MANAGE SUBROUTINE------------------
 *-------------------------------------------------------
 MANAGE:
-	LEA 	manageChoice, A1
-	BSR	 	PRINT
-	
-	BSR	 	SYSTEM_PAUSE
-	BRA	 	CITY
+	BSR     CLEAR_SCREEN
+    LEA     YOU, A4
+    BSR     SHOW_ASCII
+    BSR     ENDL
+    
+    LEA     manage_browse_string, A1
+    BSR     PRINT
+    * if (hasAlarm) 2
+    MOVE.B  (hasAlarm), D1
+    CMP.B   #1, D1
+    BNE     MANAGE_ALARM_END
+    BSR     ENDL
+    LEA     manage_browse_string_alarm, A1
+    BSR     PRINT
+MANAGE_ALARM_END:
+    * if (waterMillCount > 0) 3
+    MOVE.W  (waterMillCount), D1
+    CMP.W   #0, D1
+    BLS     MANAGE_WATER_END
+    BSR     ENDL
+    LEA     manage_browse_string_water, A1
+    BSR     PRINT
+MANAGE_WATER_END:
+    * if (solarPanelCount > 0) 4
+    MOVE.W  (solarPanelCount), D1
+    CMP.W   #0, D1
+    BLS     MANAGE_SOLAR_END
+    BSR     ENDL
+    LEA     manage_browse_string_solar, A1
+    BSR     PRINT
+MANAGE_SOLAR_END:
+    * if (hasSword) 5
+    MOVE.B  (hasSword), D1
+    CMP.B   #1, D1
+    BNE     MANAGE_SWORD_END
+    BSR     ENDL
+    LEA     manage_browse_string_sword, A1
+    BSR     PRINT
+MANAGE_SWORD_END:
+    BSR     ENDL
+    LEA     manage_browse_string_choice, A1
+    BSR     PRINT
+
+    BSR     INPUT_NUM * D1
+    
+    CMP     #1, D1
+    BEQ     CITY
+    CMP     #2, D1
+    BEQ     MANAGE_ALARM_INPUT
+    CMP     #3, D1
+    BEQ     MANAGE_WATER_INPUT
+    CMP     #4, D1
+    BEQ     MANAGE_SOLAR_INPUT
+    CMP     #5, D1
+    BEQ     MANAGE_SWORD_INPUT
+
+	BRA	 	MANAGE
+
+MANAGE_ALARM_INPUT:
+    BSR     CLEAR_SCREEN
+    
+    * Info about item
+    LEA     manage_info_string_alarm, A1
+    BSR     PRINT
+
+    BSR     ENDL
+    BSR     SYSTEM_PAUSE
+
+    BRA     MANAGE
+
+MANAGE_WATER_INPUT:
+    BSR     CLEAR_SCREEN
+    
+    * Info about item
+    LEA     manage_info_string_water, A1
+    BSR     PRINT
+
+    BSR     ENDL
+
+    LEA     manage_default_amount_string, A1
+    BSR     PRINT
+
+    MOVE.W  waterMillCount, D1
+    BSR     PRINT_INT
+
+    LEA     manage_default_amount_waterMill_string, A1
+    BSR     PRINT
+
+    BSR     ENDL
+    BSR     SYSTEM_PAUSE
+    
+    BRA     MANAGE
+MANAGE_SOLAR_INPUT:
+    BSR     CLEAR_SCREEN
+    
+    * Info about item
+    LEA     manage_info_string_solar, A1
+    BSR     PRINT
+
+    BSR     ENDL
+
+    LEA     manage_default_amount_string, A1
+    BSR     PRINT
+
+    MOVE.W  solarPanelCount, D1
+    BSR     PRINT_INT
+
+    LEA     manage_default_amount_solarPanel_string, A1
+    BSR     PRINT
+
+    BSR     ENDL
+    BSR     SYSTEM_PAUSE
+    
+    BRA     MANAGE
+MANAGE_SWORD_INPUT:
+    BSR     CLEAR_SCREEN
+    
+    * Info about item
+    LEA     manage_info_string_sword, A1
+    BSR     PRINT
+
+    BSR     ENDL
+    BSR     SYSTEM_PAUSE
+
+    BRA     MANAGE
+
+*-------------------------------------------------------------------------------------------------------------------------------------------------------*
+*-------------------------------------------------------------------------------------------------------------------------------------------------------*
+*-------------------------------------------------------------------------------------------------------------------------------------------------------*
+*-------------------------------------------------------------------------------------------------------------------------------------------------------*
+*-------------------------------------------------------------------------------------------------------------------------------------------------------*
+*-------------------------------------------------------------------------------------------------------------------------------------------------------*
 
 *-------------------------------------------------------
 *----------------CLEAR SCREEN SUBROUTINE----------------
@@ -1198,8 +1324,28 @@ shop_thank_string   DC.B    'Thank you for buying this item!',0
 shop_unable_string   DC.B    'Sorry I am currently not buying goods from individuals!',0
 
 exploreChoice	DC.B    'TODO: EXPLORE', 0
-manageChoice 	DC.B	'TODO: MANAGE', 0
-eventText	   	DC.B	'Working', 0 
+manage_browse_string      DC.B    'What should I manage?:'
+                          DC.B    $0D,$0A
+                          DC.B    '1) Exit Browse',0
+manage_browse_string_alarm    DC.B    '2) Alarm Clock',0
+manage_browse_string_water    DC.B    '3) Water Mill',0
+manage_browse_string_solar    DC.B    '4) Solar Panel',0
+manage_browse_string_sword    DC.B    '5) Sword',0
+manage_browse_string_coffee    DC.B    '6) Coffee',0
+manage_browse_string_choice    DC.B	'Enter your choice) ',0
+
+manage_info_string_alarm    DC.B    'This alarm clock allows you to wake up earlier',0
+manage_info_string_water    DC.B    'Water mills are a cheap and reliable CO2 reducer.',0
+manage_info_string_solar    DC.B    'Solar panels are expensive but are efficient at removing CO2.',0
+manage_info_string_sword    DC.B    'The sword is used to slay your enemies.',0
+manage_info_string_coffee   DC.B    'Coffee allows you to stay awake longer.',0
+
+manage_default_amount_string    DC.B    'You currently have ',0
+manage_default_amount_waterMill_string    DC.B    'x Water Mills',0
+manage_default_amount_solarPanel_string    DC.B    DC.B    'x Solar Panels',0
+
+
+work_string	   	DC.B	'Working', 0 
 work_tired_string   DC.B    'You are too tired to work right now',0
 PAUSE		  	DC.B	'Press enter to continue . . .', 0
 
@@ -1233,7 +1379,7 @@ SECOND  EQU 100
 
 DEFAULT_DAY_COUNTER EQU 3
 
-CARBON_PRODUCED_DAILY EQU 100
+CARBON_PRODUCED_DAILY EQU 0
 
 ALARM_DAY_COUNTER_BUFF EQU 2
 COFFEE_DAY_COUNTER_BUFF EQU 1
