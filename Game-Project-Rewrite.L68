@@ -1,6 +1,6 @@
 00001000 Starting Address
 Assembler used: EASy68K Editor/Assembler v5.16.01
-Created On: 20/03/2022 23:51:27
+Created On: 21/03/2022 11:49:21
 
 00000000                             1  *-------------------------------------------------------
 00000000                             2  * STARTING MEMORY ADDRESS FOR THE PROGRAMME $1000
@@ -16,7 +16,7 @@ Created On: 20/03/2022 23:51:27
 0000100C  6100 0142                 12      BSR     WELCOME
 00001010  6100 01A2                 13      BSR     STORY
 00001014  6100 01D4                 14      BSR     GUIDE_1
-00001018  6000 029E                 15      BRA     GAME_LOOP
+00001018  6000 02A0                 15      BRA     GAME_LOOP
 0000101C                            16      
 0000101C                            17  END:
 0000101C  FFFF FFFF                 18      SIMHALT
@@ -25,54 +25,54 @@ Created On: 20/03/2022 23:51:27
 00001020                            21  *------------------INITIALIZE SUBROUTINE----------------
 00001020                            22  *-------------------------------------------------------
 00001020                            23  INITIALIZE:
-00001020  33FC 00C8 00002F16        24      MOVE.W  #STARTING_CASH,MONEY
-00001028  33FC 0001 00002F18        25      MOVE.W  #1,     DAY
+00001020  33FC 0032 00002FA2        24      MOVE.W  #STARTING_CASH,money
+00001028  33FC 0001 00002FA4        25      MOVE.W  #1,     day
 00001030                            26      
-00001030  33FC 0003 00002F1A        27      MOVE.W  #DEFAULT_DAY_COUNTER,     DAY_COUNTER    
+00001030  33FC 0003 00002FA6        27      MOVE.W  #DEFAULT_dayCounter,     dayCounter  
 00001038                            28      
 00001038                            29      * Initalize game
-00001038  33FC 000F 00002F1C        30      MOVE.W  #15,    TEMPERATURE
-00001040  33FC 0190 00002F1E        31      MOVE.W  #400,    CO2_LEVEL
+00001038  33FC 000F 00002FA8        30      MOVE.W  #15,    temperature
+00001040  33FC 0190 00002FAA        31      MOVE.W  #400,    CO2_level
 00001048                            32      
 00001048                            33      * Initalize booleans
-00001048  13FC 0000 00002F24        34      MOVE.B  #0,     VISITED_SHOP
-00001050  13FC 0000 00002F25        35      MOVE.B  #0,     HAS_ALARM
-00001058  13FC 0000 00002F26        36      MOVE.B  #0,     HAS_SWORD
+00001048  13FC 0000 00002FB0        34      MOVE.B  #0,     visitedShop
+00001050  13FC 0000 00002FB1        35      MOVE.B  #0,     hasAlarm
+00001058  13FC 0000 00002FB2        36      MOVE.B  #0,     hasSword
 00001060                            37      
 00001060                            38      * Initalize counts
-00001060  33FC 0000 00002F20        39      MOVE.W  #0,     WATER_MILL_COUNT
-00001068  33FC 0000 00002F22        40      MOVE.W  #0,     SOLAR_PANEL_COUNT
+00001060  33FC 0000 00002FAC        39      MOVE.W  #0,     waterMillCount
+00001068  33FC 0000 00002FAE        40      MOVE.W  #0,     solarPanelCount  
 00001070  4E75                      41      RTS
 00001072                            42  
 00001072                            43  *-------------------------------------------------------
 00001072                            44  *-------------------SPLASH SUBROUTINE------------------
 00001072                            45  *-------------------------------------------------------
 00001072                            46  SPLASH:
-00001072  6100 0694                 47      BSR     ENDL
-00001076  43F9 00001791             48      LEA     TITLE,A1    *Load Splash string
-0000107C  6100 065A                 49      BSR     PRINT
+00001072  6100 06C0                 47      BSR     ENDL
+00001076  43F9 000017BF             48      LEA     TITLE,A1    *Load Splash string
+0000107C  6100 0686                 49      BSR     PRINT
 00001080                            50      
-00001080  6100 066E                 51      BSR     SYSTEM_PAUSE
+00001080  6100 069A                 51      BSR     SYSTEM_PAUSE
 00001084                            52      
-00001084  6100 0646                 53      BSR     CLEAR_SCREEN
+00001084  6100 0672                 53      BSR     CLEAR_SCREEN
 00001088  4E75                      54      RTS
 0000108A                            55  
 0000108A                            56  *-------------------------------------------------------
-0000108A                            57  *-------------------NAME INPUT SUBROUTINE---------------
+0000108A                            57  *-------------------name INPUT SUBROUTINE---------------
 0000108A                            58  *-------------------------------------------------------
 0000108A                            59  CLEAR_INPUT_NAME:
-0000108A  6100 0640                 60      BSR     CLEAR_SCREEN
+0000108A  6100 066C                 60      BSR     CLEAR_SCREEN
 0000108E                            61  
 0000108E                            62  INPUT_NAME:
-0000108E  6100 0678                 63      BSR     ENDL
-00001092  43F9 00001A20             64      LEA     enterName,A1
-00001098  6100 063E                 65      BSR     PRINT
-0000109C  6100 066A                 66      BSR     ENDL
+0000108E  6100 06A4                 63      BSR     ENDL
+00001092  43F9 00001A4E             64      LEA     enterName,A1
+00001098  6100 066A                 65      BSR     PRINT
+0000109C  6100 0696                 66      BSR     ENDL
 000010A0                            67      
 000010A0  103C 0002                 68      MOVE.B  #2,D0
-000010A4  43F9 00002EDA             69      LEA     NAME, A1    *Load Name address to A1 to be able to store name
+000010A4  43F9 00002F66             69      LEA     name, A1    *Load Name address to A1 to be able to store name
 000010AA  4E4F                      70      TRAP    #15         *Input Name
-000010AC  6100 065A                 71      BSR     ENDL
+000010AC  6100 0686                 71      BSR     ENDL
 000010B0                            72  
 000010B0                            73      * Check if name is between length 3 and 30
 000010B0  B27C 0002                 74      CMP.W     #2,    D1
@@ -81,16 +81,16 @@ Created On: 20/03/2022 23:51:27
 000010BC  6200 0038                 77      BHI     INPUT_NAME_LENGTH_ERROR
 000010C0                            78      
 000010C0                            79  INPUT_NAME_LOOP:
-000010C0  43F9 00001A39             80      LEA     name_confirmation_1, A1
-000010C6  6100 0610                 81      BSR     PRINT
+000010C0  43F9 00001A67             80      LEA     name_confirmation_1, A1
+000010C6  6100 063C                 81      BSR     PRINT
 000010CA                            82      
-000010CA  43F9 00002EDA             83      LEA     NAME, A1
-000010D0  6100 0606                 84      BSR     PRINT
+000010CA  43F9 00002F66             83      LEA     name, A1
+000010D0  6100 0632                 84      BSR     PRINT
 000010D4                            85      
-000010D4  43F9 00001A48             86      LEA     name_confirmation_2, A1
-000010DA  6100 05FC                 87      BSR     PRINT
+000010D4  43F9 00001A76             86      LEA     name_confirmation_2, A1
+000010DA  6100 0628                 87      BSR     PRINT
 000010DE                            88      
-000010DE  6100 0608                 89      BSR     INPUT_NUM
+000010DE  6100 0634                 89      BSR     INPUT_NUM
 000010E2                            90  
 000010E2  B27C 0002                 91      CMP     #2,D1       *No
 000010E6  67A2                      92      BEQ     CLEAR_INPUT_NAME
@@ -98,39 +98,39 @@ Created On: 20/03/2022 23:51:27
 000010E8  B27C 0001                 94      CMP     #1,D1       *Yes
 000010EC  6600 0020                 95      BNE     INPUT_NAME_MENU_ERROR    *Since number is not 1 or 2
 000010F0                            96  
-000010F0  6100 05DA                 97      BSR     CLEAR_SCREEN
+000010F0  6100 0606                 97      BSR     CLEAR_SCREEN
 000010F4  4E75                      98      RTS
 000010F6                            99  INPUT_NAME_LENGTH_ERROR:
-000010F6  43F9 00001A7B            100      LEA     name_length_fail,   A1
-000010FC  6100 05DA                101      BSR     PRINT
+000010F6  43F9 00001AA9            100      LEA     name_length_fail,   A1
+000010FC  6100 0606                101      BSR     PRINT
 00001100                           102      
-00001100  6100 0606                103      BSR     ENDL
+00001100  6100 0632                103      BSR     ENDL
 00001104                           104      
-00001104  6100 05EA                105      BSR     SYSTEM_PAUSE
-00001108  6100 05C2                106      BSR     CLEAR_SCREEN
+00001104  6100 0616                105      BSR     SYSTEM_PAUSE
+00001108  6100 05EE                106      BSR     CLEAR_SCREEN
 0000110C  6080                     107      BRA     INPUT_NAME
 0000110E                           108  
 0000110E                           109  INPUT_NAME_MENU_ERROR:
-0000110E  6100 05F8                110      BSR     ENDL
+0000110E  6100 0624                110      BSR     ENDL
 00001112                           111      
-00001112  43F9 00001AA5            112      LEA     name_confirmation_fail, A1
-00001118  6100 05BE                113      BSR     PRINT
+00001112  43F9 00001AD3            112      LEA     name_confirmation_fail, A1
+00001118  6100 05EA                113      BSR     PRINT
 0000111C                           114  
-0000111C  6100 05EA                115      BSR     ENDL
-00001120  6100 05CE                116      BSR     SYSTEM_PAUSE
+0000111C  6100 0616                115      BSR     ENDL
+00001120  6100 05FA                116      BSR     SYSTEM_PAUSE
 00001124                           117      
-00001124  6100 05A6                118      BSR     CLEAR_SCREEN
+00001124  6100 05D2                118      BSR     CLEAR_SCREEN
 00001128                           119      
-00001128  6100 05DE                120      BSR     ENDL
-0000112C  43F9 00001A20            121      LEA     enterName,A1
-00001132  6100 05A4                122      BSR     PRINT
-00001136  6100 05D0                123      BSR     ENDL
+00001128  6100 060A                120      BSR     ENDL
+0000112C  43F9 00001A4E            121      LEA     enterName,A1
+00001132  6100 05D0                122      BSR     PRINT
+00001136  6100 05FC                123      BSR     ENDL
 0000113A                           124      
-0000113A  43F9 00002EDA            125      LEA     NAME, A1
-00001140  6100 0596                126      BSR     PRINT
+0000113A  43F9 00002F66            125      LEA     name, A1
+00001140  6100 05C2                126      BSR     PRINT
 00001144                           127      
-00001144  6100 05C2                128      BSR     ENDL
-00001148  6100 05BE                129      BSR     ENDL
+00001144  6100 05EE                128      BSR     ENDL
+00001148  6100 05EA                129      BSR     ENDL
 0000114C                           130      
 0000114C  6000 FF72                131      BRA     INPUT_NAME_LOOP
 00001150                           132  
@@ -138,1021 +138,1033 @@ Created On: 20/03/2022 23:51:27
 00001150                           134  *-------------------WELCOME SUBROUTINE------------------
 00001150                           135  *-------------------------------------------------------
 00001150                           136  WELCOME:
-00001150  6100 05B6                137      BSR     ENDL
-00001154  43F9 00001AC6            138      LEA     welcome_string_1,A1
-0000115A  6100 057C                139      BSR     PRINT
+00001150  6100 05E2                137      BSR     ENDL
+00001154  43F9 00001AF4            138      LEA     welcome_string_1,A1
+0000115A  6100 05A8                139      BSR     PRINT
 0000115E                           140      
-0000115E  43F9 00002EDA            141      LEA     NAME,A1
-00001164  6100 0572                142      BSR     PRINT
+0000115E  43F9 00002F66            141      LEA     name,A1
+00001164  6100 059E                142      BSR     PRINT
 00001168                           143      
-00001168  43F9 00001E12            144      LEA     Dot, A1
-0000116E  6100 0568                145      BSR     PRINT
+00001168  43F9 00001E40            144      LEA     Dot, A1
+0000116E  6100 0594                145      BSR     PRINT
 00001172                           146      
-00001172  6100 0594                147      BSR     ENDL
-00001176  6100 0590                148      BSR     ENDL
+00001172  6100 05C0                147      BSR     ENDL
+00001176  6100 05BC                148      BSR     ENDL
 0000117A                           149      
-0000117A  43F9 00001AE9            150      LEA     welcome_string_2,A1
-00001180  6100 0556                151      BSR     PRINT
+0000117A  43F9 00001B17            150      LEA     welcome_string_2,A1
+00001180  6100 0582                151      BSR     PRINT
 00001184                           152      
-00001184  6100 0582                153      BSR     ENDL
+00001184  6100 05AE                153      BSR     ENDL
 00001188                           154      
-00001188  6100 0566                155      BSR     SYSTEM_PAUSE
-0000118C  6100 053E                156      BSR     CLEAR_SCREEN
+00001188  6100 0592                155      BSR     SYSTEM_PAUSE
+0000118C  6100 056A                156      BSR     CLEAR_SCREEN
 00001190                           157      
-00001190  6100 0576                158      BSR     ENDL
-00001194  43F9 00001B4D            159      LEA     welcome_string_3,A1
-0000119A  6100 053C                160      BSR     PRINT
+00001190  6100 05A2                158      BSR     ENDL
+00001194  43F9 00001B7B            159      LEA     welcome_string_3,A1
+0000119A  6100 0568                160      BSR     PRINT
 0000119E                           161      
 0000119E  383C 0003                162      MOVE    #3, D4      *Loop for 3 seconds for dots
-000011A2  6100 05BA                163      BSR     PRINT_DOTS
+000011A2  6100 05E8                163      BSR     PRINT_DOTS
 000011A6                           164      
-000011A6  6100 0560                165      BSR     ENDL
+000011A6  6100 058C                165      BSR     ENDL
 000011AA                           166      
-000011AA  6100 0544                167      BSR     SYSTEM_PAUSE
-000011AE  6100 051C                168      BSR     CLEAR_SCREEN
+000011AA  6100 0570                167      BSR     SYSTEM_PAUSE
+000011AE  6100 0548                168      BSR     CLEAR_SCREEN
 000011B2                           169      
 000011B2  4E75                     170      RTS
 000011B4                           171  *-------------------------------------------------------
 000011B4                           172  *-------------------STORY SUBROUTINE--------------------
 000011B4                           173  *-------------------------------------------------------
 000011B4                           174  STORY:
-000011B4  45F9 00002EDA            175      LEA     NAME, A2    *Load name for SPEAKING_ASCII
-000011BA  49F9 00001E1A            176      LEA     YOU,  A4    *Load Ascii for You
+000011B4  45F9 00002F66            175      LEA     name, A2    *Load name for SPEAKING_ASCII
+000011BA  49F9 00001E48            176      LEA     YOU,  A4    *Load Ascii for You
 000011C0                           177      
-000011C0  47F9 00001B5B            178      LEA     intro_story_string_1, A3
-000011C6  6100 0556                179      BSR     SPEAKING_ASCII
-000011CA                           180      
-000011CA  47F9 00001B9C            181      LEA     intro_story_string_2, A3
-000011D0  6100 054C                182      BSR     SPEAKING_ASCII
-000011D4                           183      
-000011D4  47F9 00001C0C            184      LEA     intro_story_string_3, A3
-000011DA  6100 0542                185      BSR     SPEAKING_ASCII
-000011DE                           186      
-000011DE  47F9 00001C5E            187      LEA     intro_story_string_4, A3
-000011E4  6100 0538                188      BSR     SPEAKING_ASCII
-000011E8  4E75                     189      RTS
-000011EA                           190  
-000011EA                           191  *-------------------------------------------------------
-000011EA                           192  *-----------------GUIDE_1 SUBROUTINE--------------------
-000011EA                           193  *-------------------------------------------------------
-000011EA                           194  GUIDE_1:
-000011EA  45F9 0000203B            195      LEA     GUIDE_NAME, A2
-000011F0  47F9 00001C8A            196      LEA     guide_1_string_1, A3
-000011F6  49F9 00002046            197      LEA     GUIDE,      A4
-000011FC                           198      
-000011FC  6100 0520                199      BSR     SPEAKING_ASCII
-00001200                           200      
-00001200                           201      * INTRODUCE
-00001200  6100 052E                202      BSR     SHOW_ASCII
-00001204  6100 0502                203      BSR     ENDL
-00001208                           204      
-00001208  43F9 0000203B            205      LEA     GUIDE_NAME, A1
-0000120E  6100 04C8                206      BSR     PRINT
-00001212                           207      
-00001212  43F9 00001E14            208      LEA     TALK_1, A1
-00001218  6100 04BE                209      BSR     PRINT
-0000121C                           210      
-0000121C  43F9 00001CBF            211      LEA     guide_1_string_2, A1
-00001222  6100 04B4                212      BSR     PRINT
-00001226                           213      
-00001226  43F9 0000203B            214      LEA     GUIDE_NAME, A1
-0000122C  6100 04AA                215      BSR     PRINT
-00001230                           216      
-00001230  43F9 00001CC5            217      LEA     guide_1_string_3, A1
-00001236  6100 04A0                218      BSR     PRINT
-0000123A                           219      
-0000123A  43F9 00001E18            220      LEA     TALK_2, A1
-00001240  6100 0496                221      BSR     PRINT
-00001244                           222      
-00001244  6100 04C2                223      BSR     ENDL
-00001248                           224      
-00001248                           225      * NEXT
-00001248  6100 04A6                226      BSR     SYSTEM_PAUSE
-0000124C                           227  
-0000124C  4E75                     228      RTS
-0000124E                           229  END_DAY:
-0000124E  6100 047C                230      BSR     CLEAR_SCREEN
-00001252  5279 00002F18            231      ADD.W   #1, DAY     *Increase day by 1
-00001258  5079 00002F1E            232      ADD.W   #8, CO2_LEVEL  * Increase CO2 level by 8 so harder
-0000125E                           233      
-0000125E                           234      * Equ to get temp : co2 * 0.0375
-0000125E  223C 00000177            235      MOVE.L  #375, D1
-00001264  C2F9 00002F1E            236      MULU.W  (CO2_LEVEL), D1
-0000126A                           237  
-0000126A  82FC 2710                238      DIVU.W  #10000, D1
-0000126E  33C1 00002F1C            239      MOVE.W  D1, TEMPERATURE
-00001274                           240      
-00001274  33FC 0003 00002F1A       241      MOVE.W  #DEFAULT_DAY_COUNTER,DAY_COUNTER  *Increase reset day counter
-0000127C                           242      
-0000127C  1239 00002F25            243      MOVE.B  (HAS_ALARM), D1
-00001282  B27C 0001                244      CMP     #1,     D1 * Has alarm
-00001286  6600 0008                245      BNE     DISPLAY_END_DAY * No = skip increase day counter
-0000128A  5279 00002F1A            246      ADD.W   #1, DAY_COUNTER
-00001290                           247  DISPLAY_END_DAY:
-00001290  49F9 00001E1A            248      LEA     YOU,  A4    *Load Ascii for Shop keeper
-00001296  6100 0498                249      BSR     SHOW_ASCII
-0000129A  6100 046C                250      BSR     ENDL
-0000129E                           251      
-0000129E  43F9 00002B72            252      LEA     sleep_string,   A1
-000012A4  6100 0432                253      BSR     PRINT
-000012A8                           254      
-000012A8  183C 0005                255      MOVE.B  #5,     D4
-000012AC  6100 04B0                256      BSR     PRINT_DOTS
-000012B0                           257      
-000012B0  6100 0456                258      BSR     ENDL
-000012B4                           259      
-000012B4  6100 043A                260      BSR     SYSTEM_PAUSE
-000012B8                           261  *-------------------------------------------------------
-000012B8                           262  *----------------GAME_LOOP (MAIN LOOP)-------------------
-000012B8                           263  *------------------------------------------------------- 
-000012B8                           264  GAME_LOOP:
-000012B8  6100 0412                265      BSR     CLEAR_SCREEN
-000012BC  6100 002C                266      BSR     DISPLAY 
-000012C0                           267  
-000012C0  43F9 00002AF8            268      LEA     mainChoice, A1   *LOAD MESSAGE
-000012C6  6100 0410                269      BSR     PRINT
-000012CA                           270      
-000012CA  103C 0004                271      MOVE.B  #4, D0
-000012CE  4E4F                     272      TRAP    #15      *ASK FOR INPUT
-000012D0                           273      
-000012D0  B27C 0001                274      CMP.W   #1,D1      *SHOP IF (D2 == #1)
-000012D4  6700 00AA                275      BEQ     WORK
-000012D8  B27C 0002                276      CMP.W   #2,D1      *ACTION IF (D2 == #2)
-000012DC  6700 00FC                277      BEQ     CITY
-000012E0  B27C 0003                278      CMP.W   #3,D1      *SLEEP IF (D2 == #3)
-000012E4  6700 FF68                279      BEQ     END_DAY
-000012E8                           280      
-000012E8  60CE                     281      BRA     GAME_LOOP   *LOOP FOREVER
-000012EA                           282  
-000012EA                           283  *-------------------------------------------------------
-000012EA                           284  *-------------------DISPLAY SUBROUTINE------------------
-000012EA                           285  *-------------------------------------------------------
-000012EA                           286  DISPLAY:
-000012EA  43F9 00001D48            287      LEA     GAME_LINES, A1
-000012F0  6100 03E6                288      BSR     PRINT
-000012F4                           289      
-000012F4  323C 0201                290      MOVE.W  #$0201,  D1  *Move text cursor to pos
-000012F8  303C 000B                291      MOVE    #11,    D0
-000012FC  4E4F                     292      TRAP    #15
-000012FE                           293      
-000012FE                           294      * Display Name
-000012FE  43F9 00001DEF            295      LEA     NAME_LABEL, A1
-00001304  6100 03D2                296      BSR     PRINT
-00001308  43F9 00002EDA            297      LEA     NAME, A1
-0000130E  6100 03C8                298      BSR     PRINT
-00001312                           299      * ----------
-00001312  6100 03F4                300      BSR     ENDL
-00001316                           301      
-00001316  323C 0202                302      MOVE.W  #$0202,  D1  *Move text cursor to pos
-0000131A  303C 000B                303      MOVE    #11,    D0
-0000131E  4E4F                     304      TRAP    #15
-00001320                           305  
-00001320                           306      * Display MONEY
-00001320  43F9 00001DF6            307      LEA     MONEY_LABEL, A1
-00001326  6100 03B0                308      BSR     PRINT
-0000132A  3239 00002F16            309      MOVE.W  (MONEY), D1
-00001330  6100 03AE                310      BSR     PRINT_INT
-00001334                           311      * ----------
-00001334                           312      
-00001334  323C 3501                313      MOVE.W  #$3501,  D1  *Move text cursor to pos
-00001338  303C 000B                314      MOVE    #11,    D0
-0000133C  4E4F                     315      TRAP    #15
-0000133E                           316      
-0000133E                           317      * Display Day
-0000133E  43F9 00001DFE            318      LEA     DAY_LABEL, A1
-00001344  6100 0392                319      BSR     PRINT
-00001348  3239 00002F18            320      MOVE.W  (DAY), D1
-0000134E  6100 0390                321      BSR     PRINT_INT
-00001352                           322      * ----------
-00001352  6100 03B4                323      BSR     ENDL
-00001356                           324  
-00001356  323C 3502                325      MOVE.W  #$3502,  D1  *Move text cursor to pos
-0000135A  303C 000B                326      MOVE    #11,    D0
-0000135E  4E4F                     327      TRAP    #15
-00001360                           328      
-00001360                           329      * Display Temperature
-00001360  43F9 00001E04            330      LEA     TEMPERATURE_LABEL, A1
-00001366  6100 0370                331      BSR     PRINT
-0000136A  3239 00002F1C            332      MOVE.W  (TEMPERATURE), D1
-00001370  6100 036E                333      BSR     PRINT_INT
-00001374                           334      * ----------
-00001374                           335  
-00001374                           336      * Reset cursor pos back to normal
-00001374  323C 0004                337      MOVE.W  #$0004,  D1  *Move text cursor to pos
-00001378  303C 000B                338      MOVE    #11,    D0
-0000137C  4E4F                     339      TRAP    #15
-0000137E                           340  
-0000137E  4E75                     341      RTS
-00001380                           342  
-00001380                           343  *-------------------------------------------------------
-00001380                           344  *--------------------WORK SUBROUTINE--------------------
-00001380                           345  *-------------------------------------------------------
-00001380                           346  WORK:
-00001380  6100 034A                347      BSR     CLEAR_SCREEN
-00001384                           348      
-00001384                           349      *if (day_counter - 2 < 0) = tired
-00001384  3239 00002F1A            350      MOVE.W  (DAY_COUNTER),  D1
-0000138A  5541                     351      SUB     #2, D1
-0000138C  6B00 0036                352      BMI     TIRED_WORK
-00001390                           353  
-00001390  B27C 0000                354      CMP     #0, D1
-00001394  6300 002E                355      BLS     TIRED_WORK
-00001398                           356  
-00001398  33C1 00002F1A            357      MOVE.W  D1, DAY_COUNTER
-0000139E  6100 0340                358      BSR     PRINT_INT
-000013A2                           359  
-000013A2  43F9 00002E90            360      LEA     eventText, A1
-000013A8  6100 032E                361      BSR     PRINT
-000013AC                           362      
-000013AC  0679 0014 00002F16       363      ADD.W   #SALARY, MONEY
-000013B4  183C 0003                364      MOVE.B  #3,     D4
-000013B8  6100 03A4                365      BSR     PRINT_DOTS
-000013BC                           366      
-000013BC  6100 0332                367      BSR     SYSTEM_PAUSE
-000013C0                           368      
-000013C0                           369      
-000013C0  6000 FEF6                370      BRA GAME_LOOP
-000013C4                           371  TIRED_WORK:
-000013C4  6100 0342                372      BSR     ENDL
-000013C8                           373  
-000013C8  43F9 00002E98            374      LEA     work_tired_string, A1
-000013CE  6100 0308                375      BSR     PRINT
-000013D2                           376      
-000013D2  6100 031C                377      BSR     SYSTEM_PAUSE
-000013D6  6000 FEE0                378      BRA     GAME_LOOP
-000013DA                           379  *-------------------------------------------------------
-000013DA                           380  *--------------------CITY SUBROUTINE--------------------
-000013DA                           381  *-------------------------------------------------------
-000013DA                           382  CITY:
-000013DA  6100 02F0                383      BSR     CLEAR_SCREEN
-000013DE  6100 FF0A                384      BSR     DISPLAY 
-000013E2                           385      
-000013E2  43F9 00002B7D            386      LEA     cityChoice, A1   *LOAD MESSAGE
-000013E8  6100 02EE                387      BSR     PRINT
-000013EC                           388      
-000013EC  103C 0004                389      MOVE.B  #4, D0
-000013F0  4E4F                     390      TRAP    #15      *ASK FOR INPUT
-000013F2                           391      
-000013F2  B27C 0001                392      CMP.W   #1,D1      *SHOP IF (D2 == #1)
-000013F6  6700 001C                393      BEQ     SHOP
-000013FA  B27C 0002                394      CMP.W   #2,D1      *EXPLORE IF (D2 == #2)
-000013FE  6700 02A8                395      BEQ     EXPLORE
-00001402  B27C 0003                396      CMP.W   #3,D1      *MANAGE IF (D2 == #3)
-00001406  6700 02B2                397      BEQ     MANAGE
-0000140A  B27C 0004                398      CMP.W   #4,D1      *LEAVE IF (D2 == #4)
-0000140E  6700 FEA8                399      BEQ     GAME_LOOP
-00001412  60C6                     400      BRA     CITY
-00001414                           401  
-00001414                           402  *-------------------------------------------------------
-00001414                           403  *--------------------SHOP SUBROUTINE--------------------
-00001414                           404  *-------------------------------------------------------
-00001414                           405  SHOP:
-00001414  6100 02B6                406      BSR     CLEAR_SCREEN
-00001418                           407      
-00001418  0C39 0000 00002F24       408      CMP.B   #0,   VISITED_SHOP
-00001420  6700 006C                409      BEQ     FIRST_TIME_SHOP
-00001424                           410  
-00001424  49F9 00002691            411      LEA     SHOP_KEEPER,      A4
-0000142A                           412      
-0000142A  6100 0304                413      BSR     SHOW_ASCII
-0000142E  6100 02D8                414      BSR     ENDL
-00001432                           415      
-00001432  43F9 00002681            416      LEA     SHOP_KEEPER_NAME, A1
-00001438  6100 029E                417      BSR     PRINT
-0000143C                           418  
-0000143C  43F9 00001E14            419      LEA     TALK_1, A1
-00001442  6100 0294                420      BSR     PRINT
-00001446                           421      
-00001446  43F9 00002C16            422      LEA     shop_string_1, A1
-0000144C  6100 028A                423      BSR     PRINT
-00001450                           424      
-00001450  43F9 00002EDA            425      LEA     NAME, A1
-00001456  6100 0280                426      BSR     PRINT
-0000145A                           427      
-0000145A  43F9 00001E18            428      LEA     TALK_2, A1
-00001460  6100 0276                429      BSR     PRINT
-00001464                           430      
-00001464  43F9 00002C24            431      LEA     shop_string_2,  A1
-0000146A  6100 026C                432      BSR     PRINT
-0000146E                           433      
-0000146E  103C 0004                434      MOVE.B  #4, D0
-00001472  4E4F                     435      TRAP    #15      *ASK FOR INPUT
-00001474                           436      
-00001474  B27C 0001                437      CMP.W   #1,D1      *BROWSE_SHOP IF (D1 == #1)
-00001478  6700 00AA                438      BEQ     BROWSE_SHOP
-0000147C  B27C 0002                439      CMP.W   #2,D1      *SELL_ITEM_SHOP IF (D1 == #2)
-00001480  6700 0224                440      BEQ     SELL_ITEM_SHOP
-00001484  B27C 0003                441      CMP.W   #3,D1      *CITY IF (D1 == #3)
-00001488  6700 FF50                442      BEQ     CITY
-0000148C                           443      
-0000148C  6086                     444      BRA     SHOP
-0000148E                           445  FIRST_TIME_SHOP:
-0000148E  13FC 0001 00002F24       446      MOVE.B    #1, VISITED_SHOP
-00001496                           447  
-00001496                           448      *INTRODUCE
-00001496  49F9 00002691            449      LEA     SHOP_KEEPER,  A4    *Load Ascii for Shop keeper
-0000149C                           450     
-0000149C  6100 0292                451      BSR     SHOW_ASCII
-000014A0  6100 0266                452      BSR     ENDL
-000014A4                           453  
-000014A4  43F9 00002681            454      LEA     SHOP_KEEPER_NAME, A1
-000014AA  6100 022C                455      BSR     PRINT
-000014AE                           456  
-000014AE  43F9 00001E14            457      LEA     TALK_1, A1
-000014B4  6100 0222                458      BSR     PRINT
-000014B8                           459      
-000014B8  43F9 00002D9C            460      LEA     shop_intro_string_1, A1
-000014BE  6100 0218                461      BSR     PRINT
-000014C2                           462      
-000014C2  43F9 00002681            463      LEA     SHOP_KEEPER_NAME, A1
-000014C8  6100 020E                464      BSR     PRINT
-000014CC                           465      
-000014CC  43F9 00002DBC            466      LEA     shop_intro_string_2,  A1
-000014D2  6100 0204                467      BSR     PRINT
-000014D6                           468      
-000014D6  43F9 00001E18            469      LEA     TALK_2, A1
-000014DC  6100 01FA                470      BSR     PRINT
-000014E0                           471      
-000014E0  6100 0226                472      BSR     ENDL
-000014E4                           473      
-000014E4  6100 020A                474      BSR     SYSTEM_PAUSE
-000014E8                           475      *
-000014E8  6000 FF2A                476      BRA     SHOP
-000014EC                           477  *-------------------------------------------------------
-000014EC                           478  *-------------------UNABLE_BUY SUBROUTINE---------------
-000014EC                           479  *----------------------[D2: need_money]-----------------
-000014EC                           480  UNABLE_BUY:
-000014EC  43F9 00002D43            481      LEA     shop_unable_buy_string_1, A1
-000014F2  6100 01E4                482      BSR     PRINT
-000014F6                           483      
-000014F6  3239 00002F16            484      MOVE.W  (MONEY),    D1
-000014FC  6100 01E2                485      BSR     PRINT_INT
-00001500                           486      
-00001500  43F9 00002D4D            487      LEA     shop_unable_buy_string_2, A1
-00001506  6100 01D0                488      BSR     PRINT
-0000150A                           489      
-0000150A  9441                     490      SUB     D1, D2
-0000150C  3202                     491      MOVE    D2, D1
-0000150E  6100 01D0                492      BSR     PRINT_INT
-00001512                           493  
-00001512  43F9 00002D5E            494      LEA     shop_unable_buy_string_3, A1
-00001518  6100 01BE                495      BSR     PRINT
-0000151C                           496      
-0000151C  6100 01D2                497      BSR     SYSTEM_PAUSE
-00001520  6100 01AA                498      BSR     CLEAR_SCREEN
-00001524                           499  BROWSE_SHOP:  
-00001524  6100 01A6                500      BSR     CLEAR_SCREEN
-00001528                           501      
-00001528  6100 FDC0                502      BSR     DISPLAY
-0000152C                           503      
-0000152C  49F9 00002691            504      LEA     SHOP_KEEPER,  A4    *Load Ascii for Shop keeper
-00001532  6100 01FC                505      BSR     SHOW_ASCII
-00001536                           506      
-00001536  6100 01D0                507      BSR     ENDL
-0000153A                           508      
-0000153A  43F9 00002C82            509      LEA     shop_browse_string, A1
-00001540  6100 0196                510      BSR     PRINT
-00001544                           511      
-00001544  103C 0004                512      MOVE.B  #4, D0
-00001548  4E4F                     513      TRAP    #15      *ASK FOR INPUT
-0000154A                           514      
-0000154A  B27C 0001                515      CMP.W   #1,D1      *Alarm Clock IF (D1 == #1)
-0000154E  6700 00C0                516      BEQ     ALARM_CLOCK
-00001552  B27C 0002                517      CMP.W   #2,D1      *Small Water Mill IF (D1 == #2)
-00001556  6700 00D0                518      BEQ     WATER_MILL
-0000155A  B27C 0003                519      CMP.W   #3,D1      *Solar Panel IF (D1 == #3)
-0000155E  6700 00F8                520      BEQ     SOLAR_PANEL
-00001562  B27C 0004                521      CMP.W   #4,D1      *Sword IF (D1 == #1)
-00001566  6700 0124                522      BEQ     SWORD
-0000156A  B27C 0005                523      CMP.W   #5,D1      *Coffee IF (D1 == #2)
-0000156E  6700 0136                524      BEQ     COFFEE
-00001572  B27C 0006                525      CMP.W   #6,D1      *Exit Browse IF (D1 == #3)
-00001576  6700 FE9C                526      BEQ     SHOP
-0000157A                           527      
-0000157A  60A8                     528      BRA     BROWSE_SHOP
-0000157C                           529  *-------------------------------------------------------
-0000157C                           530  *---------------CONFIRM_SHOP SUBROUTINE-----------------
-0000157C                           531  *   Check if player wants to actually buy the item
-0000157C                           532  *                 [D0,D1,D2: cost]
-0000157C                           533  CONFIRM_SHOP:       
-0000157C  6100 014E                534      BSR CLEAR_SCREEN
-00001580  6100 FD68                535      BSR DISPLAY
-00001584                           536  
-00001584  43F9 00002DFA            537      LEA shop_confirm_string, A1
-0000158A  6100 014C                538      BSR PRINT
-0000158E                           539      
-0000158E  3202                     540      MOVE.W  D2, D1
-00001590  6100 014E                541      BSR PRINT_INT
-00001594                           542      
-00001594  43F9 00002E2C            543      LEA YES_NO, A1
-0000159A  6100 013C                544      BSR PRINT
-0000159E                           545      
-0000159E  103C 0004                546      MOVE.B  #4, D0
-000015A2  4E4F                     547      TRAP    #15      *ASK FOR INPUT
-000015A4                           548      
-000015A4  B27C 0002                549      CMP.W   #2,D1      *No Clock IF (D1 == #2)
-000015A8  6700 FF7A                550      BEQ     BROWSE_SHOP
-000015AC  B27C 0001                551      CMP.W   #1,D1      *Repeat choice IF (D1 != #1)
-000015B0  66CA                     552      BNE     CONFIRM_SHOP
-000015B2  4E75                     553      RTS
-000015B4                           554  *-------------------------------------------------------
-000015B4                           555  *-----------PURCHASED_ITEM_SHOP SUBROUTINE--------------
-000015B4                           556  *-------------------------------------------------------
-000015B4                           557  PURCHASED_ITEM_SHOP:
-000015B4  6100 0116                558      BSR     CLEAR_SCREEN
-000015B8                           559      
-000015B8  45F9 00002681            560      LEA     SHOP_KEEPER_NAME, A2
-000015BE  47F9 00002E55            561      LEA     shop_thank_string, A3
-000015C4  49F9 00002691            562      LEA     SHOP_KEEPER, A4
-000015CA                           563  
-000015CA  6100 0152                564      BSR     SPEAKING_ASCII
-000015CE                           565      
-000015CE  6100 00FC                566      BSR     CLEAR_SCREEN
-000015D2  4E75                     567      RTS
-000015D4                           568  *-------------------------------------------------------
-000015D4                           569  *------------ATTEMPT_BUY_SINGLE_ITEM SUBROUTINE---------
-000015D4                           570  *----------------[D2:cost, A1: boolean]-----------------
-000015D4                           571  *           Used for purchasing boolean items
-000015D4                           572  ATTEMPT_BUY_SINGLE_ITEM:
-000015D4                           573      * If (!boolean) { return already_have_item(); }
-000015D4  1211                     574      MOVE.B  (A1), D1
-000015D6  B23C 0000                575      CMP.B   #0, D1
-000015DA  6600 001E                576      BNE     ALREADY_HAVE_ITEM
-000015DE                           577  
-000015DE  3239 00002F16            578      MOVE.W  (MONEY),  D1
-000015E4  9242                     579      SUB.W   D2, D1
-000015E6  6B00 FF04                580      BMI     UNABLE_BUY
-000015EA                           581      
-000015EA  33C1 00002F16            582      MOVE.W  D1, MONEY
-000015F0  12BC 0001                583      MOVE.B  #1, (A1)
-000015F4                           584     
-000015F4  61BE                     585      BSR     PURCHASED_ITEM_SHOP
-000015F6                           586      
-000015F6  6000 FF2C                587      BRA     BROWSE_SHOP
-000015FA                           588  ALREADY_HAVE_ITEM:
-000015FA  43F9 00002D80            589      LEA     shop_already_have_string,   A1
-00001600  6100 00D6                590      BSR     PRINT
-00001604                           591      
-00001604  6100 00EA                592      BSR     SYSTEM_PAUSE
-00001608  6100 00C2                593      BSR     CLEAR_SCREEN
-0000160C  6000 FF16                594      BRA     BROWSE_SHOP
-00001610                           595  ALARM_CLOCK:
-00001610  6100 00BA                596      BSR     CLEAR_SCREEN
-00001614  6100 00F2                597      BSR     ENDL
-00001618                           598      
-00001618  343C 0014                599      MOVE.W  #ALARM_COST, D2
-0000161C  6100 FF5E                600      BSR     CONFIRM_SHOP
-00001620                           601      
-00001620  43F9 00002F25            602      LEA     HAS_ALARM, A1
-00001626  60AC                     603      BRA     ATTEMPT_BUY_SINGLE_ITEM
-00001628                           604  WATER_MILL:
-00001628  6100 00A2                605      BSR     CLEAR_SCREEN
-0000162C  6100 00DA                606      BSR     ENDL
-00001630                           607      
-00001630  343C 0032                608      MOVE.W  #WATER_MILL_COST, D2
-00001634  6100 FF46                609      BSR     CONFIRM_SHOP
-00001638                           610      
-00001638  3239 00002F16            611      MOVE.W  (MONEY),  D1
-0000163E  9242                     612      SUB.W   D2, D1
-00001640  6B00 FEAA                613      BMI     UNABLE_BUY
-00001644                           614      
-00001644  33C1 00002F16            615      MOVE.W  D1, MONEY
-0000164A  5279 00002F20            616      ADD.W   #1, WATER_MILL_COUNT
-00001650                           617     
-00001650  6100 FF62                618      BSR     PURCHASED_ITEM_SHOP
-00001654                           619      
-00001654  6000 FECE                620      BRA     BROWSE_SHOP
-00001658                           621  SOLAR_PANEL:
-00001658  6100 0072                622      BSR     CLEAR_SCREEN
-0000165C  6100 00AA                623      BSR     ENDL
-00001660                           624      
-00001660  343C 0064                625      MOVE.W  #SOLAR_PANEL_COST, D2
-00001664  6100 FF16                626      BSR     CONFIRM_SHOP
-00001668                           627      
-00001668  3239 00002F16            628      MOVE.W  (MONEY),  D1
-0000166E  343C 0064                629      MOVE.W  #SOLAR_PANEL_COST, D2
-00001672  9242                     630      SUB.W   D2, D1
-00001674  6B00 FE76                631      BMI     UNABLE_BUY
-00001678                           632      
-00001678  33C1 00002F16            633      MOVE.W  D1, MONEY
-0000167E  5279 00002F22            634      ADD.W  #1,  SOLAR_PANEL_COUNT
-00001684                           635      
-00001684  6100 FF2E                636      BSR     PURCHASED_ITEM_SHOP
-00001688                           637      
-00001688  6000 FE9A                638      BRA     BROWSE_SHOP
-0000168C                           639  SWORD:
-0000168C  6100 003E                640      BSR     CLEAR_SCREEN
-00001690  6100 0076                641      BSR     ENDL
-00001694                           642      
-00001694                           643      * Confirm if player wants to buy sword
-00001694  343C 0032                644      MOVE.W  #SWORD_COST, D2
-00001698  6100 FEE2                645      BSR     CONFIRM_SHOP
-0000169C                           646     
-0000169C  43F9 00002F26            647      LEA     HAS_SWORD, A1
-000016A2  6000 FF30                648      BRA     ATTEMPT_BUY_SINGLE_ITEM
-000016A6                           649  COFFEE:
-000016A6                           650  
-000016A6                           651  SELL_ITEM_SHOP:
-000016A6                           652  
-000016A6  60FE                     653      BRA     SELL_ITEM_SHOP
-000016A8                           654  *-------------------------------------------------------
-000016A8                           655  *--------------------EXPLORE SUBROUTINE-----------------
-000016A8                           656  *-------------------------------------------------------
-000016A8                           657  EXPLORE:
-000016A8  43F9 00002E75            658      LEA     exploreChoice, A1
-000016AE  6100 0028                659      BSR     PRINT
-000016B2                           660      
-000016B2  6100 003C                661      BSR     SYSTEM_PAUSE
-000016B6  6000 FD22                662      BRA     CITY
-000016BA                           663      
-000016BA                           664  *-------------------------------------------------------
-000016BA                           665  *--------------------MANAGE SUBROUTINE------------------
-000016BA                           666  *-------------------------------------------------------
-000016BA                           667  MANAGE:
-000016BA  43F9 00002E83            668      LEA     manageChoice, A1
-000016C0  6100 0016                669      BSR     PRINT
-000016C4                           670      
-000016C4  6100 002A                671      BSR     SYSTEM_PAUSE
-000016C8  6000 FD10                672      BRA     CITY
-000016CC                           673  
-000016CC                           674  *-------------------------------------------------------
-000016CC                           675  *----------------CLEAR SCREEN SUBROUTINE----------------
-000016CC                           676  *-------------------------------------------------------
-000016CC                           677  CLEAR_SCREEN: 
-000016CC  103C 000B                678      MOVE.B  #11,D0    CLEAR SCREEN
-000016D0  323C FF00                679      MOVE.W  #$FF00,D1
-000016D4  4E4F                     680      TRAP    #15
-000016D6  4E75                     681      RTS
-000016D8                           682      
-000016D8                           683  *-------------------------------------------------------
-000016D8                           684  *----------------PRINT SUBROUTINE-----------------------
-000016D8                           685  *--------------------[D0, D1]---------------------------
-000016D8                           686  PRINT:
-000016D8  103C 000E                687      MOVE.B  #14,D0
-000016DC  4E4F                     688      TRAP    #15
-000016DE  4E75                     689      RTS
-000016E0                           690      
-000016E0                           691  *-------------------------------------------------------
-000016E0                           692  *----------------PRINT_INT SUBROUTINE-------------------
-000016E0                           693  *--------------------[D0,D1:input]----------------------
-000016E0                           694  PRINT_INT:
-000016E0  103C 0003                695      MOVE.B  #3,D0
-000016E4  4E4F                     696      TRAP    #15
-000016E6  4E75                     697      RTS
-000016E8                           698      
-000016E8                           699  *-------------------------------------------------------
-000016E8                           700  *----------------INPUT_NUM SUBROUTINE-------------------
-000016E8                           701  *-------------------[D0,D1:output]----------------------
-000016E8                           702  INPUT_NUM:
-000016E8  103C 0004                703      MOVE.B  #4,D0
-000016EC  4E4F                     704      TRAP    #15
-000016EE  4E75                     705      RTS
-000016F0                           706  *-------------------------------------------------------
-000016F0                           707  *----------------SYSTEM PAUSE SUBROUTINE----------------
-000016F0                           708  *-----------------------[D0,A1]-------------------------
-000016F0                           709  SYSTEM_PAUSE:
-000016F0  6100 0016                710      BSR      ENDL
-000016F4  43F9 00002EBC            711      LEA      PAUSE, A1   *DISPLAY PAUSE MESSAGE
-000016FA  61DC                     712      BSR      PRINT        
-000016FC  103C 0004                713      MOVE.B  #4, D0
-00001700  4E4F                     714      TRAP    #15      *ASK FOR NUMBER
-00001702  6100 0004                715      BSR     ENDL
-00001706  4E75                     716      RTS
-00001708                           717      
-00001708                           718  *-------------------------------------------------------
-00001708                           719  *--------------------ENDL SUBROUTINE--------------------
-00001708                           720  *-----------------------[D0,A1]-------------------------
-00001708                           721  ENDL:
-00001708  48E7 8040                722      MOVEM.L D0/A1,-(A7)
-0000170C  303C 000E                723      MOVE    #14,D0
-00001710  43F9 0000178E            724      LEA     CRLF,A1
-00001716  4E4F                     725      TRAP    #15
-00001718  4CDF 0201                726      MOVEM.L (A7)+,D0/A1
-0000171C  4E75                     727      RTS
-0000171E                           728      
-0000171E                           729  *-------------------------------------------------------
-0000171E                           730  *--------------SPEAKING_ASCII SUBROUTINE----------------
-0000171E                           731  *---------[A1,name: A2, text: A3, ascii: A4]------------
-0000171E                           732  SPEAKING_ASCII:
-0000171E  6100 0010                733      BSR     SHOW_ASCII
-00001722                           734      * TALK ABOUT STORY
-00001722  61E4                     735      BSR     ENDL
-00001724  6100 001C                736      BSR     SPEAK
-00001728  61DE                     737      BSR     ENDL
-0000172A                           738      *
-0000172A                           739      
-0000172A                           740      * NEXT
-0000172A  61C4                     741      BSR     SYSTEM_PAUSE
-0000172C  619E                     742      BSR     CLEAR_SCREEN
-0000172E                           743      *
-0000172E  4E75                     744      RTS
-00001730                           745  *-------------------------------------------------------
-00001730                           746  *---------------SHOW_ASCII SUBROUTINE-------------------
-00001730                           747  *------------------[A1, ascii: A4]----------------------
-00001730                           748  SHOW_ASCII:
-00001730  61D6                     749      BSR     ENDL
-00001732  324C                     750      MOVE    A4, A1
-00001734  61A2                     751      BSR     PRINT
-00001736  61D0                     752      BSR     ENDL
-00001738  43F9 00001CF7            753      LEA     LINE, A1
-0000173E  6198                     754      BSR     PRINT
-00001740  4E75                     755      RTS
-00001742                           756  *-------------------------------------------------------
-00001742                           757  *---------------------SPEAK SUBROUTINE------------------
-00001742                           758  *----------------[A1,name: A2, text: A3]----------------
-00001742                           759  SPEAK:
-00001742  324A                     760      MOVE     A2, A1
-00001744  6192                     761      BSR     PRINT
-00001746                           762  
-00001746  43F9 00001E14            763      LEA     TALK_1, A1
-0000174C  618A                     764      BSR     PRINT
-0000174E                           765      
-0000174E  324B                     766      MOVE    A3, A1
-00001750  6186                     767      BSR     PRINT
-00001752                           768      
-00001752  43F9 00001E18            769      LEA     TALK_2, A1
-00001758  6100 FF7E                770      BSR     PRINT
-0000175C                           771      
-0000175C  4E75                     772      RTS
-0000175E                           773  
-0000175E                           774  *-------------------------------------------------------
-0000175E                           775  *----------------TIMED PRINT DOT SUBROUTINE-------------
-0000175E                           776  *-------------------[D1,D2,D3,number: D4]---------------
-0000175E                           777  PRINT_DOTS:
-0000175E  43F9 00001E12            778      LEA     Dot,A1
-00001764                           779  DOT_NEXT_PRINT:
-00001764  6100 FF72                780      BSR     PRINT
-00001768  6100 001C                781      BSR     GET_MILLISECONDS
-0000176C  2401                     782      MOVE.L  D1,D2
-0000176E                           783  DOT_NEXT: 
-0000176E  6100 0016                784      BSR     GET_MILLISECONDS
-00001772                           785      
-00001772  3602                     786      MOVE    D2,D3
-00001774  9243                     787      SUB     D3,D1
-00001776                           788      
-00001776  B27C 0064                789      CMP     #SECOND,D1
-0000177A  63F2                     790      BLS     DOT_NEXT
-0000177C                           791      
-0000177C  5344                     792      SUB     #1, D4
-0000177E  B87C 0000                793      CMP     #0, D4
-00001782  66E0                     794      BNE     DOT_NEXT_PRINT
-00001784  4E75                     795      RTS
-00001786                           796      
-00001786                           797  GET_MILLISECONDS:
-00001786  103C 0008                798      MOVE.B #8, D0 # Load
-0000178A  4E4F                     799      TRAP #15  #Time in D1
-0000178C  4E75                     800      RTS
-0000178E                           801  
-0000178E                           802  
-0000178E                           803  
-0000178E                           804  *-------------------------------------------------------
-0000178E                           805  *-------------------DATA DELARATIONS--------------------
-0000178E                           806  *-------------------------------------------------------
-0000178E                           807  
-0000178E= 0D 0A 00                 808  CRLF             DC.B   $0D,$0A,0
-00001791                           809  
-00001791= 3D 3D 3D 3D 3D 3D ...    810  TITLE            DC.B    '================================================================================'
-000017E1= 0D 0A                    811                   DC.B   $0D,$0A
-000017E3= 20 5F 20 20 5F 5F ...    812                   DC.B    ' _  ___                 _                   ___   __    ___                _    '
-00001833= 0D 0A                    813                   DC.B   $0D,$0A
-00001835= 7C 20 7C 2F 20 28 ...    814                   DC.B    '| |/ (_)_ __   __ _  __| | ___  _ __ ___   / _ \ / _| / _ \__  _____ _ __(_)___ '
-00001885= 0D 0A                    815                   DC.B   $0D,$0A
-00001887= 7C 20 5E 20 2F 7C ...    816                   DC.B    '| ^ /| | ^_ \ / _` |/ _` |/ _ \| ^_ ` _ \ | | | | |_ | | | \ \/ / _ \ ^__| / __|'
-000018D7= 0D 0A                    817                   DC.B   $0D,$0A
-000018D9= 7C 20 2E 20 5C 7C ...    818                   DC.B    '| . \| | | | | (_| | (_| | (_) | | | | | || |_| |  _|| |_| |>  <  __/ |  | \__ \'
-00001929= 0D 0A                    819                   DC.B   $0D,$0A
-0000192B= 7C 5F 7C 5C 5F 5C ...    820                   DC.B    '|_|\_\_|_| |_|\__, |\__,_|\___/|_| |_| |_| \___/|_|   \___//_/\_\___|_|  |_|___/'
-0000197B= 0D 0A                    821                   DC.B   $0D,$0A
-0000197D= 20 20 20 20 20 20 ...    822                   DC.B    '              |___/                                                             '
-000019CD= 0D 0A                    823                   DC.B   $0D,$0A
-000019CF= 3D 3D 3D 3D 3D 3D ...    824                   DC.B    '================================================================================',0
-00001A20= 50 6C 65 61 73 65 ...    825  enterName       DC.B    'Please enter your name: ',0
-00001A39                           826  
-00001A39= 59 6F 75 72 20 6E ...    827  name_confirmation_1 DC.B    'Your name is "',0
-00001A48= 22 20 63 6F 72 72 ...    828  name_confirmation_2 DC.B    '" correct?'
-00001A52= 0D 0A                    829                      DC.B    $0D,$0A
-00001A54= 0D 09                    830                      DC.B    $0D,$09
-00001A56= 31 29 20 59 65 73        831                      DC.B    '1) Yes'
-00001A5C= 0D 0A                    832                      DC.B    $0D,$0A
-00001A5E= 0D 09                    833                      DC.B    $0D,$09
-00001A60= 32 29 20 4E 6F           834                      DC.B    '2) No'
-00001A65= 0D 0A                    835                      DC.B    $0D,$0A
-00001A67= 45 6E 74 65 72 20 ...    836                      DC.B    'Enter your choice) ',0
-00001A7B                           837  
-00001A7B= 50 6C 65 61 73 65 ...    838  name_length_fail        DC.B    'Please type a name between 3 - 30 length.',0
-00001AA5= 50 6C 65 61 73 65 ...    839  name_confirmation_fail  DC.B    'Please type a valid menu option.',0
-00001AC6                           840  
-00001AC6= 57 65 6C 63 6F 6D ...    841  welcome_string_1       DC.B 'Welcome to the Kingdom of Oxeris, ',0
-00001AE9                           842  
-00001AE9= 59 6F 75 20 68 61 ...    843  welcome_string_2        DC.B    'You have immigrated to the Kingdom of Oxeris as your hometown'
-00001B26= 0D 0A                    844                          DC.B    $0D,$0A
-00001B28= 68 61 73 20 62 65 ...    845                          DC.B    'has been burned down from a conflict',0
-00001B4D                           846  
-00001B4D= 33 20 79 65 61 72 ...    847  welcome_string_3        DC.B    '3 years later', 0
-00001B5B                           848  
-00001B5B= 49 74 20 68 61 73 ...    849  intro_story_string_1    DC.B    'It has been 3 years since I immigrated to'
-00001B84= 0D 0A                    850                  DC.B    $0D,$0A
-00001B86= 74 68 65 20 4B 69 ...    851                  DC.B    'the Kingdom of Oxeris', 0
-00001B9C                           852                  
-00001B9C= 54 68 65 20 6B 69 ...    853  intro_story_string_2    DC.B    'The king of Oxeris has imposed a tax which forces individuals'
-00001BD9= 0D 0A                    854                  DC.B    $0D,$0A
-00001BDB= 6F 66 20 74 68 65 ...    855                  DC.B    'of the kingdom to pay based on their C02 output.', 0
-00001C0C                           856  
-00001C0C= 49 20 61 6D 20 75 ...    857  intro_story_string_3    DC.B    'I am unsure why he has imposed a tax on CO2'
-00001C37= 0D 0A                    858                  DC.B    $0D,$0A
-00001C39= 69 66 20 69 74 20 ...    859                  DC.B    'if it is what everybody breaths out!', 0
-00001C5E                           860  
-00001C5E= 49 20 73 68 6F 75 ...    861  intro_story_string_4    DC.B    'I should make a plan to solve this problem.',0
-00001C8A                           862  
-00001C8A= 57 65 6C 63 6F 6D ...    863  guide_1_string_1        DC.B    'Welcome to the Kingdom of Oxeris, fellow adventurer.',0
-00001CBF= 49 20 61 6D 20 00        864  guide_1_string_2        DC.B    'I am ',0
-00001CC5= 20 61 6E 64 20 49 ...    865  guide_1_string_3        DC.B    ' and I am going to help you begin your adventure!',0
-00001CF7                           866  
-00001CF7= 3D 3D 3D 3D 3D 3D ...    867  LINE            DC.B    '================================================================================',0
-00001D48                           868  
-00001D48= 3D 3D 3D 3D 3D 3D ...    869  GAME_LINES      DC.B    '================================================================================'
-00001D98= 0D 0A                    870                  DC.B    $0D,$0A
-00001D9A= 0D 0A                    871                  DC.B    $0D,$0A
-00001D9C= 0D 0A                    872                  DC.B    $0D,$0A
-00001D9E= 3D 3D 3D 3D 3D 3D ...    873                  DC.B    '================================================================================', 0
-00001DEF                           874  
-00001DEF= 4E 61 6D 65 3A 20 00     875  NAME_LABEL          DC.B    'Name: ',0
-00001DF6= 4D 6F 6E 65 79 3A ...    876  MONEY_LABEL          DC.B    'Money: ',0
-00001DFE= 44 61 79 3A 20 00        877  DAY_LABEL           DC.B    'Day: ',0
-00001E04= 54 65 6D 70 65 72 ...    878  TEMPERATURE_LABEL   DC.B    'Temperature: ',0
-00001E12                           879          
-00001E12= 2E 00                    880  Dot                 DC.B    '.',0
-00001E14= 3A 20 22 00              881  TALK_1              DC.B    ': "',0
-00001E18= 22 00                    882  TALK_2              DC.B    '"',0
-00001E1A                           883  
-00001E1A= 20 20 20 20 20 20 ...    884  YOU              DC.B    '             ^JB&@@@@@&&&&BY~.          '
-00001E42= 0D 0A                    885                   DC.B   $0D,$0A
-00001E44= 20 20 20 20 20 20 ...    886                   DC.B    '           7&@&P7^:.....^75#@@#?.       '
-00001E6C= 0D 0A                    887                   DC.B   $0D,$0A
-00001E6E= 20 20 20 20 20 20 ...    888                   DC.B    '          G@&:               !#@@5      '
-00001E96= 0D 0A                    889                   DC.B   $0D,$0A
-00001E98= 20 20 20 20 20 20 ...    890                   DC.B    '         5@&        :7YPPGBGPP#@@@#Y~.  '
-00001EC0= 0D 0A                    891                   DC.B   $0D,$0A
-00001EC2= 20 20 20 20 20 20 ...    892                   DC.B    '        :@@~      7#&B5YJJ???~^~~7YB@&? '
-00001EEA= 0D 0A                    893                   DC.B   $0D,$0A
-00001EEC= 20 20 20 20 20 2E ...    894                   DC.B    '     .:^B@&      ?@&5~:::::::       J&@J'
-00001F14= 0D 0A                    895                   DC.B   $0D,$0A
-00001F16= 20 2E 35 23 26 40 ...    896                   DC.B    ' .5#&@@@@@J      B@GYJ!^^::::^^:::::~&&&'
-00001F3E= 0D 0A                    897                   DC.B   $0D,$0A
-00001F40= 20 47 40 47 3A 2E ...    898                   DC.B    ' G@G:. !@@:      Y@BYYYY?7!!!~~~!!7?5&@B'
-00001F68= 0D 0A                    899                   DC.B   $0D,$0A
-00001F6A= 2E 40 26 20 20 20 ...    900                   DC.B    '.@&    .@@.      :&@#G55YYYYYYY55PGB&&B.'
-00001F92= 0D 0A                    901                   DC.B   $0D,$0A
-00001F94= 37 40 42 20 20 20 ...    902                   DC.B    '7@B    ^@&        .?B#&&#######&&#B&@P  '
-00001FBC= 0D 0A                    903                   DC.B   $0D,$0A
-00001FBE= 47 40 42 20 20 20 ...    904                   DC.B    'G@B    ~@#            .::^~~~^::.  J@P  '
-00001FE6= 0D 0A                    905                   DC.B   $0D,$0A
-00001FE8= 26 40 47 20 20 20 ...    906                   DC.B    '&@G    ~@&                         ^@B  '
-00002010= 0D 0A                    907                   DC.B   $0D,$0A
-00002012= 40 40 47 20 20 20 ...    908                   DC.B    '@@G    .@&                         7@B  ', 0  
-0000203B                           909  
-0000203B= 47 75 69 64 65 20 ...    910  GUIDE_NAME          DC.B    'Guide Gary',   0
-00002046= 20 20 20 20 20 20 ...    911  GUIDE            DC.B    '                .!5B&&&@&&#B5?!^             '
-00002073= 0D 0A                    912                   DC.B   $0D,$0A
-00002075= 20 20 20 20 20 20 ...    913                   DC.B    '            !5G#&#G?^.....^~?PB&&7           '
-000020A2= 0D 0A                    914                   DC.B   $0D,$0A
-000020A4= 20 20 20 20 20 20 ...    915                   DC.B    '           P@G!^.              ^@&:          '
-000020D1= 0D 0A                    916                   DC.B   $0D,$0A
-000020D3= 20 20 20 20 20 20 ...    917                   DC.B    '          .@@^                  B@@&##P?:    '
-00002100= 0D 0A                    918                   DC.B   $0D,$0A
-00002102= 20 20 20 20 20 2E ...    919                   DC.B    '     .~?PG#@@.                   B@#~!5#&&5. '
-0000212F= 0D 0A                    920                   DC.B   $0D,$0A
-00002131= 20 20 5E 50 26 26 ...    921                   DC.B    '  ^P&&#G?P@@P                  :~P@@5   .!&@7'
-0000215E= 0D 0A                    922                   DC.B   $0D,$0A
-00002160= 20 50 40 23 7E 2E ...    923                   DC.B    ' P@#~.   .P#&&#BP55J???JJY5GB#&&&BJ~      ?@@'
-0000218D= 0D 0A                    924                   DC.B   $0D,$0A
-0000218F= 23 40 47 20 20 20 ...    925                   DC.B    '#@G          .^~7JY5PPPPP5J?!^.        .!G@#7'
-000021BC= 0D 0A                    926                   DC.B   $0D,$0A
-000021BE= 47 40 23 7E 2E 20 ...    927                   DC.B    'G@#~.          ...:::^~!777???JY555PPB#&&5^  '
-000021EB= 0D 0A                    928                   DC.B   $0D,$0A
-000021ED= 20 21 50 23 26 23 ...    929                   DC.B    ' !P#&##BBB##&####B&@@&#BBBBGG5YYYJJJ#@&:     '
-0000221A= 0D 0A                    930                   DC.B   $0D,$0A
-0000221C= 20 20 20 20 3A 4A ...    931                   DC.B    '    :J#&@@@@7     &@#P!:::::::...   !&@J     '
-00002249= 0D 0A                    932                   DC.B   $0D,$0A
-0000224B= 20 20 20 37 40 23 ...    933                   DC.B    '   7@#YJ?B@&      &@BPPY7~~^^^^^^^~~J&@!     '
-00002278= 0D 0A                    934                   DC.B   $0D,$0A
-0000227A= 20 20 20 26 26 20 ...    935                   DC.B    '   &&    J@B      P@&GPPPPP5555555PG#@@^     '
-000022A7= 0D 0A                    936                   DC.B   $0D,$0A
-000022A9= 20 20 5E 40 50 20 ...    937                   DC.B    '  ^@P    P@5       5&@&&########&&&@@B:      '
-000022D6= 0D 0A                    938                   DC.B   $0D,$0A
-000022D8= 20 20 4A 40 59 20 ...    939                   DC.B    '  J@Y    B@?        .~?5GGBBBBGPY?~B@Y       '
-00002305= 0D 0A                    940                   DC.B   $0D,$0A
-00002307= 20 20 42 40 3F 20 ...    941                   DC.B    '  B@?    B@?                       Y@Y       '
-00002334= 0D 0A                    942                   DC.B   $0D,$0A
-00002336= 20 20 26 40 3F 20 ...    943                   DC.B    '  &@?    P@J                       J@Y       ', 0
-00002364                           944           
-00002364= 20 20 20 20 20 20 ...    945  KING             DC.B    '            P&G:          ..            '
-0000238C= 0D 0A                    946                   DC.B   $0D,$0A
-0000238E= 20 20 20 20 20 20 ...    947                   DC.B    '           :&#&&5.     .!P#G            '
-000023B6= 0D 0A                    948                   DC.B   $0D,$0A
-000023B8= 20 20 20 20 20 20 ...    949                   DC.B    '           ?&#JP&#?.:?G#&&&7            '
-000023E0= 0D 0A                    950                   DC.B   $0D,$0A
-000023E2= 20 20 20 20 20 20 ...    951                   DC.B    '           B&G..7B&&&#5!P&#.            '
-0000240A= 0D 0A                    952                   DC.B   $0D,$0A
-0000240C= 20 20 3A 47 47 50 ...    953                   DC.B    '  :GGPPYY?5&&?...:~?!...P&B             '
-00002434= 0D 0A                    954                   DC.B   $0D,$0A
-00002436= 20 20 20 7E 47 26 ...    955                   DC.B    '   ~G&&&###BG:...      .G&B             '
-0000245E= 0D 0A                    956                   DC.B   $0D,$0A
-00002460= 20 20 20 20 20 3F ...    957                   DC.B    '     ?#&B55J^....::..:::G&#^.           '
-00002488= 0D 0A                    958                   DC.B   $0D,$0A
-0000248A= 20 20 20 20 20 20 ...    959                   DC.B    '      :B&#P555PBB#BBBBB##&&@@#Y:        '
-000024B2= 0D 0A                    960                   DC.B   $0D,$0A
-000024B4= 20 20 20 20 20 20 ...    961                   DC.B    '       .B&#B&#5!^.     .::.:J&@@#^      '
-000024DC= 0D 0A                    962                   DC.B   $0D,$0A
-000024DE= 20 20 20 20 20 20 ...    963                   DC.B    '        .B&&5.      .^7JY555YP&@@@5^    '
-00002506= 0D 0A                    964                   DC.B   $0D,$0A
-00002508= 20 20 20 20 20 20 ...    965                   DC.B    '        .&@#      !#&&##BGGGGP55PB&@&G: '
-00002530= 0D 0A                    966                   DC.B   $0D,$0A
-00002532= 20 20 20 20 20 20 ...    967                   DC.B    '        Y@@!     P@@#7::::::.      :G@&^'
-0000255A= 0D 0A                    968                   DC.B   $0D,$0A
-0000255C= 20 20 3A 3F 47 23 ...    969                   DC.B    '  :?G#&@@@@     .@@#P?^:::^^^:::....~&@#'
-00002584= 0D 0A                    970                   DC.B   $0D,$0A
-00002586= 20 3F 40 26 4A 37 ...    971                   DC.B    ' ?@&J77J@@B     .&@#PP5J7~~^^^^^^^~!Y&@&'
-000025AE= 0D 0A                    972                   DC.B   $0D,$0A
-000025B0= 20 26 40 2E 20 20 ...    973                   DC.B    ' &@.    @@?      B@&BPPPPPP555555PPG#@@7'
-000025D8= 0D 0A                    974                   DC.B   $0D,$0A
-000025DA= 7E 40 23 20 20 20 ...    975                   DC.B    '~@#    .@@~      .G@@&&#BBBBBB##&&&&@#^ '
-00002602= 0D 0A                    976                   DC.B   $0D,$0A
-00002604= 35 40 42 20 20 20 ...    977                   DC.B    '5@B    .@@~        .75G##&&&&&#BG5?&@5  '
-0000262C= 0D 0A                    978                   DC.B   $0D,$0A
-0000262E= 23 40 50 20 20 20 ...    979                   DC.B    '#@P    .@@~                        B@G  '
-00002656= 0D 0A                    980                   DC.B   $0D,$0A
-00002658= 40 40 50 20 20 20 ...    981                   DC.B    '@@P    .@@~                        G@B  ', 0
-00002681                           982  
-00002681= 53 68 6F 70 20 4B ...    983  SHOP_KEEPER_NAME DC.B   'Shop Keeper Sam',0
-00002691= 20 20 20 20 20 20 ...    984  SHOP_KEEPER      DC.B    '             .^JG&@@@@@@@@&BJ.               '
-000026BE= 0D 0A                    985                   DC.B   $0D,$0A
-000026C0= 20 20 20 20 20 20 ...    986                   DC.B    '         .7G&@@@@#PYJ??JYG#@@@7              '
-000026ED= 0D 0A                    987                   DC.B   $0D,$0A
-000026EF= 20 20 20 20 20 20 ...    988                   DC.B    '        J@@@&P!.  .YY??JJ?J#&&&B^            '
-0000271C= 0D 0A                    989                   DC.B   $0D,$0A
-0000271E= 20 20 20 20 20 20 ...    990                   DC.B    '       .@@@7     :##?^^:^^~:^^5&#            '
-0000274B= 0D 0A                    991                   DC.B   $0D,$0A
-0000274D= 20 20 20 20 20 20 ...    992                   DC.B    '        P@@5     G&5^..    ..:~#&7           '
-0000277A= 0D 0A                    993                   DC.B   $0D,$0A
-0000277C= 20 20 20 20 20 20 ...    994                   DC.B    '        ^@@&     !&B!:..   ...:Y&#           '
-000027A9= 0D 0A                    995                   DC.B   $0D,$0A
-000027AB= 20 20 20 20 20 20 ...    996                   DC.B    '         @@@.     #&?^:: ..    ^#&7          '
-000027D8= 0D 0A                    997                   DC.B   $0D,$0A
-000027DA= 20 20 20 20 20 20 ...    998                   DC.B    '         &@@.     Y&P???J?!::::^P&B          '
-00002807= 0D 0A                    999                   DC.B   $0D,$0A
-00002809= 20 20 20 20 20 20 ...   1000                   DC.B    '         #@@?!YPB#@@@@@@@@@@@@@@@@@&B57:     '
-00002836= 0D 0A                   1001                   DC.B   $0D,$0A
-00002838= 20 20 20 20 20 20 ...   1002                   DC.B    '      .7P@@@@@@&BG55YJ?77~~^^~~~7JYPB&@@@P.  '
-00002865= 0D 0A                   1003                   DC.B   $0D,$0A
-00002867= 20 20 20 2E 59 26 ...   1004                   DC.B    '   .Y&@@@&G7: .^JG#&&@@@@&@&&B5!:      ^@@&  '
-00002894= 0D 0A                   1005                   DC.B   $0D,$0A
-00002896= 20 20 21 40 40 40 ...   1006                   DC.B    '  !@@@G^.    Y&@@&BJ!~:::^~75#@@@@B~   .@@@  '
-000028C3= 0D 0A                   1007                   DC.B   $0D,$0A
-000028C5= 20 7E 40 40 40 7E ...   1008                   DC.B    ' ~@@@~     .&@@Y.              .?#@@&7!@@@!  '
-000028F2= 0D 0A                   1009                   DC.B   $0D,$0A
-000028F4= 20 7E 40 40 40 47 ...   1010                   DC.B    ' ~@@@G!.  .&@@:        .:~7?55YYY5&@@@@@#:   '
-00002921= 0D 0A                   1011                   DC.B   $0D,$0A
-00002923= 20 20 2E 3F 23 40 ...   1012                   DC.B    '  .?#@@@@&&@@!       7B&@&&&&########&&@&B7  '
-00002950= 0D 0A                   1013                   DC.B   $0D,$0A
-00002952= 20 20 20 20 20 20 ...   1014                   DC.B    '      .^7B@@#      .#@@#J~^^^^^^.     .^5@@B.'
-0000297F= 0D 0A                   1015                   DC.B   $0D,$0A
-00002981= 20 20 20 20 2E 3A ...   1016                   DC.B    '    .:~7?#@@7      B@&B5^::^^^^^:...    .5@@G'
-000029AE= 0D 0A                   1017                   DC.B   $0D,$0A
-000029B0= 20 20 59 26 40 40 ...   1018                   DC.B    '  Y&@@@@@@@@.      &@&PPY!^^::::^^^^^::::J@@&'
-000029DD= 0D 0A                   1019                   DC.B   $0D,$0A
-000029DF= 20 3F 40 26 5E 2E ...   1020                   DC.B    ' ?@&^.  .@@#       B@&GPPPPY?7!!~~~~!!7?YG&@&'
-00002A0C= 0D 0A                   1021                   DC.B   $0D,$0A
-00002A0E= 20 26 40 7E 20 20 ...   1022                   DC.B    ' &@~    .@@P       ~@@&BGPPPPPPPPPPPPPGG#&@&~'
-00002A3B= 0D 0A                   1023                   DC.B   $0D,$0A
-00002A3D= 5E 40 40 2E 20 20 ...   1024                   DC.B    '^@@.    .@@?        !#@@&&##BBBBBB##&&&@@@P. '
-00002A6A= 0D 0A                   1025                   DC.B   $0D,$0A
-00002A6C= 4A 40 40 2E 20 20 ...   1026                   DC.B    'J@@.    ^@@!          ^?PB#&&&&&&&&#BPJY@@7  '
-00002A99= 0D 0A                   1027                   DC.B   $0D,$0A
-00002A9B= 42 40 40 20 20 20 ...   1028                   DC.B    'B@@     ^@@!                           .@@?  '
-00002AC8= 0D 0A                   1029                   DC.B   $0D,$0A
-00002ACA= 26 40 40 20 20 20 ...   1030                   DC.B    '&@@     ^@@!                            @@Y  ', 0
-00002AF8                          1031      
-00002AF8= 57 68 61 74 20 77 ...   1032  mainChoice      DC.B    'What would you like to do?'
-00002B12= 0D 0A                   1033                  DC.B    $0D,$0A
-00002B14= 31 29 20 47 6F 20 ...   1034                  DC.B    '1) Go to work to earn money'
-00002B2F= 0D 0A                   1035                  DC.B    $0D,$0A
-00002B31= 32 29 20 45 6E 74 ...   1036                  DC.B    '2) Enter the Town'
-00002B42= 0D 0A                   1037                  DC.B    $0D,$0A
-00002B44= 33 29 20 53 6C 65 ...   1038                  DC.B    '3) Sleep and end the day'
-00002B5C= 0D 0A                   1039                  DC.B    $0D,$0A
-00002B5E= 45 6E 74 65 72 20 ...   1040                  DC.B    'Enter your choice) ',0
-00002B72                          1041  
-00002B72= 5A 7A 5A 7A 5A 7A ...   1042  sleep_string    DC.B    'ZzZzZzZzZz',0
-00002B7D                          1043  
-00002B7D= 57 68 61 74 20 77 ...   1044  cityChoice      DC.B    'What would you like to do in the town?'
-00002BA3= 0D 0A                   1045                  DC.B    $0D,$0A
-00002BA5= 31 29 20 56 69 73 ...   1046                  DC.B    '1) Visit the Building Shop'
-00002BBF= 0D 0A                   1047                  DC.B    $0D,$0A
-00002BC1= 32 29 20 45 78 70 ...   1048                  DC.B    '2) Explore the Town'
-00002BD4= 0D 0A                   1049                  DC.B    $0D,$0A
-00002BD6= 33 29 20 4D 61 6E ...   1050                  DC.B    '3) Manage your Buildings'
-00002BEE= 0D 0A                   1051                  DC.B    $0D,$0A
-00002BF0= 34 29 20 45 78 69 ...   1052                  DC.B    '4) Exit the Town'
-00002C00= 0D 0A                   1053                  DC.B    $0D,$0A
-00002C02= 45 6E 74 65 72 20 ...   1054                  DC.B    'Enter your choice) ',0
-00002C16                          1055  
-00002C16                          1056  
-00002C16= 57 65 6C 63 6F 6D ...   1057  shop_string_1           DC.B    'Welcome back ',0
-00002C24= 0D 0A                   1058  shop_string_2           DC.B    $0D,$0A
-00002C26= 31 29 20 42 72 6F ...   1059                          DC.B    '1) Browse around the shop'
-00002C3F= 0D 0A                   1060                          DC.B    $0D,$0A
-00002C41= 32 29 20 53 65 6C ...   1061                          DC.B    '2) Sell items to the shop'
-00002C5A= 0D 0A                   1062                          DC.B    $0D,$0A
-00002C5C= 33 29 20 45 78 69 ...   1063                          DC.B    '3) Exit the Shop'
-00002C6C= 0D 0A                   1064                          DC.B    $0D,$0A
-00002C6E= 45 6E 74 65 72 20 ...   1065                          DC.B    'Enter your choice) ',0
-00002C82                          1066  
-00002C82                          1067                          
-00002C82= 54 68 65 72 65 20 ...   1068  shop_browse_string      DC.B    'There is a selection of items that caught your interest:'
-00002CBA= 0D 0A                   1069                          DC.B    $0D,$0A
-00002CBC= 31 29 20 41 6C 61 ...   1070                          DC.B    '1) Alarm Clock : $20'
-00002CD0= 0D 0A                   1071                          DC.B    $0D,$0A
-00002CD2= 32 29 20 57 61 74 ...   1072                          DC.B    '2) Water Mill : $50'
-00002CE5= 0D 0A                   1073                          DC.B    $0D,$0A
-00002CE7= 33 29 20 53 6F 6C ...   1074                          DC.B    '3) Solar Panel : $100'
-00002CFC= 0D 0A                   1075                          DC.B    $0D,$0A
-00002CFE= 34 29 20 53 77 6F ...   1076                          DC.B    '4) Sword : $50'
-00002D0C= 0D 0A                   1077                          DC.B    $0D,$0A
-00002D0E= 35 29 20 43 6F 66 ...   1078                          DC.B    '5) Coffee : $10'
-00002D1D= 0D 0A                   1079                          DC.B    $0D,$0A
-00002D1F= 36 29 20 45 78 69 ...   1080                          DC.B    '6) Exit Browse'
-00002D2D= 0D 0A                   1081                          DC.B    $0D,$0A
-00002D2F= 45 6E 74 65 72 20 ...   1082                          DC.B    'Enter your choice) ',0
-00002D43                          1083  
-00002D43                          1084  
-00002D43= 59 6F 75 20 68 61 ...   1085  shop_unable_buy_string_1: DC.B    'You have ',0
-00002D4D= 20 63 61 73 68 2E ...   1086  shop_unable_buy_string_2: DC.B    ' cash. You need ',0
-00002D5E= 20 6D 6F 72 65 20 ...   1087  shop_unable_buy_string_3: DC.B    ' more cash to purchase this item.',0
-00002D80                          1088  
-00002D80= 59 6F 75 20 61 6C ...   1089  shop_already_have_string:  DC.B    'You already have this item.',0
-00002D9C                          1090  
-00002D9C= 57 65 6C 63 6F 6D ...   1091  shop_intro_string_1           DC.B    'Welcome to my Shop, my name is ',0
-00002DBC= 21                      1092  shop_intro_string_2           DC.B    '!' 
-00002DBD= 0D 0A                   1093                                DC.B    $0D,$0A
-00002DBF= 49 20 73 65 6C 6C ...   1094                                DC.B    'I sell items that could be used to reduce your CO2 output.',0
-00002DFA                          1095  
-00002DFA= 41 72 65 20 79 6F ...   1096  shop_confirm_string DC.B    'Are you sure that you want to buy this item for $',0
-00002E2C= 0D 0A                   1097  YES_NO              DC.B    $0D,$0A
-00002E2E= 0D 09                   1098                      DC.B    $0D,$09
-00002E30= 31 29 20 59 65 73       1099                      DC.B    '1) Yes'
-00002E36= 0D 0A                   1100                      DC.B    $0D,$0A
-00002E38= 0D 09                   1101                      DC.B    $0D,$09
-00002E3A= 32 29 20 4E 6F          1102                      DC.B    '2) No'
-00002E3F= 0D 0A                   1103                      DC.B    $0D,$0A
-00002E41= 45 6E 74 65 72 20 ...   1104                      DC.B    'Enter your choice) ',0
-00002E55= 54 68 61 6E 6B 20 ...   1105  shop_thank_string   DC.B    'Thank you for buying this item!',0
-00002E75                          1106  
-00002E75= 54 4F 44 4F 3A 20 ...   1107  exploreChoice   DC.B    'TODO: EXPLORE', 0
-00002E83= 54 4F 44 4F 3A 20 ...   1108  manageChoice    DC.B    'TODO: MANAGE', 0
-00002E90= 57 6F 72 6B 69 6E ...   1109  eventText       DC.B    'Working', 0 
-00002E98= 59 6F 75 20 61 72 ...   1110  work_tired_string   DC.B    'You are too tired to work right now',0
-00002EBC= 50 72 65 73 73 20 ...   1111  PAUSE           DC.B    'Press enter to continue . . .', 0
-00002EDA                          1112  
-00002EDA                          1113  NAME            DS.W    30  *Max length of name can be 30
-00002F16                          1114  MONEY           DS.W    1   *PLAYER MONEY in hundreds
-00002F18                          1115  DAY             DS.W    1   *DAYS PASSED
-00002F1A                          1116  
-00002F1A                          1117  DAY_COUNTER     DS.W    1   *INCREASED FROM 3 TO 4 IF ALARM
-00002F1C                          1118  
-00002F1C                          1119  TEMPERATURE     DS.W    1   * Default = 15 C
-00002F1E                          1120  CO2_LEVEL       DS.W    1   * Default = 400 ppm or 0.0375 per CO2
-00002F20                          1121  
-00002F20                          1122  * Amount
-00002F20                          1123  WATER_MILL_COUNT    DS.W    1
-00002F22                          1124  SOLAR_PANEL_COUNT   DS.W    1
-00002F24                          1125  * Booleans
-00002F24                          1126  VISITED_SHOP    DS.B    1   *Check if you visited shop before
-00002F25                          1127  HAS_ALARM       DS.B    1
-00002F26                          1128  HAS_SWORD       DS.B    1
-00002F27                          1129  *
-00002F27                          1130  
-00002F27                          1131  JOB_TYPE        DS.B    1
-00002F28                          1132  JOB_LEVEL       DS.B    1
-00002F29                          1133  
-00002F29                          1134  
-00002F29                          1135  
-00002F29                          1136  *-------------------------------------------------------
-00002F29                          1137  *VALIDATION VALUES TO BE USED
-00002F29                          1138  *-------------------------------------------------------
-00002F29  =00000014               1139  SALARY    EQU 20
-00002F29  =000000C8               1140  STARTING_CASH     EQU 200
-00002F29  =00002710               1141  MILLION  EQU 10000
-00002F29  =000003E8               1142  HUNDREDTHOUSAND EQU 1000
-00002F29  =00000064               1143  SECOND  EQU 100
-00002F29  =00000003               1144  DEFAULT_DAY_COUNTER EQU 3
-00002F29                          1145  
-00002F29                          1146  * ITEMS
-00002F29  =00000014               1147  ALARM_COST          EQU 20
-00002F29  =00000032               1148  WATER_MILL_COST     EQU 50
-00002F29  =00000064               1149  SOLAR_PANEL_COST    EQU 100
-00002F29  =00000032               1150  SWORD_COST          EQU 50
-00002F29                          1151      END START
+000011C0                           178      * Intro sequence of messages
+000011C0  47F9 00001B89            179      LEA     intro_story_string_1, A3
+000011C6  6100 0582                180      BSR     SPEAKING_ASCII
+000011CA                           181      
+000011CA  47F9 00001BCA            182      LEA     intro_story_string_2, A3
+000011D0  6100 0578                183      BSR     SPEAKING_ASCII
+000011D4                           184      
+000011D4  47F9 00001C3A            185      LEA     intro_story_string_3, A3
+000011DA  6100 056E                186      BSR     SPEAKING_ASCII
+000011DE                           187      
+000011DE  47F9 00001C8C            188      LEA     intro_story_string_4, A3
+000011E4  6100 0564                189      BSR     SPEAKING_ASCII
+000011E8                           190      *
+000011E8                           191  
+000011E8  4E75                     192      RTS
+000011EA                           193  
+000011EA                           194  *-------------------------------------------------------
+000011EA                           195  *-----------------GUIDE_1 SUBROUTINE--------------------
+000011EA                           196  *-------------------------------------------------------
+000011EA                           197  GUIDE_1:
+000011EA  45F9 00002069            198      LEA     GUIDE_NAME, A2
+000011F0  47F9 00001CB8            199      LEA     guide_1_string_1, A3
+000011F6  49F9 00002074            200      LEA     GUIDE,      A4
+000011FC                           201      
+000011FC  6100 054C                202      BSR     SPEAKING_ASCII
+00001200                           203      
+00001200                           204      * INTRODUCE
+00001200  6100 055C                205      BSR     SHOW_ASCII
+00001204  6100 052E                206      BSR     ENDL
+00001208                           207      
+00001208  43F9 00002069            208      LEA     GUIDE_NAME, A1
+0000120E  6100 04F4                209      BSR     PRINT
+00001212                           210      
+00001212  43F9 00001E42            211      LEA     TALK_1, A1
+00001218  6100 04EA                212      BSR     PRINT
+0000121C                           213      
+0000121C  43F9 00001CED            214      LEA     guide_1_string_2, A1
+00001222  6100 04E0                215      BSR     PRINT
+00001226                           216      
+00001226  43F9 00002069            217      LEA     GUIDE_NAME, A1
+0000122C  6100 04D6                218      BSR     PRINT
+00001230                           219      
+00001230  43F9 00001CF3            220      LEA     guide_1_string_3, A1
+00001236  6100 04CC                221      BSR     PRINT
+0000123A                           222      
+0000123A  43F9 00001E46            223      LEA     TALK_2, A1
+00001240  6100 04C2                224      BSR     PRINT
+00001244                           225      
+00001244  6100 04EE                226      BSR     ENDL
+00001248                           227      
+00001248                           228      * NEXT
+00001248  6100 04D2                229      BSR     SYSTEM_PAUSE
+0000124C                           230  
+0000124C  4E75                     231      RTS
+0000124E                           232  END_DAY:
+0000124E  6100 04A8                233      BSR     CLEAR_SCREEN
+00001252  5279 00002FA4            234      ADD.W   #1, day     *Increase day by 1
+00001258  0679 0014 00002FAA       235      ADD.W   #CARBON_PRODUCED_DAILY, CO2_level  * Increase CO2 level by CARBON_PRODUCED_DAILY so harder and faster
+00001260                           236      
+00001260                           237      * Equation to get temp : co2 * 0.0375
+00001260  223C 00000177            238      MOVE.L  #375, D1
+00001266  C2F9 00002FAA            239      MULU.W  (CO2_level), D1
+0000126C                           240  
+0000126C  82FC 2710                241      DIVU.W  #10000, D1
+00001270  33C1 00002FA8            242      MOVE.W  D1, temperature
+00001276                           243      
+00001276  33FC 0003 00002FA6       244      MOVE.W  #DEFAULT_dayCounter,dayCounter  *Increase reset day counter
+0000127E                           245      
+0000127E  1239 00002FB1            246      MOVE.B  (hasAlarm), D1
+00001284  B27C 0001                247      CMP     #1,     D1 * Has alarm
+00001288  6600 0008                248      BNE     DISPLAY_END_DAY * No = skip increase day counter
+0000128C  5279 00002FA6            249      ADD.W   #1, dayCounter
+00001292                           250  DISPLAY_END_DAY:
+00001292  49F9 00001E48            251      LEA     YOU,  A4    *Load Ascii for Shop keeper
+00001298  6100 04C4                252      BSR     SHOW_ASCII
+0000129C  6100 0496                253      BSR     ENDL
+000012A0                           254      
+000012A0  43F9 00002B9F            255      LEA     sleep_string,   A1
+000012A6  6100 045C                256      BSR     PRINT
+000012AA                           257      
+000012AA  183C 0005                258      MOVE.B  #5,     D4
+000012AE  6100 04DC                259      BSR     PRINT_DOTS
+000012B2                           260      
+000012B2  6100 0480                261      BSR     ENDL
+000012B6                           262      
+000012B6  6100 0464                263      BSR     SYSTEM_PAUSE
+000012BA                           264  *-------------------------------------------------------
+000012BA                           265  *----------------GAME_LOOP (MAIN LOOP)-------------------
+000012BA                           266  *------------------------------------------------------- 
+000012BA                           267  GAME_LOOP:
+000012BA  6100 043C                268      BSR     CLEAR_SCREEN
+000012BE  6100 002C                269      BSR     DISPLAY 
+000012C2                           270  
+000012C2  43F9 00002B26            271      LEA     mainChoice, A1   *LOAD MESSAGE
+000012C8  6100 043A                272      BSR     PRINT
+000012CC                           273      
+000012CC  103C 0004                274      MOVE.B  #4, D0
+000012D0  4E4F                     275      TRAP    #15      *ASK FOR INPUT
+000012D2                           276      
+000012D2  B27C 0001                277      CMP.W   #1,D1      *SHOP IF (D2 == #1)
+000012D6  6700 00AA                278      BEQ     WORK
+000012DA  B27C 0002                279      CMP.W   #2,D1      *ACTION IF (D2 == #2)
+000012DE  6700 00FC                280      BEQ     CITY
+000012E2  B27C 0003                281      CMP.W   #3,D1      *SLEEP IF (D2 == #3)
+000012E6  6700 FF66                282      BEQ     END_DAY
+000012EA                           283      
+000012EA  60CE                     284      BRA     GAME_LOOP   *LOOP FOREVER
+000012EC                           285  
+000012EC                           286  *-------------------------------------------------------
+000012EC                           287  *-------------------DISPLAY SUBROUTINE------------------
+000012EC                           288  *-------------------------------------------------------
+000012EC                           289  DISPLAY:
+000012EC  43F9 00001D76            290      LEA     GAME_LINES, A1
+000012F2  6100 0410                291      BSR     PRINT
+000012F6                           292      
+000012F6  323C 0201                293      MOVE.W  #$0201,  D1  *Move text cursor to pos
+000012FA  303C 000B                294      MOVE    #11,    D0
+000012FE  4E4F                     295      TRAP    #15
+00001300                           296      
+00001300                           297      * Display Name
+00001300  43F9 00001E1D            298      LEA     NAME_LABEL, A1
+00001306  6100 03FC                299      BSR     PRINT
+0000130A  43F9 00002F66            300      LEA     name, A1
+00001310  6100 03F2                301      BSR     PRINT
+00001314                           302      * ----------
+00001314  6100 041E                303      BSR     ENDL
+00001318                           304      
+00001318  323C 0202                305      MOVE.W  #$0202,  D1  *Move text cursor to pos
+0000131C  303C 000B                306      MOVE    #11,    D0
+00001320  4E4F                     307      TRAP    #15
+00001322                           308  
+00001322                           309      * Display money
+00001322  43F9 00001E24            310      LEA     MONEY_LABEL, A1
+00001328  6100 03DA                311      BSR     PRINT
+0000132C  3239 00002FA2            312      MOVE.W  (money), D1
+00001332  6100 03D8                313      BSR     PRINT_INT
+00001336                           314      * ----------
+00001336                           315      
+00001336  323C 3501                316      MOVE.W  #$3501,  D1  *Move text cursor to pos
+0000133A  303C 000B                317      MOVE    #11,    D0
+0000133E  4E4F                     318      TRAP    #15
+00001340                           319      
+00001340                           320      * Display Day
+00001340  43F9 00001E2C            321      LEA     DAY_LABEL, A1
+00001346  6100 03BC                322      BSR     PRINT
+0000134A  3239 00002FA4            323      MOVE.W  (day), D1
+00001350  6100 03BA                324      BSR     PRINT_INT
+00001354                           325      * ----------
+00001354  6100 03DE                326      BSR     ENDL
+00001358                           327  
+00001358  323C 3502                328      MOVE.W  #$3502,  D1  *Move text cursor to pos
+0000135C  303C 000B                329      MOVE    #11,    D0
+00001360  4E4F                     330      TRAP    #15
+00001362                           331      
+00001362                           332      * Display temperature
+00001362  43F9 00001E32            333      LEA     temperature_LABEL, A1
+00001368  6100 039A                334      BSR     PRINT
+0000136C  3239 00002FA8            335      MOVE.W  (temperature), D1
+00001372  6100 0398                336      BSR     PRINT_INT
+00001376                           337      * ----------
+00001376                           338  
+00001376                           339      * Reset cursor pos back to normal
+00001376  323C 0004                340      MOVE.W  #$0004,  D1  *Move text cursor to pos
+0000137A  303C 000B                341      MOVE    #11,    D0
+0000137E  4E4F                     342      TRAP    #15
+00001380                           343  
+00001380  4E75                     344      RTS
+00001382                           345  
+00001382                           346  *-------------------------------------------------------
+00001382                           347  *--------------------WORK SUBROUTINE--------------------
+00001382                           348  *-------------------------------------------------------
+00001382                           349  WORK:
+00001382  6100 0374                350      BSR     CLEAR_SCREEN
+00001386                           351      
+00001386                           352      *if (dayCounter - 2 < 0) = tired
+00001386  3239 00002FA6            353      MOVE.W  (dayCounter),  D1
+0000138C  5541                     354      SUB     #2, D1
+0000138E  6B00 0036                355      BMI     TIRED_WORK
+00001392                           356  
+00001392  B27C 0000                357      CMP     #0, D1
+00001396  6300 002E                358      BLS     TIRED_WORK
+0000139A                           359  
+0000139A  33C1 00002FA6            360      MOVE.W  D1, dayCounter
+000013A0  6100 036A                361      BSR     PRINT_INT
+000013A4                           362  
+000013A4  43F9 00002F1C            363      LEA     eventText, A1
+000013AA  6100 0358                364      BSR     PRINT
+000013AE                           365      
+000013AE  0679 0014 00002FA2       366      ADD.W   #SALARY, money
+000013B6  183C 0003                367      MOVE.B  #3,     D4
+000013BA  6100 03D0                368      BSR     PRINT_DOTS
+000013BE                           369      
+000013BE  6100 035C                370      BSR     SYSTEM_PAUSE
+000013C2                           371      
+000013C2                           372      
+000013C2  6000 FEF6                373      BRA GAME_LOOP
+000013C6                           374  TIRED_WORK:
+000013C6  6100 036C                375      BSR     ENDL
+000013CA                           376  
+000013CA  43F9 00002F24            377      LEA     work_tired_string, A1
+000013D0  6100 0332                378      BSR     PRINT
+000013D4                           379      
+000013D4  6100 0346                380      BSR     SYSTEM_PAUSE
+000013D8  6000 FEE0                381      BRA     GAME_LOOP
+000013DC                           382  *-------------------------------------------------------
+000013DC                           383  *--------------------CITY SUBROUTINE--------------------
+000013DC                           384  *-------------------------------------------------------
+000013DC                           385  CITY:
+000013DC  6100 031A                386      BSR     CLEAR_SCREEN
+000013E0  6100 FF0A                387      BSR     DISPLAY 
+000013E4                           388      
+000013E4  43F9 00002BAA            389      LEA     cityChoice, A1   *LOAD MESSAGE
+000013EA  6100 0318                390      BSR     PRINT
+000013EE                           391      
+000013EE  103C 0004                392      MOVE.B  #4, D0
+000013F2  4E4F                     393      TRAP    #15      *ASK FOR INPUT
+000013F4                           394      
+000013F4  B27C 0001                395      CMP.W   #1,D1      *SHOP IF (D2 == #1)
+000013F8  6700 001C                396      BEQ     SHOP
+000013FC  B27C 0002                397      CMP.W   #2,D1      *EXPLORE IF (D2 == #2)
+00001400  6700 02D2                398      BEQ     EXPLORE
+00001404  B27C 0003                399      CMP.W   #3,D1      *MANAGE IF (D2 == #3)
+00001408  6700 02DC                400      BEQ     MANAGE
+0000140C  B27C 0004                401      CMP.W   #4,D1      *LEAVE IF (D2 == #4)
+00001410  6700 FEA8                402      BEQ     GAME_LOOP
+00001414  60C6                     403      BRA     CITY
+00001416                           404  
+00001416                           405  *-------------------------------------------------------
+00001416                           406  *--------------------SHOP SUBROUTINE--------------------
+00001416                           407  *-------------------------------------------------------
+00001416                           408  SHOP:
+00001416  6100 02E0                409      BSR     CLEAR_SCREEN
+0000141A                           410      
+0000141A  0C39 0000 00002FB0       411      CMP.B   #0,   visitedShop
+00001422  6700 006C                412      BEQ     FIRST_TIME_SHOP
+00001426                           413  
+00001426  49F9 000026BF            414      LEA     SHOP_KEEPER,      A4
+0000142C                           415      
+0000142C  6100 0330                416      BSR     SHOW_ASCII
+00001430  6100 0302                417      BSR     ENDL
+00001434                           418      
+00001434  43F9 000026AF            419      LEA     SHOP_KEEPER_NAME, A1
+0000143A  6100 02C8                420      BSR     PRINT
+0000143E                           421  
+0000143E  43F9 00001E42            422      LEA     TALK_1, A1
+00001444  6100 02BE                423      BSR     PRINT
+00001448                           424      
+00001448  43F9 00002C43            425      LEA     shop_string_1, A1
+0000144E  6100 02B4                426      BSR     PRINT
+00001452                           427      
+00001452  43F9 00002F66            428      LEA     name, A1
+00001458  6100 02AA                429      BSR     PRINT
+0000145C                           430      
+0000145C  43F9 00001E46            431      LEA     TALK_2, A1
+00001462  6100 02A0                432      BSR     PRINT
+00001466                           433      
+00001466  43F9 00002C4A            434      LEA     shop_string_2,  A1
+0000146C  6100 0296                435      BSR     PRINT
+00001470                           436      
+00001470  103C 0004                437      MOVE.B  #4, D0
+00001474  4E4F                     438      TRAP    #15      *ASK FOR INPUT
+00001476                           439      
+00001476  B27C 0001                440      CMP.W   #1,D1      *BROWSE_SHOP IF (D1 == #1)
+0000147A  6700 00AA                441      BEQ     BROWSE_SHOP
+0000147E  B27C 0002                442      CMP.W   #2,D1      *SELL_ITEM_SHOP IF (D1 == #2)
+00001482  6700 0236                443      BEQ     SELL_ITEM_SHOP
+00001486  B27C 0003                444      CMP.W   #3,D1      *CITY IF (D1 == #3)
+0000148A  6700 FF50                445      BEQ     CITY
+0000148E                           446      
+0000148E  6086                     447      BRA     SHOP
+00001490                           448  FIRST_TIME_SHOP:
+00001490  13FC 0001 00002FB0       449      MOVE.B    #1, visitedShop
+00001498                           450  
+00001498                           451      *INTRODUCE
+00001498  49F9 000026BF            452      LEA     SHOP_KEEPER,  A4    *Load Ascii for Shop keeper
+0000149E                           453     
+0000149E  6100 02BE                454      BSR     SHOW_ASCII
+000014A2  6100 0290                455      BSR     ENDL
+000014A6                           456  
+000014A6  43F9 000026AF            457      LEA     SHOP_KEEPER_NAME, A1
+000014AC  6100 0256                458      BSR     PRINT
+000014B0                           459  
+000014B0  43F9 00001E42            460      LEA     TALK_1, A1
+000014B6  6100 024C                461      BSR     PRINT
+000014BA                           462      
+000014BA  43F9 00002DF0            463      LEA     shop_intro_string_1, A1
+000014C0  6100 0242                464      BSR     PRINT
+000014C4                           465      
+000014C4  43F9 000026AF            466      LEA     SHOP_KEEPER_NAME, A1
+000014CA  6100 0238                467      BSR     PRINT
+000014CE                           468      
+000014CE  43F9 00002E10            469      LEA     shop_intro_string_2,  A1
+000014D4  6100 022E                470      BSR     PRINT
+000014D8                           471      
+000014D8  43F9 00001E46            472      LEA     TALK_2, A1
+000014DE  6100 0224                473      BSR     PRINT
+000014E2                           474      
+000014E2  6100 0250                475      BSR     ENDL
+000014E6                           476      
+000014E6  6100 0234                477      BSR     SYSTEM_PAUSE
+000014EA                           478      *
+000014EA  6000 FF2A                479      BRA     SHOP
+000014EE                           480  *-------------------------------------------------------
+000014EE                           481  *-------------------UNABLE_BUY SUBROUTINE---------------
+000014EE                           482  *----------------------[D2: need_money]-----------------
+000014EE                           483  UNABLE_BUY:
+000014EE  43F9 00002D97            484      LEA     shop_unable_buy_string_1, A1
+000014F4  6100 020E                485      BSR     PRINT
+000014F8                           486      
+000014F8  3239 00002FA2            487      MOVE.W  (money),    D1
+000014FE  6100 020C                488      BSR     PRINT_INT
+00001502                           489      
+00001502  43F9 00002DA1            490      LEA     shop_unable_buy_string_2, A1
+00001508  6100 01FA                491      BSR     PRINT
+0000150C                           492      
+0000150C  9441                     493      SUB     D1, D2
+0000150E  3202                     494      MOVE    D2, D1
+00001510  6100 01FA                495      BSR     PRINT_INT
+00001514                           496  
+00001514  43F9 00002DB2            497      LEA     shop_unable_buy_string_3, A1
+0000151A  6100 01E8                498      BSR     PRINT
+0000151E                           499      
+0000151E  6100 01FC                500      BSR     SYSTEM_PAUSE
+00001522  6100 01D4                501      BSR     CLEAR_SCREEN
+00001526                           502  BROWSE_SHOP:  
+00001526  6100 01D0                503      BSR     CLEAR_SCREEN
+0000152A                           504      
+0000152A  49F9 000026BF            505      LEA     SHOP_KEEPER,  A4    *Load Ascii for Shop keeper
+00001530  6100 022C                506      BSR     SHOW_ASCII
+00001534                           507      
+00001534  6100 01FE                508      BSR     ENDL
+00001538                           509      
+00001538  43F9 00002CD6            510      LEA     shop_browse_string, A1
+0000153E  6100 01C4                511      BSR     PRINT
+00001542                           512      
+00001542  103C 0004                513      MOVE.B  #4, D0
+00001546  4E4F                     514      TRAP    #15      *ASK FOR INPUT
+00001548                           515      
+00001548  B27C 0001                516      CMP.W   #1,D1      *Alarm Clock IF (D1 == #1)
+0000154C  6700 00BC                517      BEQ     ALARM_CLOCK
+00001550  B27C 0002                518      CMP.W   #2,D1      *Small Water Mill IF (D1 == #2)
+00001554  6700 00CC                519      BEQ     WATER_MILL
+00001558  B27C 0003                520      CMP.W   #3,D1      *Solar Panel IF (D1 == #3)
+0000155C  6700 00F4                521      BEQ     SOLAR_PANEL
+00001560  B27C 0004                522      CMP.W   #4,D1      *Sword IF (D1 == #1)
+00001564  6700 0120                523      BEQ     SWORD
+00001568  B27C 0005                524      CMP.W   #5,D1      *Coffee IF (D1 == #2)
+0000156C  6700 0132                525      BEQ     COFFEE
+00001570  B27C 0006                526      CMP.W   #6,D1      *Exit Browse IF (D1 == #3)
+00001574  6700 FEA0                527      BEQ     SHOP
+00001578                           528      
+00001578  60AC                     529      BRA     BROWSE_SHOP
+0000157A                           530  *-------------------------------------------------------
+0000157A                           531  *---------------CONFIRM_SHOP SUBROUTINE-----------------
+0000157A                           532  *   Check if player wants to actually buy the item
+0000157A                           533  *                 [D0,D1,D2: cost]
+0000157A                           534  CONFIRM_SHOP:       
+0000157A  6100 017C                535      BSR CLEAR_SCREEN
+0000157E  6100 FD6C                536      BSR DISPLAY
+00001582                           537  
+00001582  43F9 00002E4E            538      LEA shop_confirm_string, A1
+00001588  6100 017A                539      BSR PRINT
+0000158C                           540      
+0000158C  3202                     541      MOVE.W  D2, D1
+0000158E  6100 017C                542      BSR PRINT_INT
+00001592                           543      
+00001592  43F9 00002E80            544      LEA YES_NO, A1
+00001598  6100 016A                545      BSR PRINT
+0000159C                           546      
+0000159C  103C 0004                547      MOVE.B  #4, D0
+000015A0  4E4F                     548      TRAP    #15      *ASK FOR INPUT
+000015A2                           549      
+000015A2  B27C 0002                550      CMP.W   #2,D1      *No Clock IF (D1 == #2)
+000015A6  6700 FF7E                551      BEQ     BROWSE_SHOP
+000015AA  B27C 0001                552      CMP.W   #1,D1      *Repeat choice IF (D1 != #1)
+000015AE  66CA                     553      BNE     CONFIRM_SHOP
+000015B0  4E75                     554      RTS
+000015B2                           555  *-------------------------------------------------------
+000015B2                           556  *-----------PURCHASED_ITEM_SHOP SUBROUTINE--------------
+000015B2                           557  *-------------------------------------------------------
+000015B2                           558  PURCHASED_ITEM_SHOP:  
+000015B2  45F9 000026AF            559      LEA     SHOP_KEEPER_NAME, A2
+000015B8  47F9 00002EA9            560      LEA     shop_thank_string, A3
+000015BE  49F9 000026BF            561      LEA     SHOP_KEEPER, A4
+000015C4                           562  
+000015C4  6100 0184                563      BSR     SPEAKING_ASCII
+000015C8                           564      
+000015C8  6100 012E                565      BSR     CLEAR_SCREEN
+000015CC  4E75                     566      RTS
+000015CE                           567  *-------------------------------------------------------
+000015CE                           568  *------------ATTEMPT_BUY_SINGLE_ITEM SUBROUTINE---------
+000015CE                           569  *----------------[D2:cost, A1: boolean]-----------------
+000015CE                           570  *           Used for purchasing boolean items
+000015CE                           571  ATTEMPT_BUY_SINGLE_ITEM:
+000015CE                           572      * If (!boolean) { return already_have_item(); }
+000015CE  1211                     573      MOVE.B  (A1), D1
+000015D0  B23C 0000                574      CMP.B   #0, D1
+000015D4  6600 001E                575      BNE     ALREADY_HAVE_ITEM
+000015D8                           576  
+000015D8  3239 00002FA2            577      MOVE.W  (money),  D1
+000015DE  9242                     578      SUB.W   D2, D1
+000015E0  6B00 FF0C                579      BMI     UNABLE_BUY
+000015E4                           580      
+000015E4  33C1 00002FA2            581      MOVE.W  D1, money
+000015EA  12BC 0001                582      MOVE.B  #1, (A1)
+000015EE                           583     
+000015EE  61C2                     584      BSR     PURCHASED_ITEM_SHOP
+000015F0                           585      
+000015F0  6000 FF34                586      BRA     BROWSE_SHOP
+000015F4                           587  ALREADY_HAVE_ITEM:
+000015F4  43F9 00002DD4            588      LEA     shop_already_have_string,   A1
+000015FA  6100 0108                589      BSR     PRINT
+000015FE                           590      
+000015FE  6100 011C                591      BSR     SYSTEM_PAUSE
+00001602  6100 00F4                592      BSR     CLEAR_SCREEN
+00001606  6000 FF1E                593      BRA     BROWSE_SHOP
+0000160A                           594  ALARM_CLOCK:
+0000160A  6100 00EC                595      BSR     CLEAR_SCREEN
+0000160E  6100 0124                596      BSR     ENDL
+00001612                           597      
+00001612  343C 0014                598      MOVE.W  #ALARM_COST, D2
+00001616  6100 FF62                599      BSR     CONFIRM_SHOP
+0000161A                           600      
+0000161A  43F9 00002FB1            601      LEA     hasAlarm, A1
+00001620  60AC                     602      BRA     ATTEMPT_BUY_SINGLE_ITEM
+00001622                           603  WATER_MILL:
+00001622  6100 00D4                604      BSR     CLEAR_SCREEN
+00001626  6100 010C                605      BSR     ENDL
+0000162A                           606      
+0000162A  343C 0032                607      MOVE.W  #WATER_MILL_COST, D2
+0000162E  6100 FF4A                608      BSR     CONFIRM_SHOP
+00001632                           609      
+00001632  3239 00002FA2            610      MOVE.W  (money),  D1
+00001638  9242                     611      SUB.W   D2, D1
+0000163A  6B00 FEB2                612      BMI     UNABLE_BUY
+0000163E                           613      
+0000163E  33C1 00002FA2            614      MOVE.W  D1, money
+00001644  5279 00002FAC            615      ADD.W   #1, waterMillCount
+0000164A                           616     
+0000164A  6100 FF66                617      BSR     PURCHASED_ITEM_SHOP
+0000164E                           618      
+0000164E  6000 FED6                619      BRA     BROWSE_SHOP
+00001652                           620  SOLAR_PANEL:
+00001652  6100 00A4                621      BSR     CLEAR_SCREEN
+00001656  6100 00DC                622      BSR     ENDL
+0000165A                           623      
+0000165A  343C 0064                624      MOVE.W  #SOLAR_PANEL_COST, D2
+0000165E  6100 FF1A                625      BSR     CONFIRM_SHOP
+00001662                           626      
+00001662  3239 00002FA2            627      MOVE.W  (money),  D1
+00001668  343C 0064                628      MOVE.W  #SOLAR_PANEL_COST, D2
+0000166C  9242                     629      SUB.W   D2, D1
+0000166E  6B00 FE7E                630      BMI     UNABLE_BUY
+00001672                           631      
+00001672  33C1 00002FA2            632      MOVE.W  D1, money
+00001678  5279 00002FAE            633      ADD.W  #1,  solarPanelCount
+0000167E                           634      
+0000167E  6100 FF32                635      BSR     PURCHASED_ITEM_SHOP
+00001682                           636      
+00001682  6000 FEA2                637      BRA     BROWSE_SHOP
+00001686                           638  SWORD:
+00001686  6100 0070                639      BSR     CLEAR_SCREEN
+0000168A  6100 00A8                640      BSR     ENDL
+0000168E                           641      
+0000168E                           642      * Confirm if player wants to buy sword
+0000168E  343C 2FB2                643      MOVE.W  #hasSword, D2
+00001692  6100 FEE6                644      BSR     CONFIRM_SHOP
+00001696                           645     
+00001696  43F9 00002FB2            646      LEA     hasSword, A1
+0000169C  6000 FF30                647      BRA     ATTEMPT_BUY_SINGLE_ITEM
+000016A0                           648  COFFEE:
+000016A0  6100 0056                649      BSR     CLEAR_SCREEN
+000016A4  6100 008E                650      BSR     ENDL
+000016A8                           651      
+000016A8  343C 000A                652      MOVE.W  #COFFEE_COST, D2
+000016AC  6100 FECC                653      BSR     CONFIRM_SHOP
+000016B0                           654      
+000016B0  43F9 00002FB3            655      LEA     hasCoffee, A1
+000016B6  6000 FF16                656      BRA     ATTEMPT_BUY_SINGLE_ITEM
+000016BA                           657  SELL_ITEM_SHOP:
+000016BA  45F9 000026AF            658      LEA     SHOP_KEEPER_NAME, A2
+000016C0  47F9 00002EC9            659      LEA     shop_unable_string, A3
+000016C6  49F9 000026BF            660      LEA     SHOP_KEEPER, A4
+000016CC                           661  
+000016CC  6100 007C                662      BSR     SPEAKING_ASCII
+000016D0  6000 FD44                663      BRA     SHOP
+000016D4                           664  *-------------------------------------------------------
+000016D4                           665  *--------------------EXPLORE SUBROUTINE-----------------
+000016D4                           666  *-------------------------------------------------------
+000016D4                           667  EXPLORE:
+000016D4  43F9 00002F01            668      LEA     exploreChoice, A1
+000016DA  6100 0028                669      BSR     PRINT
+000016DE                           670      
+000016DE  6100 003C                671      BSR     SYSTEM_PAUSE
+000016E2  6000 FCF8                672      BRA     CITY
+000016E6                           673      
+000016E6                           674  *-------------------------------------------------------
+000016E6                           675  *--------------------MANAGE SUBROUTINE------------------
+000016E6                           676  *-------------------------------------------------------
+000016E6                           677  MANAGE:
+000016E6  43F9 00002F0F            678      LEA     manageChoice, A1
+000016EC  6100 0016                679      BSR     PRINT
+000016F0                           680      
+000016F0  6100 002A                681      BSR     SYSTEM_PAUSE
+000016F4  6000 FCE6                682      BRA     CITY
+000016F8                           683  
+000016F8                           684  *-------------------------------------------------------
+000016F8                           685  *----------------CLEAR SCREEN SUBROUTINE----------------
+000016F8                           686  *-------------------------------------------------------
+000016F8                           687  CLEAR_SCREEN: 
+000016F8  103C 000B                688      MOVE.B  #11,D0    CLEAR SCREEN
+000016FC  323C FF00                689      MOVE.W  #$FF00,D1
+00001700  4E4F                     690      TRAP    #15
+00001702  4E75                     691      RTS
+00001704                           692      
+00001704                           693  *-------------------------------------------------------
+00001704                           694  *----------------PRINT SUBROUTINE-----------------------
+00001704                           695  *--------------------[D0, D1]---------------------------
+00001704                           696  PRINT:
+00001704  103C 000E                697      MOVE.B  #14,D0
+00001708  4E4F                     698      TRAP    #15
+0000170A  4E75                     699      RTS
+0000170C                           700      
+0000170C                           701  *-------------------------------------------------------
+0000170C                           702  *----------------PRINT_INT SUBROUTINE-------------------
+0000170C                           703  *--------------------[D0,D1:input]----------------------
+0000170C                           704  PRINT_INT:
+0000170C  103C 0003                705      MOVE.B  #3,D0
+00001710  4E4F                     706      TRAP    #15
+00001712  4E75                     707      RTS
+00001714                           708      
+00001714                           709  *-------------------------------------------------------
+00001714                           710  *----------------INPUT_NUM SUBROUTINE-------------------
+00001714                           711  *-------------------[D0,D1:output]----------------------
+00001714                           712  INPUT_NUM:
+00001714  103C 0004                713      MOVE.B  #4,D0
+00001718  4E4F                     714      TRAP    #15
+0000171A  4E75                     715      RTS
+0000171C                           716  *-------------------------------------------------------
+0000171C                           717  *----------------SYSTEM PAUSE SUBROUTINE----------------
+0000171C                           718  *-----------------------[D0,A1]-------------------------
+0000171C                           719  SYSTEM_PAUSE:
+0000171C  6100 0016                720      BSR      ENDL
+00001720  43F9 00002F48            721      LEA      PAUSE, A1   *DISPLAY PAUSE MESSAGE
+00001726  61DC                     722      BSR      PRINT        
+00001728  103C 0004                723      MOVE.B  #4, D0
+0000172C  4E4F                     724      TRAP    #15      *ASK FOR NUMBER but dont use number
+0000172E  6100 0004                725      BSR     ENDL
+00001732  4E75                     726      RTS
+00001734                           727      
+00001734                           728  *-------------------------------------------------------
+00001734                           729  *--------------------ENDL SUBROUTINE--------------------
+00001734                           730  *-----------------------[D0,A1]-------------------------
+00001734                           731  ENDL:
+00001734  48E7 8040                732      MOVEM.L D0/A1,-(A7)
+00001738  303C 000E                733      MOVE    #14,D0
+0000173C  43F9 000017BC            734      LEA     CRLF,A1
+00001742  4E4F                     735      TRAP    #15
+00001744  4CDF 0201                736      MOVEM.L (A7)+,D0/A1
+00001748  4E75                     737      RTS
+0000174A                           738      
+0000174A                           739  *-------------------------------------------------------
+0000174A                           740  *--------------SPEAKING_ASCII SUBROUTINE----------------
+0000174A                           741  *---------[A1,name: A2, text: A3, ascii: A4]------------
+0000174A                           742  *    Used when a character is speaking a dialogue
+0000174A                           743  SPEAKING_ASCII:
+0000174A  61AC                     744      BSR     CLEAR_SCREEN
+0000174C  6100 0010                745      BSR     SHOW_ASCII
+00001750                           746      * TALK ABOUT STORY
+00001750  61E2                     747      BSR     ENDL
+00001752  6100 001C                748      BSR     SPEAK
+00001756  61DC                     749      BSR     ENDL
+00001758                           750      *
+00001758                           751      
+00001758                           752      * NEXT
+00001758  61C2                     753      BSR     SYSTEM_PAUSE
+0000175A  619C                     754      BSR     CLEAR_SCREEN
+0000175C                           755      *
+0000175C  4E75                     756      RTS
+0000175E                           757  *-------------------------------------------------------
+0000175E                           758  *---------------SHOW_ASCII SUBROUTINE-------------------
+0000175E                           759  *------------------[A1, ascii: A4]----------------------
+0000175E                           760  SHOW_ASCII:
+0000175E  61D4                     761      BSR     ENDL
+00001760  324C                     762      MOVE    A4, A1
+00001762  61A0                     763      BSR     PRINT
+00001764  61CE                     764      BSR     ENDL
+00001766  43F9 00001D25            765      LEA     LINE, A1
+0000176C  6196                     766      BSR     PRINT
+0000176E  4E75                     767      RTS
+00001770                           768  *-------------------------------------------------------
+00001770                           769  *---------------------SPEAK SUBROUTINE------------------
+00001770                           770  *----------------[A1,name: A2, text: A3]----------------
+00001770                           771  SPEAK:
+00001770  324A                     772      MOVE     A2, A1
+00001772  6190                     773      BSR     PRINT
+00001774                           774  
+00001774  43F9 00001E42            775      LEA     TALK_1, A1
+0000177A  6188                     776      BSR     PRINT
+0000177C                           777      
+0000177C  324B                     778      MOVE    A3, A1
+0000177E  6184                     779      BSR     PRINT
+00001780                           780      
+00001780  43F9 00001E46            781      LEA     TALK_2, A1
+00001786  6100 FF7C                782      BSR     PRINT
+0000178A                           783      
+0000178A  4E75                     784      RTS
+0000178C                           785  
+0000178C                           786  *-------------------------------------------------------
+0000178C                           787  *----------------TIMED PRINT DOT SUBROUTINE-------------
+0000178C                           788  *-------------------[D1,D2,D3,number: D4]---------------
+0000178C                           789  PRINT_DOTS:
+0000178C  43F9 00001E40            790      LEA     Dot,A1
+00001792                           791  DOT_NEXT_PRINT:
+00001792  6100 FF70                792      BSR     PRINT
+00001796  6100 001C                793      BSR     GET_MILLISECONDS
+0000179A  2401                     794      MOVE.L  D1,D2
+0000179C                           795  DOT_NEXT: 
+0000179C  6100 0016                796      BSR     GET_MILLISECONDS
+000017A0                           797      
+000017A0  3602                     798      MOVE    D2,D3
+000017A2  9243                     799      SUB     D3,D1
+000017A4                           800      
+000017A4  B27C 0064                801      CMP     #SECOND,D1
+000017A8  63F2                     802      BLS     DOT_NEXT
+000017AA                           803      
+000017AA  5344                     804      SUB     #1, D4
+000017AC  B87C 0000                805      CMP     #0, D4
+000017B0  66E0                     806      BNE     DOT_NEXT_PRINT
+000017B2  4E75                     807      RTS
+000017B4                           808      
+000017B4                           809  GET_MILLISECONDS:
+000017B4  103C 0008                810      MOVE.B #8, D0 # Load
+000017B8  4E4F                     811      TRAP #15  #Time in D1
+000017BA  4E75                     812      RTS
+000017BC                           813  
+000017BC                           814  
+000017BC                           815  
+000017BC                           816  *-------------------------------------------------------
+000017BC                           817  *-------------------DATA DELARATIONS--------------------
+000017BC                           818  *-------------------------------------------------------
+000017BC                           819  
+000017BC= 0D 0A 00                 820  CRLF             DC.B   $0D,$0A,0
+000017BF                           821  
+000017BF= 3D 3D 3D 3D 3D 3D ...    822  TITLE            DC.B    '================================================================================'
+0000180F= 0D 0A                    823                   DC.B   $0D,$0A
+00001811= 20 5F 20 20 5F 5F ...    824                   DC.B    ' _  ___                 _                   ___   __    ___                _    '
+00001861= 0D 0A                    825                   DC.B   $0D,$0A
+00001863= 7C 20 7C 2F 20 28 ...    826                   DC.B    '| |/ (_)_ __   __ _  __| | ___  _ __ ___   / _ \ / _| / _ \__  _____ _ __(_)___ '
+000018B3= 0D 0A                    827                   DC.B   $0D,$0A
+000018B5= 7C 20 5E 20 2F 7C ...    828                   DC.B    '| ^ /| | ^_ \ / _` |/ _` |/ _ \| ^_ ` _ \ | | | | |_ | | | \ \/ / _ \ ^__| / __|'
+00001905= 0D 0A                    829                   DC.B   $0D,$0A
+00001907= 7C 20 2E 20 5C 7C ...    830                   DC.B    '| . \| | | | | (_| | (_| | (_) | | | | | || |_| |  _|| |_| |>  <  __/ |  | \__ \'
+00001957= 0D 0A                    831                   DC.B   $0D,$0A
+00001959= 7C 5F 7C 5C 5F 5C ...    832                   DC.B    '|_|\_\_|_| |_|\__, |\__,_|\___/|_| |_| |_| \___/|_|   \___//_/\_\___|_|  |_|___/'
+000019A9= 0D 0A                    833                   DC.B   $0D,$0A
+000019AB= 20 20 20 20 20 20 ...    834                   DC.B    '              |___/                                                             '
+000019FB= 0D 0A                    835                   DC.B   $0D,$0A
+000019FD= 3D 3D 3D 3D 3D 3D ...    836                   DC.B    '================================================================================',0
+00001A4E= 50 6C 65 61 73 65 ...    837  enterName       DC.B    'Please enter your name: ',0
+00001A67                           838  
+00001A67= 59 6F 75 72 20 6E ...    839  name_confirmation_1 DC.B    'Your name is "',0
+00001A76= 22 20 63 6F 72 72 ...    840  name_confirmation_2 DC.B    '" correct?'
+00001A80= 0D 0A                    841                      DC.B    $0D,$0A
+00001A82= 0D 09                    842                      DC.B    $0D,$09
+00001A84= 31 29 20 59 65 73        843                      DC.B    '1) Yes'
+00001A8A= 0D 0A                    844                      DC.B    $0D,$0A
+00001A8C= 0D 09                    845                      DC.B    $0D,$09
+00001A8E= 32 29 20 4E 6F           846                      DC.B    '2) No'
+00001A93= 0D 0A                    847                      DC.B    $0D,$0A
+00001A95= 45 6E 74 65 72 20 ...    848                      DC.B    'Enter your choice) ',0
+00001AA9                           849  
+00001AA9= 50 6C 65 61 73 65 ...    850  name_length_fail        DC.B    'Please type a name between 3 - 30 length.',0
+00001AD3= 50 6C 65 61 73 65 ...    851  name_confirmation_fail  DC.B    'Please type a valid menu option.',0
+00001AF4                           852  
+00001AF4= 57 65 6C 63 6F 6D ...    853  welcome_string_1       DC.B 'Welcome to the Kingdom of Oxeris, ',0
+00001B17                           854  
+00001B17= 59 6F 75 20 68 61 ...    855  welcome_string_2        DC.B    'You have immigrated to the Kingdom of Oxeris as your hometown'
+00001B54= 0D 0A                    856                          DC.B    $0D,$0A
+00001B56= 68 61 73 20 62 65 ...    857                          DC.B    'has been burned down from a conflict',0
+00001B7B                           858  
+00001B7B= 33 20 79 65 61 72 ...    859  welcome_string_3        DC.B    '3 years later', 0
+00001B89                           860  
+00001B89= 49 74 20 68 61 73 ...    861  intro_story_string_1    DC.B    'It has been 3 years since I immigrated to'
+00001BB2= 0D 0A                    862                  DC.B    $0D,$0A
+00001BB4= 74 68 65 20 4B 69 ...    863                  DC.B    'the Kingdom of Oxeris', 0
+00001BCA                           864                  
+00001BCA= 54 68 65 20 6B 69 ...    865  intro_story_string_2    DC.B    'The king of Oxeris has imposed a tax which forces individuals'
+00001C07= 0D 0A                    866                  DC.B    $0D,$0A
+00001C09= 6F 66 20 74 68 65 ...    867                  DC.B    'of the kingdom to pay based on their C02 output.', 0
+00001C3A                           868  
+00001C3A= 49 20 61 6D 20 75 ...    869  intro_story_string_3    DC.B    'I am unsure why he has imposed a tax on CO2'
+00001C65= 0D 0A                    870                  DC.B    $0D,$0A
+00001C67= 69 66 20 69 74 20 ...    871                  DC.B    'if it is what everybody breaths out!', 0
+00001C8C                           872  
+00001C8C= 49 20 73 68 6F 75 ...    873  intro_story_string_4    DC.B    'I should make a plan to solve this problem.',0
+00001CB8                           874  
+00001CB8= 57 65 6C 63 6F 6D ...    875  guide_1_string_1        DC.B    'Welcome to the Kingdom of Oxeris, fellow adventurer.',0
+00001CED= 49 20 61 6D 20 00        876  guide_1_string_2        DC.B    'I am ',0
+00001CF3= 20 61 6E 64 20 49 ...    877  guide_1_string_3        DC.B    ' and I am going to help you begin your adventure!',0
+00001D25                           878  
+00001D25= 3D 3D 3D 3D 3D 3D ...    879  LINE            DC.B    '================================================================================',0
+00001D76                           880  
+00001D76= 3D 3D 3D 3D 3D 3D ...    881  GAME_LINES      DC.B    '================================================================================'
+00001DC6= 0D 0A                    882                  DC.B    $0D,$0A
+00001DC8= 0D 0A                    883                  DC.B    $0D,$0A
+00001DCA= 0D 0A                    884                  DC.B    $0D,$0A
+00001DCC= 3D 3D 3D 3D 3D 3D ...    885                  DC.B    '================================================================================', 0
+00001E1D                           886  
+00001E1D= 4E 61 6D 65 3A 20 00     887  NAME_LABEL          DC.B    'Name: ',0
+00001E24= 4D 6F 6E 65 79 3A ...    888  MONEY_LABEL          DC.B    'Money: ',0
+00001E2C= 44 61 79 3A 20 00        889  DAY_LABEL           DC.B    'Day: ',0
+00001E32= 74 65 6D 70 65 72 ...    890  temperature_LABEL   DC.B    'temperature: ',0
+00001E40                           891          
+00001E40= 2E 00                    892  Dot                 DC.B    '.',0
+00001E42= 3A 20 22 00              893  TALK_1              DC.B    ': "',0
+00001E46= 22 00                    894  TALK_2              DC.B    '"',0
+00001E48                           895  
+00001E48= 20 20 20 20 20 20 ...    896  YOU              DC.B    '             ^JB&@@@@@&&&&BY~.          '
+00001E70= 0D 0A                    897                   DC.B   $0D,$0A
+00001E72= 20 20 20 20 20 20 ...    898                   DC.B    '           7&@&P7^:.....^75#@@#?.       '
+00001E9A= 0D 0A                    899                   DC.B   $0D,$0A
+00001E9C= 20 20 20 20 20 20 ...    900                   DC.B    '          G@&:               !#@@5      '
+00001EC4= 0D 0A                    901                   DC.B   $0D,$0A
+00001EC6= 20 20 20 20 20 20 ...    902                   DC.B    '         5@&        :7YPPGBGPP#@@@#Y~.  '
+00001EEE= 0D 0A                    903                   DC.B   $0D,$0A
+00001EF0= 20 20 20 20 20 20 ...    904                   DC.B    '        :@@~      7#&B5YJJ???~^~~7YB@&? '
+00001F18= 0D 0A                    905                   DC.B   $0D,$0A
+00001F1A= 20 20 20 20 20 2E ...    906                   DC.B    '     .:^B@&      ?@&5~:::::::       J&@J'
+00001F42= 0D 0A                    907                   DC.B   $0D,$0A
+00001F44= 20 2E 35 23 26 40 ...    908                   DC.B    ' .5#&@@@@@J      B@GYJ!^^::::^^:::::~&&&'
+00001F6C= 0D 0A                    909                   DC.B   $0D,$0A
+00001F6E= 20 47 40 47 3A 2E ...    910                   DC.B    ' G@G:. !@@:      Y@BYYYY?7!!!~~~!!7?5&@B'
+00001F96= 0D 0A                    911                   DC.B   $0D,$0A
+00001F98= 2E 40 26 20 20 20 ...    912                   DC.B    '.@&    .@@.      :&@#G55YYYYYYY55PGB&&B.'
+00001FC0= 0D 0A                    913                   DC.B   $0D,$0A
+00001FC2= 37 40 42 20 20 20 ...    914                   DC.B    '7@B    ^@&        .?B#&&#######&&#B&@P  '
+00001FEA= 0D 0A                    915                   DC.B   $0D,$0A
+00001FEC= 47 40 42 20 20 20 ...    916                   DC.B    'G@B    ~@#            .::^~~~^::.  J@P  '
+00002014= 0D 0A                    917                   DC.B   $0D,$0A
+00002016= 26 40 47 20 20 20 ...    918                   DC.B    '&@G    ~@&                         ^@B  '
+0000203E= 0D 0A                    919                   DC.B   $0D,$0A
+00002040= 40 40 47 20 20 20 ...    920                   DC.B    '@@G    .@&                         7@B  ', 0  
+00002069                           921  
+00002069= 47 75 69 64 65 20 ...    922  GUIDE_NAME          DC.B    'Guide Gary',   0
+00002074= 20 20 20 20 20 20 ...    923  GUIDE            DC.B    '                .!5B&&&@&&#B5?!^             '
+000020A1= 0D 0A                    924                   DC.B   $0D,$0A
+000020A3= 20 20 20 20 20 20 ...    925                   DC.B    '            !5G#&#G?^.....^~?PB&&7           '
+000020D0= 0D 0A                    926                   DC.B   $0D,$0A
+000020D2= 20 20 20 20 20 20 ...    927                   DC.B    '           P@G!^.              ^@&:          '
+000020FF= 0D 0A                    928                   DC.B   $0D,$0A
+00002101= 20 20 20 20 20 20 ...    929                   DC.B    '          .@@^                  B@@&##P?:    '
+0000212E= 0D 0A                    930                   DC.B   $0D,$0A
+00002130= 20 20 20 20 20 2E ...    931                   DC.B    '     .~?PG#@@.                   B@#~!5#&&5. '
+0000215D= 0D 0A                    932                   DC.B   $0D,$0A
+0000215F= 20 20 5E 50 26 26 ...    933                   DC.B    '  ^P&&#G?P@@P                  :~P@@5   .!&@7'
+0000218C= 0D 0A                    934                   DC.B   $0D,$0A
+0000218E= 20 50 40 23 7E 2E ...    935                   DC.B    ' P@#~.   .P#&&#BP55J???JJY5GB#&&&BJ~      ?@@'
+000021BB= 0D 0A                    936                   DC.B   $0D,$0A
+000021BD= 23 40 47 20 20 20 ...    937                   DC.B    '#@G          .^~7JY5PPPPP5J?!^.        .!G@#7'
+000021EA= 0D 0A                    938                   DC.B   $0D,$0A
+000021EC= 47 40 23 7E 2E 20 ...    939                   DC.B    'G@#~.          ...:::^~!777???JY555PPB#&&5^  '
+00002219= 0D 0A                    940                   DC.B   $0D,$0A
+0000221B= 20 21 50 23 26 23 ...    941                   DC.B    ' !P#&##BBB##&####B&@@&#BBBBGG5YYYJJJ#@&:     '
+00002248= 0D 0A                    942                   DC.B   $0D,$0A
+0000224A= 20 20 20 20 3A 4A ...    943                   DC.B    '    :J#&@@@@7     &@#P!:::::::...   !&@J     '
+00002277= 0D 0A                    944                   DC.B   $0D,$0A
+00002279= 20 20 20 37 40 23 ...    945                   DC.B    '   7@#YJ?B@&      &@BPPY7~~^^^^^^^~~J&@!     '
+000022A6= 0D 0A                    946                   DC.B   $0D,$0A
+000022A8= 20 20 20 26 26 20 ...    947                   DC.B    '   &&    J@B      P@&GPPPPP5555555PG#@@^     '
+000022D5= 0D 0A                    948                   DC.B   $0D,$0A
+000022D7= 20 20 5E 40 50 20 ...    949                   DC.B    '  ^@P    P@5       5&@&&########&&&@@B:      '
+00002304= 0D 0A                    950                   DC.B   $0D,$0A
+00002306= 20 20 4A 40 59 20 ...    951                   DC.B    '  J@Y    B@?        .~?5GGBBBBGPY?~B@Y       '
+00002333= 0D 0A                    952                   DC.B   $0D,$0A
+00002335= 20 20 42 40 3F 20 ...    953                   DC.B    '  B@?    B@?                       Y@Y       '
+00002362= 0D 0A                    954                   DC.B   $0D,$0A
+00002364= 20 20 26 40 3F 20 ...    955                   DC.B    '  &@?    P@J                       J@Y       ', 0
+00002392                           956           
+00002392= 20 20 20 20 20 20 ...    957  KING             DC.B    '            P&G:          ..            '
+000023BA= 0D 0A                    958                   DC.B   $0D,$0A
+000023BC= 20 20 20 20 20 20 ...    959                   DC.B    '           :&#&&5.     .!P#G            '
+000023E4= 0D 0A                    960                   DC.B   $0D,$0A
+000023E6= 20 20 20 20 20 20 ...    961                   DC.B    '           ?&#JP&#?.:?G#&&&7            '
+0000240E= 0D 0A                    962                   DC.B   $0D,$0A
+00002410= 20 20 20 20 20 20 ...    963                   DC.B    '           B&G..7B&&&#5!P&#.            '
+00002438= 0D 0A                    964                   DC.B   $0D,$0A
+0000243A= 20 20 3A 47 47 50 ...    965                   DC.B    '  :GGPPYY?5&&?...:~?!...P&B             '
+00002462= 0D 0A                    966                   DC.B   $0D,$0A
+00002464= 20 20 20 7E 47 26 ...    967                   DC.B    '   ~G&&&###BG:...      .G&B             '
+0000248C= 0D 0A                    968                   DC.B   $0D,$0A
+0000248E= 20 20 20 20 20 3F ...    969                   DC.B    '     ?#&B55J^....::..:::G&#^.           '
+000024B6= 0D 0A                    970                   DC.B   $0D,$0A
+000024B8= 20 20 20 20 20 20 ...    971                   DC.B    '      :B&#P555PBB#BBBBB##&&@@#Y:        '
+000024E0= 0D 0A                    972                   DC.B   $0D,$0A
+000024E2= 20 20 20 20 20 20 ...    973                   DC.B    '       .B&#B&#5!^.     .::.:J&@@#^      '
+0000250A= 0D 0A                    974                   DC.B   $0D,$0A
+0000250C= 20 20 20 20 20 20 ...    975                   DC.B    '        .B&&5.      .^7JY555YP&@@@5^    '
+00002534= 0D 0A                    976                   DC.B   $0D,$0A
+00002536= 20 20 20 20 20 20 ...    977                   DC.B    '        .&@#      !#&&##BGGGGP55PB&@&G: '
+0000255E= 0D 0A                    978                   DC.B   $0D,$0A
+00002560= 20 20 20 20 20 20 ...    979                   DC.B    '        Y@@!     P@@#7::::::.      :G@&^'
+00002588= 0D 0A                    980                   DC.B   $0D,$0A
+0000258A= 20 20 3A 3F 47 23 ...    981                   DC.B    '  :?G#&@@@@     .@@#P?^:::^^^:::....~&@#'
+000025B2= 0D 0A                    982                   DC.B   $0D,$0A
+000025B4= 20 3F 40 26 4A 37 ...    983                   DC.B    ' ?@&J77J@@B     .&@#PP5J7~~^^^^^^^~!Y&@&'
+000025DC= 0D 0A                    984                   DC.B   $0D,$0A
+000025DE= 20 26 40 2E 20 20 ...    985                   DC.B    ' &@.    @@?      B@&BPPPPPP555555PPG#@@7'
+00002606= 0D 0A                    986                   DC.B   $0D,$0A
+00002608= 7E 40 23 20 20 20 ...    987                   DC.B    '~@#    .@@~      .G@@&&#BBBBBB##&&&&@#^ '
+00002630= 0D 0A                    988                   DC.B   $0D,$0A
+00002632= 35 40 42 20 20 20 ...    989                   DC.B    '5@B    .@@~        .75G##&&&&&#BG5?&@5  '
+0000265A= 0D 0A                    990                   DC.B   $0D,$0A
+0000265C= 23 40 50 20 20 20 ...    991                   DC.B    '#@P    .@@~                        B@G  '
+00002684= 0D 0A                    992                   DC.B   $0D,$0A
+00002686= 40 40 50 20 20 20 ...    993                   DC.B    '@@P    .@@~                        G@B  ', 0
+000026AF                           994  
+000026AF= 53 68 6F 70 20 4B ...    995  SHOP_KEEPER_NAME DC.B   'Shop Keeper Sam',0
+000026BF= 20 20 20 20 20 20 ...    996  SHOP_KEEPER      DC.B    '             .^JG&@@@@@@@@&BJ.               '
+000026EC= 0D 0A                    997                   DC.B   $0D,$0A
+000026EE= 20 20 20 20 20 20 ...    998                   DC.B    '         .7G&@@@@#PYJ??JYG#@@@7              '
+0000271B= 0D 0A                    999                   DC.B   $0D,$0A
+0000271D= 20 20 20 20 20 20 ...   1000                   DC.B    '        J@@@&P!.  .YY??JJ?J#&&&B^            '
+0000274A= 0D 0A                   1001                   DC.B   $0D,$0A
+0000274C= 20 20 20 20 20 20 ...   1002                   DC.B    '       .@@@7     :##?^^:^^~:^^5&#            '
+00002779= 0D 0A                   1003                   DC.B   $0D,$0A
+0000277B= 20 20 20 20 20 20 ...   1004                   DC.B    '        P@@5     G&5^..    ..:~#&7           '
+000027A8= 0D 0A                   1005                   DC.B   $0D,$0A
+000027AA= 20 20 20 20 20 20 ...   1006                   DC.B    '        ^@@&     !&B!:..   ...:Y&#           '
+000027D7= 0D 0A                   1007                   DC.B   $0D,$0A
+000027D9= 20 20 20 20 20 20 ...   1008                   DC.B    '         @@@.     #&?^:: ..    ^#&7          '
+00002806= 0D 0A                   1009                   DC.B   $0D,$0A
+00002808= 20 20 20 20 20 20 ...   1010                   DC.B    '         &@@.     Y&P???J?!::::^P&B          '
+00002835= 0D 0A                   1011                   DC.B   $0D,$0A
+00002837= 20 20 20 20 20 20 ...   1012                   DC.B    '         #@@?!YPB#@@@@@@@@@@@@@@@@@&B57:     '
+00002864= 0D 0A                   1013                   DC.B   $0D,$0A
+00002866= 20 20 20 20 20 20 ...   1014                   DC.B    '      .7P@@@@@@&BG55YJ?77~~^^~~~7JYPB&@@@P.  '
+00002893= 0D 0A                   1015                   DC.B   $0D,$0A
+00002895= 20 20 20 2E 59 26 ...   1016                   DC.B    '   .Y&@@@&G7: .^JG#&&@@@@&@&&B5!:      ^@@&  '
+000028C2= 0D 0A                   1017                   DC.B   $0D,$0A
+000028C4= 20 20 21 40 40 40 ...   1018                   DC.B    '  !@@@G^.    Y&@@&BJ!~:::^~75#@@@@B~   .@@@  '
+000028F1= 0D 0A                   1019                   DC.B   $0D,$0A
+000028F3= 20 7E 40 40 40 7E ...   1020                   DC.B    ' ~@@@~     .&@@Y.              .?#@@&7!@@@!  '
+00002920= 0D 0A                   1021                   DC.B   $0D,$0A
+00002922= 20 7E 40 40 40 47 ...   1022                   DC.B    ' ~@@@G!.  .&@@:        .:~7?55YYY5&@@@@@#:   '
+0000294F= 0D 0A                   1023                   DC.B   $0D,$0A
+00002951= 20 20 2E 3F 23 40 ...   1024                   DC.B    '  .?#@@@@&&@@!       7B&@&&&&########&&@&B7  '
+0000297E= 0D 0A                   1025                   DC.B   $0D,$0A
+00002980= 20 20 20 20 20 20 ...   1026                   DC.B    '      .^7B@@#      .#@@#J~^^^^^^.     .^5@@B.'
+000029AD= 0D 0A                   1027                   DC.B   $0D,$0A
+000029AF= 20 20 20 20 2E 3A ...   1028                   DC.B    '    .:~7?#@@7      B@&B5^::^^^^^:...    .5@@G'
+000029DC= 0D 0A                   1029                   DC.B   $0D,$0A
+000029DE= 20 20 59 26 40 40 ...   1030                   DC.B    '  Y&@@@@@@@@.      &@&PPY!^^::::^^^^^::::J@@&'
+00002A0B= 0D 0A                   1031                   DC.B   $0D,$0A
+00002A0D= 20 3F 40 26 5E 2E ...   1032                   DC.B    ' ?@&^.  .@@#       B@&GPPPPY?7!!~~~~!!7?YG&@&'
+00002A3A= 0D 0A                   1033                   DC.B   $0D,$0A
+00002A3C= 20 26 40 7E 20 20 ...   1034                   DC.B    ' &@~    .@@P       ~@@&BGPPPPPPPPPPPPPGG#&@&~'
+00002A69= 0D 0A                   1035                   DC.B   $0D,$0A
+00002A6B= 5E 40 40 2E 20 20 ...   1036                   DC.B    '^@@.    .@@?        !#@@&&##BBBBBB##&&&@@@P. '
+00002A98= 0D 0A                   1037                   DC.B   $0D,$0A
+00002A9A= 4A 40 40 2E 20 20 ...   1038                   DC.B    'J@@.    ^@@!          ^?PB#&&&&&&&&#BPJY@@7  '
+00002AC7= 0D 0A                   1039                   DC.B   $0D,$0A
+00002AC9= 42 40 40 20 20 20 ...   1040                   DC.B    'B@@     ^@@!                           .@@?  '
+00002AF6= 0D 0A                   1041                   DC.B   $0D,$0A
+00002AF8= 26 40 40 20 20 20 ...   1042                   DC.B    '&@@     ^@@!                            @@Y  ', 0
+00002B26                          1043      
+00002B26= 57 68 61 74 20 77 ...   1044  mainChoice      DC.B    'What would you like to do?'
+00002B40= 0D 0A                   1045                  DC.B    $0D,$0A
+00002B42= 31 29 20 47 6F 20 ...   1046                  DC.B    '1) Go to work and earn $20'
+00002B5C= 0D 0A                   1047                  DC.B    $0D,$0A
+00002B5E= 32 29 20 45 6E 74 ...   1048                  DC.B    '2) Enter the Town'
+00002B6F= 0D 0A                   1049                  DC.B    $0D,$0A
+00002B71= 33 29 20 53 6C 65 ...   1050                  DC.B    '3) Sleep and end the day'
+00002B89= 0D 0A                   1051                  DC.B    $0D,$0A
+00002B8B= 45 6E 74 65 72 20 ...   1052                  DC.B    'Enter your choice) ',0
+00002B9F                          1053  
+00002B9F= 5A 7A 5A 7A 5A 7A ...   1054  sleep_string    DC.B    'ZzZzZzZzZz',0
+00002BAA                          1055  
+00002BAA= 57 68 61 74 20 77 ...   1056  cityChoice      DC.B    'What would you like to do in the town?'
+00002BD0= 0D 0A                   1057                  DC.B    $0D,$0A
+00002BD2= 31 29 20 56 69 73 ...   1058                  DC.B    '1) Visit the Building Shop'
+00002BEC= 0D 0A                   1059                  DC.B    $0D,$0A
+00002BEE= 32 29 20 45 78 70 ...   1060                  DC.B    '2) Explore the Town'
+00002C01= 0D 0A                   1061                  DC.B    $0D,$0A
+00002C03= 33 29 20 4D 61 6E ...   1062                  DC.B    '3) Manage your Buildings'
+00002C1B= 0D 0A                   1063                  DC.B    $0D,$0A
+00002C1D= 34 29 20 45 78 69 ...   1064                  DC.B    '4) Exit the Town'
+00002C2D= 0D 0A                   1065                  DC.B    $0D,$0A
+00002C2F= 45 6E 74 65 72 20 ...   1066                  DC.B    'Enter your choice) ',0
+00002C43                          1067  
+00002C43                          1068  
+00002C43= 48 65 6C 6C 6F 20 00    1069  shop_string_1           DC.B    'Hello ',0
+00002C4A= 2C 20 79 6F 75 20 ...   1070  shop_string_2           DC.B    ', you are free to have a look around my store.'
+00002C78= 0D 0A                   1071                          DC.B    $0D,$0A
+00002C7A= 31 29 20 42 72 6F ...   1072                          DC.B    '1) Browse around the shop'
+00002C93= 0D 0A                   1073                          DC.B    $0D,$0A
+00002C95= 32 29 20 53 65 6C ...   1074                          DC.B    '2) Sell items to the shop'
+00002CAE= 0D 0A                   1075                          DC.B    $0D,$0A
+00002CB0= 33 29 20 45 78 69 ...   1076                          DC.B    '3) Exit the Shop'
+00002CC0= 0D 0A                   1077                          DC.B    $0D,$0A
+00002CC2= 45 6E 74 65 72 20 ...   1078                          DC.B    'Enter your choice) ',0
+00002CD6                          1079  
+00002CD6                          1080                          
+00002CD6= 54 68 65 72 65 20 ...   1081  shop_browse_string      DC.B    'There is a selection of items that caught your interest:'
+00002D0E= 0D 0A                   1082                          DC.B    $0D,$0A
+00002D10= 31 29 20 41 6C 61 ...   1083                          DC.B    '1) Alarm Clock : $20'
+00002D24= 0D 0A                   1084                          DC.B    $0D,$0A
+00002D26= 32 29 20 57 61 74 ...   1085                          DC.B    '2) Water Mill : $50'
+00002D39= 0D 0A                   1086                          DC.B    $0D,$0A
+00002D3B= 33 29 20 53 6F 6C ...   1087                          DC.B    '3) Solar Panel : $100'
+00002D50= 0D 0A                   1088                          DC.B    $0D,$0A
+00002D52= 34 29 20 53 77 6F ...   1089                          DC.B    '4) Sword : $50'
+00002D60= 0D 0A                   1090                          DC.B    $0D,$0A
+00002D62= 35 29 20 43 6F 66 ...   1091                          DC.B    '5) Coffee : $10'
+00002D71= 0D 0A                   1092                          DC.B    $0D,$0A
+00002D73= 36 29 20 45 78 69 ...   1093                          DC.B    '6) Exit Browse'
+00002D81= 0D 0A                   1094                          DC.B    $0D,$0A
+00002D83= 45 6E 74 65 72 20 ...   1095                          DC.B    'Enter your choice) ',0
+00002D97                          1096  
+00002D97                          1097  
+00002D97= 59 6F 75 20 68 61 ...   1098  shop_unable_buy_string_1: DC.B    'You have ',0
+00002DA1= 20 63 61 73 68 2E ...   1099  shop_unable_buy_string_2: DC.B    ' cash. You need ',0
+00002DB2= 20 6D 6F 72 65 20 ...   1100  shop_unable_buy_string_3: DC.B    ' more cash to purchase this item.',0
+00002DD4                          1101  
+00002DD4= 59 6F 75 20 61 6C ...   1102  shop_already_have_string:  DC.B    'You already have this item.',0
+00002DF0                          1103  
+00002DF0= 57 65 6C 63 6F 6D ...   1104  shop_intro_string_1           DC.B    'Welcome to my Shop, my name is ',0
+00002E10= 21                      1105  shop_intro_string_2           DC.B    '!' 
+00002E11= 0D 0A                   1106                                DC.B    $0D,$0A
+00002E13= 49 20 73 65 6C 6C ...   1107                                DC.B    'I sell items that could be used to reduce your CO2 output.',0
+00002E4E                          1108  
+00002E4E= 41 72 65 20 79 6F ...   1109  shop_confirm_string DC.B    'Are you sure that you want to buy this item for $',0
+00002E80= 0D 0A                   1110  YES_NO              DC.B    $0D,$0A
+00002E82= 0D 09                   1111                      DC.B    $0D,$09
+00002E84= 31 29 20 59 65 73       1112                      DC.B    '1) Yes'
+00002E8A= 0D 0A                   1113                      DC.B    $0D,$0A
+00002E8C= 0D 09                   1114                      DC.B    $0D,$09
+00002E8E= 32 29 20 4E 6F          1115                      DC.B    '2) No'
+00002E93= 0D 0A                   1116                      DC.B    $0D,$0A
+00002E95= 45 6E 74 65 72 20 ...   1117                      DC.B    'Enter your choice) ',0
+00002EA9= 54 68 61 6E 6B 20 ...   1118  shop_thank_string   DC.B    'Thank you for buying this item!',0
+00002EC9= 53 6F 72 72 79 20 ...   1119  shop_unable_string   DC.B    'Sorry I am currently not buying goods from individuals!',0
+00002F01                          1120  
+00002F01= 54 4F 44 4F 3A 20 ...   1121  exploreChoice   DC.B    'TODO: EXPLORE', 0
+00002F0F= 54 4F 44 4F 3A 20 ...   1122  manageChoice    DC.B    'TODO: MANAGE', 0
+00002F1C= 57 6F 72 6B 69 6E ...   1123  eventText       DC.B    'Working', 0 
+00002F24= 59 6F 75 20 61 72 ...   1124  work_tired_string   DC.B    'You are too tired to work right now',0
+00002F48= 50 72 65 73 73 20 ...   1125  PAUSE           DC.B    'Press enter to continue . . .', 0
+00002F66                          1126  
+00002F66                          1127  name            DS.W    30  *Max length of name can be 30
+00002FA2                          1128  money           DS.W    1   *PLAYER money in hundreds
+00002FA4                          1129  day             DS.W    1   *DAYS PASSED
+00002FA6                          1130  
+00002FA6                          1131  dayCounter     DS.W    1   *INCREASED FROM 3 TO 4 IF ALARM
+00002FA8                          1132  
+00002FA8                          1133  temperature     DS.W    1   * Default = 15 C
+00002FAA                          1134  CO2_level       DS.W    1   * Default = 400 ppm or 0.0375 per CO2
+00002FAC                          1135  
+00002FAC                          1136  * Amount
+00002FAC                          1137  waterMillCount    DS.W    1
+00002FAE                          1138  solarPanelCount   DS.W    1
+00002FB0                          1139  * Booleans
+00002FB0                          1140  visitedShop    DS.B    1   *Check if you visited shop before
+00002FB1                          1141  hasAlarm       DS.B    1
+00002FB2                          1142  hasSword       DS.B    1
+00002FB3                          1143  hasCoffee      DS.B    1
+00002FB4                          1144  *
+00002FB4                          1145  
+00002FB4                          1146  *-------------------------------------------------------
+00002FB4                          1147  *VALIDATION VALUES TO BE USED
+00002FB4                          1148  *-------------------------------------------------------
+00002FB4  =00000014               1149  SALARY    EQU 20
+00002FB4  =00000032               1150  STARTING_CASH     EQU 50
+00002FB4  =00002710               1151  MILLION  EQU 10000
+00002FB4  =000003E8               1152  HUNDREDTHOUSAND EQU 1000
+00002FB4  =00000064               1153  SECOND  EQU 100
+00002FB4  =00000003               1154  DEFAULT_dayCounter EQU 3
+00002FB4  =00000014               1155  CARBON_PRODUCED_DAILY EQU 20
+00002FB4                          1156  
+00002FB4                          1157  * ITEMS
+00002FB4  =00000014               1158  ALARM_COST          EQU 20
+00002FB4  =00000032               1159  WATER_MILL_COST     EQU 50
+00002FB4  =00000064               1160  SOLAR_PANEL_COST    EQU 100
+00002FB4  =00000032               1161  SWORD_COST          EQU 50
+00002FB4  =0000000A               1162  COFFEE_COST          EQU 10
+00002FB4                          1163      END START
 
 No errors detected
 No warnings generated
@@ -1161,126 +1173,128 @@ No warnings generated
 SYMBOL TABLE INFORMATION
 Symbol-name         Value
 -------------------------
-ALARM_CLOCK         1610
+ALARM_CLOCK         160A
 ALARM_COST          14
-ALREADY_HAVE_ITEM   15FA
-ATTEMPT_BUY_SINGLE_ITEM  15D4
-BROWSE_SHOP         1524
-CITY                13DA
-CITYCHOICE          2B7D
+ALREADY_HAVE_ITEM   15F4
+ATTEMPT_BUY_SINGLE_ITEM  15CE
+BROWSE_SHOP         1526
+CARBON_PRODUCED_DAILY  14
+CITY                13DC
+CITYCHOICE          2BAA
 CLEAR_INPUT_NAME    108A
-CLEAR_SCREEN        16CC
-CO2_LEVEL           2F1E
-COFFEE              16A6
-CONFIRM_SHOP        157C
-CRLF                178E
-DAY                 2F18
-DAY_COUNTER         2F1A
-DAY_LABEL           1DFE
-DEFAULT_DAY_COUNTER  3
-DISPLAY             12EA
-DISPLAY_END_DAY     1290
-DOT                 1E12
-DOT_NEXT            176E
-DOT_NEXT_PRINT      1764
+CLEAR_SCREEN        16F8
+CO2_LEVEL           2FAA
+COFFEE              16A0
+COFFEE_COST         A
+CONFIRM_SHOP        157A
+CRLF                17BC
+DAY                 2FA4
+DAYCOUNTER          2FA6
+DAY_LABEL           1E2C
+DEFAULT_DAYCOUNTER  3
+DISPLAY             12EC
+DISPLAY_END_DAY     1292
+DOT                 1E40
+DOT_NEXT            179C
+DOT_NEXT_PRINT      1792
 END                 101C
-ENDL                1708
+ENDL                1734
 END_DAY             124E
-ENTERNAME           1A20
-EVENTTEXT           2E90
-EXPLORE             16A8
-EXPLORECHOICE       2E75
-FIRST_TIME_SHOP     148E
-GAME_LINES          1D48
-GAME_LOOP           12B8
-GET_MILLISECONDS    1786
-GUIDE               2046
+ENTERNAME           1A4E
+EVENTTEXT           2F1C
+EXPLORE             16D4
+EXPLORECHOICE       2F01
+FIRST_TIME_SHOP     1490
+GAME_LINES          1D76
+GAME_LOOP           12BA
+GET_MILLISECONDS    17B4
+GUIDE               2074
 GUIDE_1             11EA
-GUIDE_1_STRING_1    1C8A
-GUIDE_1_STRING_2    1CBF
-GUIDE_1_STRING_3    1CC5
-GUIDE_NAME          203B
-HAS_ALARM           2F25
-HAS_SWORD           2F26
+GUIDE_1_STRING_1    1CB8
+GUIDE_1_STRING_2    1CED
+GUIDE_1_STRING_3    1CF3
+GUIDE_NAME          2069
+HASALARM            2FB1
+HASCOFFEE           2FB3
+HASSWORD            2FB2
 HUNDREDTHOUSAND     3E8
 INITIALIZE          1020
 INPUT_NAME          108E
 INPUT_NAME_LENGTH_ERROR  10F6
 INPUT_NAME_LOOP     10C0
 INPUT_NAME_MENU_ERROR  110E
-INPUT_NUM           16E8
-INTRO_STORY_STRING_1  1B5B
-INTRO_STORY_STRING_2  1B9C
-INTRO_STORY_STRING_3  1C0C
-INTRO_STORY_STRING_4  1C5E
-JOB_LEVEL           2F28
-JOB_TYPE            2F27
-KING                2364
-LINE                1CF7
-MAINCHOICE          2AF8
-MANAGE              16BA
-MANAGECHOICE        2E83
+INPUT_NUM           1714
+INTRO_STORY_STRING_1  1B89
+INTRO_STORY_STRING_2  1BCA
+INTRO_STORY_STRING_3  1C3A
+INTRO_STORY_STRING_4  1C8C
+KING                2392
+LINE                1D25
+MAINCHOICE          2B26
+MANAGE              16E6
+MANAGECHOICE        2F0F
 MILLION             2710
-MONEY               2F16
-MONEY_LABEL         1DF6
-NAME                2EDA
-NAME_CONFIRMATION_1  1A39
-NAME_CONFIRMATION_2  1A48
-NAME_CONFIRMATION_FAIL  1AA5
-NAME_LABEL          1DEF
-NAME_LENGTH_FAIL    1A7B
-PAUSE               2EBC
-PRINT               16D8
-PRINT_DOTS          175E
-PRINT_INT           16E0
-PURCHASED_ITEM_SHOP  15B4
+MONEY               2FA2
+MONEY_LABEL         1E24
+NAME                2F66
+NAME_CONFIRMATION_1  1A67
+NAME_CONFIRMATION_2  1A76
+NAME_CONFIRMATION_FAIL  1AD3
+NAME_LABEL          1E1D
+NAME_LENGTH_FAIL    1AA9
+PAUSE               2F48
+PRINT               1704
+PRINT_DOTS          178C
+PRINT_INT           170C
+PURCHASED_ITEM_SHOP  15B2
 SALARY              14
 SECOND              64
-SELL_ITEM_SHOP      16A6
-SHOP                1414
-SHOP_ALREADY_HAVE_STRING  2D80
-SHOP_BROWSE_STRING  2C82
-SHOP_CONFIRM_STRING  2DFA
-SHOP_INTRO_STRING_1  2D9C
-SHOP_INTRO_STRING_2  2DBC
-SHOP_KEEPER         2691
-SHOP_KEEPER_NAME    2681
-SHOP_STRING_1       2C16
-SHOP_STRING_2       2C24
-SHOP_THANK_STRING   2E55
-SHOP_UNABLE_BUY_STRING_1  2D43
-SHOP_UNABLE_BUY_STRING_2  2D4D
-SHOP_UNABLE_BUY_STRING_3  2D5E
-SHOW_ASCII          1730
-SLEEP_STRING        2B72
-SOLAR_PANEL         1658
+SELL_ITEM_SHOP      16BA
+SHOP                1416
+SHOP_ALREADY_HAVE_STRING  2DD4
+SHOP_BROWSE_STRING  2CD6
+SHOP_CONFIRM_STRING  2E4E
+SHOP_INTRO_STRING_1  2DF0
+SHOP_INTRO_STRING_2  2E10
+SHOP_KEEPER         26BF
+SHOP_KEEPER_NAME    26AF
+SHOP_STRING_1       2C43
+SHOP_STRING_2       2C4A
+SHOP_THANK_STRING   2EA9
+SHOP_UNABLE_BUY_STRING_1  2D97
+SHOP_UNABLE_BUY_STRING_2  2DA1
+SHOP_UNABLE_BUY_STRING_3  2DB2
+SHOP_UNABLE_STRING  2EC9
+SHOW_ASCII          175E
+SLEEP_STRING        2B9F
+SOLARPANELCOUNT     2FAE
+SOLAR_PANEL         1652
 SOLAR_PANEL_COST    64
-SOLAR_PANEL_COUNT   2F22
-SPEAK               1742
-SPEAKING_ASCII      171E
+SPEAK               1770
+SPEAKING_ASCII      174A
 SPLASH              1072
 START               1000
-STARTING_CASH       C8
+STARTING_CASH       32
 STORY               11B4
-SWORD               168C
+SWORD               1686
 SWORD_COST          32
-SYSTEM_PAUSE        16F0
-TALK_1              1E14
-TALK_2              1E18
-TEMPERATURE         2F1C
-TEMPERATURE_LABEL   1E04
-TIRED_WORK          13C4
-TITLE               1791
-UNABLE_BUY          14EC
-VISITED_SHOP        2F24
-WATER_MILL          1628
+SYSTEM_PAUSE        171C
+TALK_1              1E42
+TALK_2              1E46
+TEMPERATURE         2FA8
+TEMPERATURE_LABEL   1E32
+TIRED_WORK          13C6
+TITLE               17BF
+UNABLE_BUY          14EE
+VISITEDSHOP         2FB0
+WATERMILLCOUNT      2FAC
+WATER_MILL          1622
 WATER_MILL_COST     32
-WATER_MILL_COUNT    2F20
 WELCOME             1150
-WELCOME_STRING_1    1AC6
-WELCOME_STRING_2    1AE9
-WELCOME_STRING_3    1B4D
-WORK                1380
-WORK_TIRED_STRING   2E98
-YES_NO              2E2C
-YOU                 1E1A
+WELCOME_STRING_1    1AF4
+WELCOME_STRING_2    1B17
+WELCOME_STRING_3    1B7B
+WORK                1382
+WORK_TIRED_STRING   2F24
+YES_NO              2E80
+YOU                 1E48

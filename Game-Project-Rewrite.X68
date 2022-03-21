@@ -21,23 +21,24 @@ END:
 *------------------INITIALIZE SUBROUTINE----------------
 *-------------------------------------------------------
 INITIALIZE:
-	MOVE.W  #STARTING_CASH,MONEY
-	MOVE.W  #1,     DAY
+	MOVE.W  #STARTING_CASH,money
+	MOVE.W  #1,     day
 	
-	MOVE.W  #DEFAULT_DAY_COUNTER,     DAY_COUNTER    
+	MOVE.W  #DEFAULT_DAY_COUNTER,     dayCounter  
 	
 	* Initalize game
-    MOVE.W  #15,    TEMPERATURE
-    MOVE.W  #400,    CO2_LEVEL
+    MOVE.W  #15,    temperature
+    MOVE.W  #400,    CO2_level
     
     * Initalize booleans
-    MOVE.B  #0,     VISITED_SHOP
-	MOVE.B  #0,     HAS_ALARM
-	MOVE.B  #0,     HAS_SWORD
+    MOVE.B  #0,     visitedShop
+	MOVE.B  #0,     hasAlarm
+	MOVE.B  #0,     hasSword
+	MOVE.B  #0,     hasCoffee
 	
 	* Initalize counts
-	MOVE.W  #0,     WATER_MILL_COUNT
-	MOVE.W  #0,     SOLAR_PANEL_COUNT
+	MOVE.W  #0,     waterMillCount
+	MOVE.W  #0,     solarPanelCount  
     RTS
 
 *-------------------------------------------------------
@@ -54,7 +55,7 @@ SPLASH:
 	RTS
 
 *-------------------------------------------------------
-*-------------------NAME INPUT SUBROUTINE---------------
+*-------------------name INPUT SUBROUTINE---------------
 *-------------------------------------------------------
 CLEAR_INPUT_NAME:
     BSR     CLEAR_SCREEN
@@ -66,7 +67,7 @@ INPUT_NAME:
 	BSR	 	ENDL
 	
 	MOVE.B  #2,D0
-	LEA	 	NAME, A1	*Load Name address to A1 to be able to store name
+	LEA	 	name, A1	*Load Name address to A1 to be able to store name
 	TRAP	#15		    *Input Name
 	BSR	 	ENDL
 
@@ -80,7 +81,7 @@ INPUT_NAME_LOOP:
 	LEA	 	name_confirmation_1, A1
 	BSR     PRINT
 	
-	LEA	 	NAME, A1
+	LEA	 	name, A1
 	BSR     PRINT
 	
 	LEA	 	name_confirmation_2, A1
@@ -122,7 +123,7 @@ INPUT_NAME_MENU_ERROR:
 	BSR	 	PRINT
 	BSR	 	ENDL
 	
-	LEA	 	NAME, A1
+	LEA	 	name, A1
 	BSR     PRINT
 	
     BSR	 	ENDL
@@ -138,7 +139,7 @@ WELCOME:
 	LEA	 	welcome_string_1,A1
 	BSR     PRINT
 	
-	LEA	 	NAME,A1
+	LEA	 	name,A1
 	BSR     PRINT
 	
 	LEA	 	Dot, A1
@@ -172,9 +173,10 @@ WELCOME:
 *-------------------STORY SUBROUTINE--------------------
 *-------------------------------------------------------
 STORY:
-    LEA     NAME, A2    *Load name for SPEAKING_ASCII
+    LEA     name, A2    *Load name for SPEAKING_ASCII
     LEA     YOU,  A4    *Load Ascii for You
     
+    * Intro sequence of messages
     LEA     intro_story_string_1, A3
     BSR     SPEAKING_ASCII
     
@@ -186,6 +188,8 @@ STORY:
     
     LEA     intro_story_string_4, A3
     BSR     SPEAKING_ASCII
+    *
+
     RTS
 
 *-------------------------------------------------------
@@ -226,24 +230,37 @@ GUIDE_1:
 	BSR	 	SYSTEM_PAUSE
 
     RTS
+*-------------------------------------------------------
+*--------------------ADD_DAY_COUNTER--------------------
+*-----------------[D1: boolean, D2:buff]---------------- 
+*Checks if D1 is true and add day counter buff to day counter
+ADD_DAY_COUNTER:
+    CMP     #1,     D1
+    BNE     ADD_DAY_COUNTER_END
+    ADD.W   D2, dayCounter
+ADD_DAY_COUNTER_END:
+    RTS
 END_DAY:
     BSR     CLEAR_SCREEN
-    ADD.W   #1, DAY     *Increase day by 1
-    ADD.W   #12, CO2_LEVEL  * Increase CO2 level by 12 so harder and faster
+    ADD.W   #1, day     *Increase day by 1
+    ADD.W   #CARBON_PRODUCED_DAILY, CO2_level  * Increase CO2 level by CARBON_PRODUCED_DAILY so harder and faster
     
-    * Equ to get temp : co2 * 0.0375
+    * Equation to get temp : co2 * 0.0375
     MOVE.L  #375, D1
-    MULU.W  (CO2_LEVEL), D1
+    MULU.W  (CO2_level), D1
 
     DIVU.W  #10000, D1
-    MOVE.W  D1, TEMPERATURE
+    MOVE.W  D1, temperature
     
-    MOVE.W  #DEFAULT_DAY_COUNTER,DAY_COUNTER  *Increase reset day counter
+    MOVE.W  #DEFAULT_DAY_COUNTER,dayCounter  *Increase reset day counter
     
-    MOVE.B  (HAS_ALARM), D1
-    CMP     #1,     D1 * Has alarm
-    BNE     DISPLAY_END_DAY * No = skip increase day counter
-    ADD.W   #1, DAY_COUNTER
+    MOVE.B  (hasAlarm), D1
+    MOVE.W  #ALARM_DAY_COUNTER_BUFF, D2
+    BSR     ADD_DAY_COUNTER
+    
+    MOVE.B  (hasCoffee), D1
+    MOVE.W  #COFFEE_DAY_COUNTER_BUFF, D2
+    BSR     ADD_DAY_COUNTER
 DISPLAY_END_DAY:
     LEA     YOU,  A4    *Load Ascii for Shop keeper
     BSR     SHOW_ASCII
@@ -259,7 +276,7 @@ DISPLAY_END_DAY:
 	
 	BSR	 	SYSTEM_PAUSE
 *-------------------------------------------------------
-*----------------GAME_LOOP (MAIN LOOP)-------------------
+*----------------GAME_LOOP (MAIN LOOP)------------------
 *------------------------------------------------------- 
 GAME_LOOP:
     BSR     CLEAR_SCREEN
@@ -287,54 +304,54 @@ DISPLAY:
     LEA 	GAME_LINES, A1
 	BSR	 	PRINT
 	
-	MOVE.W  #$0201,  D1  *Move text cursor to pos
+	MOVE.W  #$0201,  D1  *Move text cursor to text position
 	MOVE    #11,    D0
 	TRAP    #15
 	
 	* Display Name
 	LEA     NAME_LABEL, A1
 	BSR     PRINT
-	LEA     NAME, A1
+	LEA     name, A1
 	BSR     PRINT
 	* ----------
 	BSR	 	ENDL
 	
-	MOVE.W  #$0202,  D1  *Move text cursor to pos
+	MOVE.W  #$0202,  D1  *Move text cursor to text position
 	MOVE    #11,    D0
 	TRAP    #15
 
-	* Display MONEY
+	* Display money
 	LEA     MONEY_LABEL, A1
 	BSR     PRINT
-	MOVE.W  (MONEY), D1
+	MOVE.W  (money), D1
 	BSR     PRINT_INT
 	* ----------
 	
-	MOVE.W  #$3501,  D1  *Move text cursor to pos
+	MOVE.W  #$3501,  D1  *Move text cursor to text position
 	MOVE    #11,    D0
 	TRAP    #15
 	
 	* Display Day
 	LEA     DAY_LABEL, A1
 	BSR     PRINT
-	MOVE.W  (DAY), D1
+	MOVE.W  (day), D1
 	BSR     PRINT_INT
 	* ----------
     BSR	 	ENDL
 
-	MOVE.W  #$3502,  D1  *Move text cursor to pos
+	MOVE.W  #$3502,  D1  *Move text cursor to text position
 	MOVE    #11,    D0
 	TRAP    #15
 	
-    * Display Temperature
-	LEA     TEMPERATURE_LABEL, A1
+    * Display temperature
+	LEA     temperature_LABEL, A1
 	BSR     PRINT
-	MOVE.W  (TEMPERATURE), D1
+	MOVE.W  (temperature), D1
 	BSR     PRINT_INT
 	* ----------
 
     * Reset cursor pos back to normal
-    MOVE.W  #$0004,  D1  *Move text cursor to pos
+    MOVE.W  #$0004,  D1
 	MOVE    #11,    D0
 	TRAP    #15
 
@@ -346,26 +363,25 @@ DISPLAY:
 WORK:
     BSR     CLEAR_SCREEN
 	
-	*if (day_counter - 2 < 0) = tired
-	MOVE.W  (DAY_COUNTER),  D1
+	*if (dayCounter - 2 < 0) = tired
+	MOVE.W  (dayCounter),  D1
 	SUB     #2, D1
 	BMI     TIRED_WORK
 
 	CMP     #0, D1
     BLS     TIRED_WORK
 
-	MOVE.W  D1, DAY_COUNTER
+	MOVE.W  D1, dayCounter
     BSR     PRINT_INT
 
     LEA 	eventText, A1
 	BSR	 	PRINT
 	
-	ADD.W   #SALARY, MONEY
+	ADD.W   #SALARY, money
 	MOVE.B  #3,     D4
 	BSR     PRINT_DOTS
 	
 	BSR	 	SYSTEM_PAUSE
-	
 	
     BRA GAME_LOOP
 TIRED_WORK:
@@ -405,7 +421,7 @@ CITY:
 SHOP:
     BSR     CLEAR_SCREEN
     
-    CMP.B   #0,   VISITED_SHOP
+    CMP.B   #0,   visitedShop
     BEQ     FIRST_TIME_SHOP
 
     LEA     SHOP_KEEPER,      A4
@@ -422,7 +438,7 @@ SHOP:
     LEA     shop_string_1, A1
     BSR     PRINT
     
-    LEA     NAME, A1
+    LEA     name, A1
     BSR     PRINT
     
     LEA     TALK_2, A1
@@ -443,7 +459,7 @@ SHOP:
 	
 	BRA	 	SHOP
 FIRST_TIME_SHOP:
-    MOVE.B    #1, VISITED_SHOP
+    MOVE.B    #1, visitedShop
 
     *INTRODUCE
     LEA     SHOP_KEEPER,  A4    *Load Ascii for Shop keeper
@@ -481,7 +497,7 @@ UNABLE_BUY:
     LEA     shop_unable_buy_string_1, A1
     BSR     PRINT
     
-    MOVE.W  (MONEY),    D1
+    MOVE.W  (money),    D1
     BSR     PRINT_INT
     
     LEA     shop_unable_buy_string_2, A1
@@ -498,8 +514,6 @@ UNABLE_BUY:
     BSR     CLEAR_SCREEN
 BROWSE_SHOP:  
     BSR     CLEAR_SCREEN
-    
-    BSR     DISPLAY
     
     LEA     SHOP_KEEPER,  A4    *Load Ascii for Shop keeper
     BSR     SHOW_ASCII
@@ -533,13 +547,16 @@ BROWSE_SHOP:
 CONFIRM_SHOP:       
     BSR CLEAR_SCREEN
     BSR DISPLAY
-
+    
+    * Ask
     LEA shop_confirm_string, A1
     BSR PRINT
     
+    * Cost
     MOVE.W  D2, D1
     BSR PRINT_INT
     
+    * Yes or No
     LEA YES_NO, A1
     BSR PRINT
     
@@ -554,9 +571,7 @@ CONFIRM_SHOP:
 *-------------------------------------------------------
 *-----------PURCHASED_ITEM_SHOP SUBROUTINE--------------
 *-------------------------------------------------------
-PURCHASED_ITEM_SHOP:
-    BSR     CLEAR_SCREEN
-    
+PURCHASED_ITEM_SHOP:  
     LEA     SHOP_KEEPER_NAME, A2
     LEA     shop_thank_string, A3
     LEA     SHOP_KEEPER, A4
@@ -574,12 +589,14 @@ ATTEMPT_BUY_SINGLE_ITEM:
     MOVE.B  (A1), D1
     CMP.B   #0, D1
     BNE     ALREADY_HAVE_ITEM
-
-    MOVE.W  (MONEY),  D1
+    
+    * Check if able to afford
+    MOVE.W  (money),  D1
 	SUB.W   D2, D1
 	BMI     UNABLE_BUY
 	
-    MOVE.W  D1, MONEY
+	* Remove money and set boolean to true
+    MOVE.W  D1, money
     MOVE.B  #1, (A1)
    
     BSR     PURCHASED_ITEM_SHOP
@@ -596,24 +613,28 @@ ALARM_CLOCK:
     BSR     CLEAR_SCREEN
     BSR     ENDL
     
+    * Ask for confirmation
     MOVE.W  #ALARM_COST, D2
     BSR     CONFIRM_SHOP
     
-    LEA     HAS_ALARM, A1
+    LEA     hasAlarm, A1
     BRA     ATTEMPT_BUY_SINGLE_ITEM
 WATER_MILL:
     BSR     CLEAR_SCREEN
     BSR     ENDL
     
+    * Ask for confirmation
     MOVE.W  #WATER_MILL_COST, D2
     BSR     CONFIRM_SHOP
     
-    MOVE.W  (MONEY),  D1
+    * Check if able to afford item
+    MOVE.W  (money),  D1
 	SUB.W   D2, D1
 	BMI     UNABLE_BUY
 	
-    MOVE.W  D1, MONEY
-    ADD.W   #1, WATER_MILL_COUNT
+	* Remove money and increment count
+    MOVE.W  D1, money
+    ADD.W   #1, waterMillCount
    
     BSR     PURCHASED_ITEM_SHOP
     
@@ -622,16 +643,19 @@ SOLAR_PANEL:
     BSR     CLEAR_SCREEN
     BSR     ENDL
     
+    * Ask for confirmation
     MOVE.W  #SOLAR_PANEL_COST, D2
     BSR     CONFIRM_SHOP
     
-    MOVE.W  (MONEY),  D1
+    * Check if able to afford item
+    MOVE.W  (money),  D1
     MOVE.W  #SOLAR_PANEL_COST, D2
 	SUB.W   D2, D1
 	BMI     UNABLE_BUY
 	
-    MOVE.W  D1, MONEY
-    ADD.W  #1,  SOLAR_PANEL_COUNT
+	* Remove money and increment count
+    MOVE.W  D1, money
+    ADD.W  #1,  solarPanelCount
     
     BSR     PURCHASED_ITEM_SHOP
     
@@ -641,16 +665,28 @@ SWORD:
     BSR     ENDL
     
     * Confirm if player wants to buy sword
-    MOVE.W  #SWORD_COST, D2
+    MOVE.W  #hasSword, D2
     BSR     CONFIRM_SHOP
-   
-    LEA     HAS_SWORD, A1
+    
+    LEA     hasSword, A1
     BRA     ATTEMPT_BUY_SINGLE_ITEM
 COFFEE:
-
+    BSR     CLEAR_SCREEN
+    BSR     ENDL
+    
+    * Confirm if player wants to buy coffee
+    MOVE.W  #COFFEE_COST, D2
+    BSR     CONFIRM_SHOP
+    
+    LEA     hasCoffee, A1
+    BRA     ATTEMPT_BUY_SINGLE_ITEM
 SELL_ITEM_SHOP:
+    LEA     SHOP_KEEPER_NAME, A2
+    LEA     shop_unable_string, A3
+    LEA     SHOP_KEEPER, A4
 
-    BRA     SELL_ITEM_SHOP
+    BSR     SPEAKING_ASCII
+    BRA     SHOP
 *-------------------------------------------------------
 *--------------------EXPLORE SUBROUTINE-----------------
 *-------------------------------------------------------
@@ -711,7 +747,7 @@ SYSTEM_PAUSE:
 	LEA		 PAUSE, A1   *DISPLAY PAUSE MESSAGE
 	BSR		 PRINT		  
 	MOVE.B  #4, D0
-	TRAP	#15		 *ASK FOR NUMBER
+	TRAP	#15		 *ASK FOR NUMBER but dont use number
 	BSR		ENDL
 	RTS
 	
@@ -729,7 +765,9 @@ ENDL:
 *-------------------------------------------------------
 *--------------SPEAKING_ASCII SUBROUTINE----------------
 *---------[A1,name: A2, text: A3, ascii: A4]------------
+*    Used when a character is speaking a dialogue
 SPEAKING_ASCII:
+    BSR     CLEAR_SCREEN
     BSR     SHOW_ASCII
     * TALK ABOUT STORY
     BSR     ENDL
@@ -875,7 +913,7 @@ GAME_LINES      DC.B    '=======================================================
 NAME_LABEL          DC.B    'Name: ',0
 MONEY_LABEL          DC.B    'Money: ',0
 DAY_LABEL           DC.B    'Day: ',0
-TEMPERATURE_LABEL   DC.B    'Temperature: ',0
+temperature_LABEL   DC.B    'temperature: ',0
 	    
 Dot  		        DC.B	'.',0
 TALK_1              DC.B    ': "',0
@@ -1054,8 +1092,9 @@ cityChoice		DC.B	'What would you like to do in the town?'
                 DC.B	'Enter your choice) ',0
 
 
-shop_string_1           DC.B    'Welcome back ',0
-shop_string_2           DC.B	$0D,$0A
+shop_string_1           DC.B    'Hello ',0
+shop_string_2           DC.B    ', you are free to have a look around my store.'
+                        DC.B	$0D,$0A
                         DC.B	'1) Browse around the shop'
                         DC.B	$0D,$0A
                         DC.B	'2) Sell items to the shop'
@@ -1103,6 +1142,7 @@ YES_NO              DC.B	$0D,$0A
                     DC.B	$0D,$0A
                     DC.B	'Enter your choice) ',0
 shop_thank_string   DC.B    'Thank you for buying this item!',0
+shop_unable_string   DC.B    'Sorry I am currently not buying goods from individuals!',0
 
 exploreChoice	DC.B    'TODO: EXPLORE', 0
 manageChoice 	DC.B	'TODO: MANAGE', 0
@@ -1110,28 +1150,24 @@ eventText	   	DC.B	'Working', 0
 work_tired_string   DC.B    'You are too tired to work right now',0
 PAUSE		  	DC.B	'Press enter to continue . . .', 0
 
-NAME	 		DS.W	30  *Max length of name can be 30
-MONEY 			DS.W	1	*PLAYER MONEY in hundreds
-DAY             DS.W    1   *DAYS PASSED
+name	 		DS.W	30  *Max length of name can be 30
+money 			DS.W	1	*PLAYER money in hundreds
+day             DS.W    1   *DAYS PASSED
 
-DAY_COUNTER     DS.W    1   *INCREASED FROM 3 TO 4 IF ALARM
+dayCounter     DS.W    1   *INCREASED FROM 3 TO 4 IF ALARM
 
-TEMPERATURE     DS.W    1   * Default = 15 C
-CO2_LEVEL       DS.W    1   * Default = 400 ppm or 0.0375 per CO2
+temperature     DS.W    1   * Default = 15 C
+CO2_level       DS.W    1   * Default = 400 ppm or 0.0375 per CO2
 
 * Amount
-WATER_MILL_COUNT    DS.W    1
-SOLAR_PANEL_COUNT   DS.W    1
+waterMillCount    DS.W    1
+solarPanelCount   DS.W    1
 * Booleans
-VISITED_SHOP    DS.B    1   *Check if you visited shop before
-HAS_ALARM       DS.B    1
-HAS_SWORD       DS.B    1
+visitedShop    DS.B    1   *Check if you visited shop before
+hasAlarm       DS.B    1
+hasSword       DS.B    1
+hasCoffee      DS.B    1
 *
-
-JOB_TYPE        DS.B    1
-JOB_LEVEL       DS.B    1
-
-
 
 *-------------------------------------------------------
 *VALIDATION VALUES TO BE USED
@@ -1141,14 +1177,24 @@ STARTING_CASH	  EQU 50
 MILLION	 EQU 10000
 HUNDREDTHOUSAND EQU 1000
 SECOND  EQU 100
+
 DEFAULT_DAY_COUNTER EQU 3
 
+CARBON_PRODUCED_DAILY EQU 20
+
+ALARM_DAY_COUNTER_BUFF EQU 2
+COFFEE_DAY_COUNTER_BUFF EQU 1
 * ITEMS
 ALARM_COST          EQU 20
 WATER_MILL_COST     EQU 50
 SOLAR_PANEL_COST    EQU 100
 SWORD_COST          EQU 50
+COFFEE_COST          EQU 10
 	END	START
+
+
+
+
 
 
 
