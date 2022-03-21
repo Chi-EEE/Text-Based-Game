@@ -245,11 +245,11 @@ END_DAY:
     BSR     CLEAR_SCREEN
     ADD.W   #1, day     *Increase day by 1
     BSR     RANDOM_NUMBER   * Get rng num between 0 - 10000
+    BSR     PRINT_INT
     ADD.W   D1, CO2_level   * Add random number to CO2_level
+    MOVE.W  D1, D5          * Keep track of CO2 produced
     ADD.W   #CARBON_PRODUCED_DAILY, CO2_level  * Increase CO2 level by CARBON_PRODUCED_DAILY so harder and faster
-    
-    MOVE.W  D1, D3          * Keep track of CO2 produced
-    ADD.W  #CARBON_PRODUCED_DAILY, D3          * Keep track of CO2 produced
+    ADD.W   #CARBON_PRODUCED_DAILY, D5          * Keep track of CO2 produced
     
     * Equation to get temp : co2 * 0.0375
     MOVE.L  #375, D1
@@ -280,13 +280,12 @@ DISPLAY_END_DAY:
 	BSR     PRINT_DOTS
 	
 	BSR     ENDL
-	BSR     ENDL
 	BSR	 	SYSTEM_PAUSE
 	
 	LEA sleep_increment_co2_string_1, A1
 	BSR     PRINT
 	
-	MOVE.W  D3, D1
+	MOVE.W  D5, D1
 	BSR     PRINT_INT
 	
 	LEA     sleep_increment_co2_string_2, A1
@@ -549,7 +548,8 @@ BROWSE_SHOP:
     LEA     shop_browse_string, A1
     BSR     PRINT
 
-	MOVE.B  #4, D0
+	MOVE.B  #4, D0
+
 	TRAP	#15		 *ASK FOR INPUT
 	
 	CMP.W   #1,D1	   *Alarm Clock IF (D1 == #1)
@@ -997,7 +997,7 @@ YOU              DC.B    '             ^JB&@@@@@&&&&BY~.          '
                  DC.B	$0D,$0A
                  DC.B    '@@G    .@&                         7@B  ', 0  
 
-GUIDE_NAME          DC.B    'Guide Gary',   0
+GUIDE_NAME       DC.B    'Guide Gary',   0
 GUIDE            DC.B    '                .!5B&&&@&&#B5?!^             '
                  DC.B	$0D,$0A
                  DC.B    '            !5G#&#G?^.....^~?PB&&7           '
@@ -1244,6 +1244,7 @@ SOLAR_PANEL_COST    EQU 100
 SWORD_COST          EQU 50
 COFFEE_COST          EQU 10
 	END	START
+
 
 
 
