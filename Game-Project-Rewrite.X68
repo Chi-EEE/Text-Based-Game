@@ -107,6 +107,7 @@ INPUT_NAME_LENGTH_ERROR:
     BSR	 	CLEAR_SCREEN
 	BRA     INPUT_NAME
 
+* Give error if input to menu wrong
 INPUT_NAME_MENU_ERROR:
     BSR     ENDL
     
@@ -243,6 +244,8 @@ ADD_DAY_COUNTER_END:
 END_DAY:
     BSR     CLEAR_SCREEN
     ADD.W   #1, day     *Increase day by 1
+    BSR     RANDOM_NUMBER   * Get rng num between 0 - 100
+    ADD.W   D1, CO2_level   * Add random number to CO2_level
     ADD.W   #CARBON_PRODUCED_DAILY, CO2_level  * Increase CO2 level by CARBON_PRODUCED_DAILY so harder and faster
     
     * Equation to get temp : co2 * 0.0375
@@ -250,6 +253,7 @@ END_DAY:
     MULU.W  (CO2_level), D1
 
     DIVU.W  #10000, D1
+    DIVU.W  #10, D1
     MOVE.W  D1, temperature
     
     MOVE.W  #DEFAULT_DAY_COUNTER,dayCounter  *Increase reset day counter
@@ -274,6 +278,9 @@ DISPLAY_END_DAY:
 	
 	BSR     ENDL
 	
+	
+	
+	BSR     WAIT
 	BSR	 	SYSTEM_PAUSE
 *-------------------------------------------------------
 *----------------GAME_LOOP (MAIN LOOP)------------------
@@ -848,7 +855,23 @@ GET_MILLISECONDS:
     MOVE.B #8, D0 # Load
     TRAP #15  #Time in D1
     RTS
+RANDOM_NUMBER:
+    BSR GET_MILLISECONDS
+    
+    AND.L #$5FFFFF, D1 # AND 6 Bits to prevent any overflow
 
+    DIVU #100, D1 #Divide by 100, 1000, 10000 depending on Number range required
+
+    SWAP D1 #SWAP Higher Order Word and Lower Order Word in D1
+    
+    ADDQ.W #1, D1 #Add 1 to D1.W so number is at least 1
+
+    MOVE.W D1, D2 #Extract the number from D1.W
+
+    CLR.L D1 # Clear contents of D1
+
+    MOVE.W D2, D1 #Move the generated number to D1
+    RTS
 
 
 *-------------------------------------------------------
@@ -1090,6 +1113,7 @@ mainChoice   	DC.B	'What would you like to do?'
                 DC.B	'Enter your choice) ',0
 
 sleep_string    DC.B    'ZzZzZzZzZz',0
+sle
 
 cityChoice		DC.B	'What would you like to do in the town?'
                 DC.B	$0D,$0A
@@ -1114,7 +1138,6 @@ shop_string_3           DC.B	$0D,$0A
                         DC.B	'3) Exit the Shop'
                         DC.B	$0D,$0A
                         DC.B	'Enter your choice) ',0
-
                         
 shop_browse_string      DC.B    'There is a selection of items that caught your interest:'
                         DC.B	$0D,$0A
@@ -1169,7 +1192,7 @@ day             DS.W    1   *DAYS PASSED
 dayCounter     DS.W    1   *INCREASED FROM 3 TO 4 IF ALARM
 
 temperature     DS.W    1   * Default = 15 C
-CO2_level       DS.W    1   * Default = 400 ppm or 0.0375 per CO2
+CO2_level       DS.W    1   * Default = 4000 ppm or 0.00375 per CO2
 
 * Amount
 waterMillCount    DS.W    1
