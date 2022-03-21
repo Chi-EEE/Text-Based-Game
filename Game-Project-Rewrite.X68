@@ -267,6 +267,8 @@ END_DAY:
     MOVE.B  (hasCoffee), D1
     MOVE.W  #COFFEE_DAY_COUNTER_BUFF, D2
     BSR     ADD_DAY_COUNTER
+    
+    MOVE.B  #0, hasCoffee * Reset coffee to 0 as it is consumed
 DISPLAY_END_DAY:
     LEA     YOU,  A4    *Load Ascii for Shop keeper
     BSR     SHOW_ASCII
@@ -1343,7 +1345,7 @@ YES_NO              DC.B	$0D,$0A
 shop_thank_string   DC.B    'Thank you for buying this item!',0
 shop_unable_string   DC.B    'Sorry I am currently not buying goods from individuals!',0
 
-exploreChoice	DC.B    'TODO: EXPLORE', 0
+exploreChoice	DC.B    'The road to town is currently blocked by a giant immovable boulder.', 0
 manage_browse_string      DC.B    'What should I manage?:'
                           DC.B    $0D,$0A
                           DC.B    '1) Exit Browse',0
@@ -1410,6 +1412,7 @@ SOLAR_PANEL_COST    EQU 100
 SWORD_COST          EQU 50
 COFFEE_COST          EQU 10
 	END	START
+
 
 
 
