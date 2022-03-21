@@ -371,8 +371,7 @@ WORK:
 	CMP     #0, D1
     BLS     TIRED_WORK
 
-	MOVE.W  D1, dayCounter
-    BSR     PRINT_INT
+    BSR     ENDL
 
     LEA 	eventText, A1
 	BSR	 	PRINT
@@ -440,11 +439,14 @@ SHOP:
     
     LEA     name, A1
     BSR     PRINT
+     
+    LEA     shop_string_2,  A1
+    BSR     PRINT
     
     LEA     TALK_2, A1
     BSR     PRINT
     
-    LEA     shop_string_2,  A1
+    LEA     shop_string_3,  A1
     BSR     PRINT
     
 	MOVE.B  #4, D0
@@ -810,22 +812,32 @@ SPEAK:
     RTS
 
 *-------------------------------------------------------
-*----------------TIMED PRINT DOT SUBROUTINE-------------
-*-------------------[D1,D2,D3,number: D4]---------------
-PRINT_DOTS:
-    LEA     Dot,A1
-DOT_NEXT_PRINT:
-    BSR     PRINT
+*-------------------WAIT SUBROUTINE---------------------
+*----------------[D1,D2,D3,number: D4]------------------
+*                   Waits 1 second
+WAIT: *Get start time
     BSR     GET_MILLISECONDS
     MOVE.L  D1,D2
-DOT_NEXT: 
+WAIT_LOOP:
     BSR     GET_MILLISECONDS
     
     MOVE    D2,D3
     SUB     D3,D1
     
     CMP     #SECOND,D1
-    BLS     DOT_NEXT
+    BLS     WAIT_LOOP
+
+    RTS
+
+*-------------------------------------------------------
+*----------------TIMED PRINT DOT SUBROUTINE-------------
+*-------------------[D1,D2,D3,number: D4]---------------
+PRINT_DOTS:
+    LEA     Dot,A1
+DOT_NEXT_PRINT: * while (D4 != 0)
+    BSR     PRINT
+    
+    BSR     WAIT
     
     SUB     #1, D4
     CMP     #0, D4
@@ -1093,8 +1105,8 @@ cityChoice		DC.B	'What would you like to do in the town?'
 
 
 shop_string_1           DC.B    'Hello ',0
-shop_string_2           DC.B    ', you are free to have a look around my store.'
-                        DC.B	$0D,$0A
+shop_string_2           DC.B    ', you are free to have a look around my store.',0
+shop_string_3           DC.B	$0D,$0A
                         DC.B	'1) Browse around the shop'
                         DC.B	$0D,$0A
                         DC.B	'2) Sell items to the shop'
@@ -1191,6 +1203,7 @@ SOLAR_PANEL_COST    EQU 100
 SWORD_COST          EQU 50
 COFFEE_COST          EQU 10
 	END	START
+
 
 
 
