@@ -811,7 +811,7 @@ MANAGE_WATER_INPUT:
     MOVE.W  waterMillCount, D1
     BSR     PRINT_INT
 
-    LEA     manage_default_amount_waterMill_string, A1
+    LEA     manage_default_amount_waterMill, A1
     BSR     PRINT
 
     BSR     ENDL
@@ -833,7 +833,7 @@ MANAGE_SOLAR_INPUT:
     MOVE.W  solarPanelCount, D1
     BSR     PRINT_INT
 
-    LEA     manage_default_amount_solarPanel_string, A1
+    LEA     manage_default_amount_solarPanel, A1
     BSR     PRINT
 
     BSR     ENDL
@@ -1340,9 +1340,9 @@ manage_info_string_solar    DC.B    'Solar panels are expensive but are efficien
 manage_info_string_sword    DC.B    'The sword is used to slay your enemies.',0
 manage_info_string_coffee   DC.B    'Coffee allows you to stay awake longer.',0
 
-manage_default_amount_string    DC.B    'You currently have ',0
-manage_default_amount_waterMill_string    DC.B    'x Water Mills',0
-manage_default_amount_solarPanel_string    DC.B    DC.B    'x Solar Panels',0
+manage_default_amount_string        DC.B    'You currently have ',0
+manage_default_amount_waterMill     DC.B    'x Water Mills',0
+manage_default_amount_solarPanel    DC.B    'x Solar Panels',0
 
 
 work_string	   	DC.B	'Working', 0 
