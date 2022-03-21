@@ -785,6 +785,11 @@ MANAGE_SWORD_END:
 	BRA	 	MANAGE
 
 MANAGE_ALARM_INPUT:
+    * if (!hasAlarm) { return; }
+    MOVE.B  (hasAlarm), D1
+    CMP.B   #1, D1
+    BNE     MANAGE
+
     BSR     CLEAR_SCREEN
     
     * Info about item
@@ -797,6 +802,11 @@ MANAGE_ALARM_INPUT:
     BRA     MANAGE
 
 MANAGE_WATER_INPUT:
+    * if (waterMillCount < 0) { return; }
+    MOVE.W  (waterMillCount), D1
+    CMP.W   #0, D1
+    BLS     MANAGE_SOLAR_END
+
     BSR     CLEAR_SCREEN
     
     * Info about item
@@ -819,6 +829,11 @@ MANAGE_WATER_INPUT:
     
     BRA     MANAGE
 MANAGE_SOLAR_INPUT:
+    * if (solarPanelCount < 0) { return; }
+    MOVE.W  (solarPanelCount), D1
+    CMP.W   #0, D1
+    BLS     MANAGE_SOLAR_END
+
     BSR     CLEAR_SCREEN
     
     * Info about item
@@ -841,6 +856,11 @@ MANAGE_SOLAR_INPUT:
     
     BRA     MANAGE
 MANAGE_SWORD_INPUT:
+    * if (!hasSword) { return; }
+    MOVE.B  (hasSword), D1
+    CMP.B   #1, D1
+    BNE     MANAGE
+
     BSR     CLEAR_SCREEN
     
     * Info about item

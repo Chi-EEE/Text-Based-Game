@@ -1,6 +1,6 @@
 00001000 Starting Address
 Assembler used: EASy68K Editor/Assembler v5.16.01
-Created On: 21/03/2022 22:46:29
+Created On: 21/03/2022 22:47:18
 
 00000000                             1  *-------------------------------------------------------
 00000000                             2  * STARTING MEMORY ADDRESS FOR THE PROGRAMME $1000
@@ -25,24 +25,24 @@ Created On: 21/03/2022 22:46:29
 00001020                            21  *------------------INITIALIZE SUBROUTINE----------------
 00001020                            22  *-------------------------------------------------------
 00001020                            23  INITIALIZE:
-00001020  33FC 0032 00003342        24      MOVE.W  #STARTING_CASH,money
-00001028  33FC 0001 00003344        25      MOVE.W  #1,     day
+00001020  33FC 0032 00003350        24      MOVE.W  #STARTING_CASH,money
+00001028  33FC 0001 00003352        25      MOVE.W  #1,     day
 00001030                            26      
-00001030  33FC 0003 00003346        27      MOVE.W  #DEFAULT_DAY_COUNTER,     dayCounter  
+00001030  33FC 0003 00003354        27      MOVE.W  #DEFAULT_DAY_COUNTER,     dayCounter  
 00001038                            28      
 00001038                            29      * Initalize game
-00001038  33FC 000F 00003348        30      MOVE.W  #15,    temperature
-00001040  33FC 0190 0000334A        31      MOVE.W  #400,    CO2_level
+00001038  33FC 000F 00003356        30      MOVE.W  #15,    temperature
+00001040  33FC 0190 00003358        31      MOVE.W  #400,    CO2_level
 00001048                            32      
 00001048                            33      * Initalize booleans
-00001048  13FC 0000 00003350        34      MOVE.B  #0,     visitedShop
-00001050  13FC 0000 00003351        35      MOVE.B  #0,     hasAlarm
-00001058  13FC 0000 00003352        36      MOVE.B  #0,     hasSword
-00001060  13FC 0000 00003353        37      MOVE.B  #0,     hasCoffee
+00001048  13FC 0000 0000335E        34      MOVE.B  #0,     visitedShop
+00001050  13FC 0000 0000335F        35      MOVE.B  #0,     hasAlarm
+00001058  13FC 0000 00003360        36      MOVE.B  #0,     hasSword
+00001060  13FC 0000 00003361        37      MOVE.B  #0,     hasCoffee
 00001068                            38      
 00001068                            39      * Initalize counts
-00001068  33FC 0000 0000334C        40      MOVE.W  #0,     waterMillCount
-00001070  33FC 0000 0000334E        41      MOVE.W  #0,     solarPanelCount  
+00001068  33FC 0000 0000335A        40      MOVE.W  #0,     waterMillCount
+00001070  33FC 0000 0000335C        41      MOVE.W  #0,     solarPanelCount  
 00001078  4E75                      42      RTS
 0000107A                            43  
 0000107A                            44  *-------------------------------------------------------
@@ -71,7 +71,7 @@ Created On: 21/03/2022 22:46:29
 000010A4  6100 0858                 67      BSR     ENDL
 000010A8                            68      
 000010A8  103C 0002                 69      MOVE.B  #2,D0
-000010AC  43F9 00003306             70      LEA     name, A1    *Load Name address to A1 to be able to store name
+000010AC  43F9 00003314             70      LEA     name, A1    *Load Name address to A1 to be able to store name
 000010B2  4E4F                      71      TRAP    #15         *Input Name
 000010B4  6100 0848                 72      BSR     ENDL
 000010B8                            73  
@@ -85,7 +85,7 @@ Created On: 21/03/2022 22:46:29
 000010C8  43F9 00001C4D             81      LEA     name_confirmation_1, A1
 000010CE  6100 07FE                 82      BSR     PRINT
 000010D2                            83      
-000010D2  43F9 00003306             84      LEA     name, A1
+000010D2  43F9 00003314             84      LEA     name, A1
 000010D8  6100 07F4                 85      BSR     PRINT
 000010DC                            86      
 000010DC  43F9 00001C5C             87      LEA     name_confirmation_2, A1
@@ -128,7 +128,7 @@ Created On: 21/03/2022 22:46:29
 0000113A  6100 0792                124      BSR     PRINT
 0000113E  6100 07BE                125      BSR     ENDL
 00001142                           126      
-00001142  43F9 00003306            127      LEA     name, A1
+00001142  43F9 00003314            127      LEA     name, A1
 00001148  6100 0784                128      BSR     PRINT
 0000114C                           129      
 0000114C  6100 07B0                130      BSR     ENDL
@@ -144,7 +144,7 @@ Created On: 21/03/2022 22:46:29
 0000115C  43F9 00001CDA            140      LEA     welcome_string_1,A1
 00001162  6100 076A                141      BSR     PRINT
 00001166                           142      
-00001166  43F9 00003306            143      LEA     name,A1
+00001166  43F9 00003314            143      LEA     name,A1
 0000116C  6100 0760                144      BSR     PRINT
 00001170                           145      
 00001170  43F9 00002026            146      LEA     Dot, A1
@@ -178,7 +178,7 @@ Created On: 21/03/2022 22:46:29
 000011BC                           174  *-------------------STORY SUBROUTINE--------------------
 000011BC                           175  *-------------------------------------------------------
 000011BC                           176  STORY:
-000011BC  45F9 00003306            177      LEA     name, A2    *Load name for SPEAKING_ASCII
+000011BC  45F9 00003314            177      LEA     name, A2    *Load name for SPEAKING_ASCII
 000011C2  49F9 0000202E            178      LEA     YOU,  A4    *Load Ascii for You
 000011C8                           179      
 000011C8                           180      * Intro sequence of messages
@@ -242,33 +242,33 @@ Created On: 21/03/2022 22:46:29
 00001256                           238  ADD_DAY_COUNTER:
 00001256  B27C 0001                239      CMP     #1,     D1
 0000125A  6600 0008                240      BNE     ADD_DAY_COUNTER_END
-0000125E  D579 00003346            241      ADD.W   D2, dayCounter
+0000125E  D579 00003354            241      ADD.W   D2, dayCounter
 00001264                           242  ADD_DAY_COUNTER_END:
 00001264  4E75                     243      RTS
 00001266                           244  END_DAY:
 00001266  6100 065A                245      BSR     CLEAR_SCREEN
-0000126A  5279 00003344            246      ADD.W   #1, day     *Increase day by 1
+0000126A  5279 00003352            246      ADD.W   #1, day     *Increase day by 1
 00001270  6100 0718                247      BSR     RANDOM_NUMBER   * Get rng num between 0 - 10000
-00001274  D379 0000334A            248      ADD.W   D1, CO2_level   * Add random number to CO2_level
+00001274  D379 00003358            248      ADD.W   D1, CO2_level   * Add random number to CO2_level
 0000127A  3A01                     249      MOVE.W  D1, D5          * Keep track of CO2 produced
-0000127C  0679 0000 0000334A       250      ADD.W   #CARBON_PRODUCED_DAILY, CO2_level  * Increase CO2 level by CARBON_PRODUCED_DAILY so harder and faster
+0000127C  0679 0000 00003358       250      ADD.W   #CARBON_PRODUCED_DAILY, CO2_level  * Increase CO2 level by CARBON_PRODUCED_DAILY so harder and faster
 00001284  0645 0000                251      ADD.W   #CARBON_PRODUCED_DAILY, D5          * Keep track of CO2 produced
 00001288                           252      
 00001288                           253      * Equation to get temp : co2 * 0.0375
 00001288  223C 00000177            254      MOVE.L  #375, D1
-0000128E  C2F9 0000334A            255      MULU.W  (CO2_level), D1
+0000128E  C2F9 00003358            255      MULU.W  (CO2_level), D1
 00001294                           256  
 00001294  82FC 2710                257      DIVU.W  #10000, D1
 00001298  82FC 000A                258      DIVU.W  #10, D1
-0000129C  33C1 00003348            259      MOVE.W  D1, temperature
+0000129C  33C1 00003356            259      MOVE.W  D1, temperature
 000012A2                           260      
-000012A2  33FC 0003 00003346       261      MOVE.W  #DEFAULT_DAY_COUNTER,dayCounter  *Increase reset day counter
+000012A2  33FC 0003 00003354       261      MOVE.W  #DEFAULT_DAY_COUNTER,dayCounter  *Increase reset day counter
 000012AA                           262      
-000012AA  1239 00003351            263      MOVE.B  (hasAlarm), D1
+000012AA  1239 0000335F            263      MOVE.B  (hasAlarm), D1
 000012B0  343C 0002                264      MOVE.W  #ALARM_DAY_COUNTER_BUFF, D2
 000012B4  61A0                     265      BSR     ADD_DAY_COUNTER
 000012B6                           266      
-000012B6  1239 00003353            267      MOVE.B  (hasCoffee), D1
+000012B6  1239 00003361            267      MOVE.B  (hasCoffee), D1
 000012BC  343C 0001                268      MOVE.W  #COFFEE_DAY_COUNTER_BUFF, D2
 000012C0  6194                     269      BSR     ADD_DAY_COUNTER
 000012C2                           270  DISPLAY_END_DAY:
@@ -335,7 +335,7 @@ Created On: 21/03/2022 22:46:29
 0000135A                           331      * Display Name
 0000135A  43F9 00002003            332      LEA     NAME_LABEL, A1
 00001360  6100 056C                333      BSR     PRINT
-00001364  43F9 00003306            334      LEA     name, A1
+00001364  43F9 00003314            334      LEA     name, A1
 0000136A  6100 0562                335      BSR     PRINT
 0000136E                           336      * ----------
 0000136E  6100 058E                337      BSR     ENDL
@@ -347,7 +347,7 @@ Created On: 21/03/2022 22:46:29
 0000137C                           343      * Display money
 0000137C  43F9 0000200A            344      LEA     MONEY_LABEL, A1
 00001382  6100 054A                345      BSR     PRINT
-00001386  3239 00003342            346      MOVE.W  (money), D1
+00001386  3239 00003350            346      MOVE.W  (money), D1
 0000138C  6100 0548                347      BSR     PRINT_INT
 00001390                           348      * ----------
 00001390                           349      
@@ -358,7 +358,7 @@ Created On: 21/03/2022 22:46:29
 0000139A                           354      * Display Day
 0000139A  43F9 00002012            355      LEA     DAY_LABEL, A1
 000013A0  6100 052C                356      BSR     PRINT
-000013A4  3239 00003344            357      MOVE.W  (day), D1
+000013A4  3239 00003352            357      MOVE.W  (day), D1
 000013AA  6100 052A                358      BSR     PRINT_INT
 000013AE                           359      * ----------
 000013AE  6100 054E                360      BSR     ENDL
@@ -370,7 +370,7 @@ Created On: 21/03/2022 22:46:29
 000013BC                           366      * Display temperature
 000013BC  43F9 00002018            367      LEA     temperature_LABEL, A1
 000013C2  6100 050A                368      BSR     PRINT
-000013C6  3239 00003348            369      MOVE.W  (temperature), D1
+000013C6  3239 00003356            369      MOVE.W  (temperature), D1
 000013CC  6100 0508                370      BSR     PRINT_INT
 000013D0                           371      * ----------
 000013D0                           372  
@@ -388,21 +388,21 @@ Created On: 21/03/2022 22:46:29
 000013DC  6100 04E4                384      BSR     CLEAR_SCREEN
 000013E0                           385      
 000013E0                           386      *if (dayCounter - 2 < 0) = tired
-000013E0  3239 00003346            387      MOVE.W  (dayCounter),  D1
+000013E0  3239 00003354            387      MOVE.W  (dayCounter),  D1
 000013E6  5541                     388      SUB     #2, D1
 000013E8  6B00 0036                389      BMI     TIRED_WORK
 000013EC                           390  
 000013EC  B27C 0000                391      CMP     #0, D1          * Check if day counter is equal or less than 0
 000013F0  6300 002E                392      BLS     TIRED_WORK
 000013F4                           393      
-000013F4  33C1 00003346            394      MOVE.W  D1,  dayCounter * Set day counter to subtracted day counter
+000013F4  33C1 00003354            394      MOVE.W  D1,  dayCounter * Set day counter to subtracted day counter
 000013FA                           395  
 000013FA  6100 0502                396      BSR     ENDL
 000013FE                           397  
-000013FE  43F9 000032BC            398      LEA     work_string, A1
+000013FE  43F9 000032CA            398      LEA     work_string, A1
 00001404  6100 04C8                399      BSR     PRINT
 00001408                           400      
-00001408  0679 0014 00003342       401      ADD.W   #SALARY, money
+00001408  0679 0014 00003350       401      ADD.W   #SALARY, money
 00001410  183C 0003                402      MOVE.B  #3,     D4
 00001414  6100 0556                403      BSR     PRINT_DOTS
 00001418                           404      
@@ -412,7 +412,7 @@ Created On: 21/03/2022 22:46:29
 00001420                           408  TIRED_WORK:
 00001420  6100 04DC                409      BSR     ENDL
 00001424                           410  
-00001424  43F9 000032C4            411      LEA     work_tired_string, A1
+00001424  43F9 000032D2            411      LEA     work_tired_string, A1
 0000142A  6100 04A2                412      BSR     PRINT
 0000142E                           413      
 0000142E  6100 04B6                414      BSR     SYSTEM_PAUSE
@@ -446,7 +446,7 @@ Created On: 21/03/2022 22:46:29
 00001470                           442  SHOP:
 00001470  6100 0450                443      BSR     CLEAR_SCREEN
 00001474                           444      
-00001474  0C39 0000 00003350       445      CMP.B   #0,   visitedShop
+00001474  0C39 0000 0000335E       445      CMP.B   #0,   visitedShop
 0000147C  6700 0078                446      BEQ     FIRST_TIME_SHOP
 00001480                           447  
 00001480  49F9 000028A5            448      LEA     SHOP_KEEPER,      A4
@@ -463,7 +463,7 @@ Created On: 21/03/2022 22:46:29
 000014A2  43F9 00002E63            459      LEA     shop_string_1, A1
 000014A8  6100 0424                460      BSR     PRINT
 000014AC                           461      
-000014AC  43F9 00003306            462      LEA     name, A1
+000014AC  43F9 00003314            462      LEA     name, A1
 000014B2  6100 041A                463      BSR     PRINT
 000014B6                           464       
 000014B6  43F9 00002E6A            465      LEA     shop_string_2,  A1
@@ -487,7 +487,7 @@ Created On: 21/03/2022 22:46:29
 000014F2                           483      
 000014F2  6000 FF7C                484      BRA     SHOP
 000014F6                           485  FIRST_TIME_SHOP:
-000014F6  13FC 0001 00003350       486      MOVE.B    #1, visitedShop
+000014F6  13FC 0001 0000335E       486      MOVE.B    #1, visitedShop
 000014FE                           487  
 000014FE                           488      *INTRODUCE
 000014FE  49F9 000028A5            489      LEA     SHOP_KEEPER,  A4    *Load Ascii for Shop keeper
@@ -525,7 +525,7 @@ Created On: 21/03/2022 22:46:29
 00001554  43F9 00002FB8            521      LEA     shop_unable_buy_string_1, A1
 0000155A  6100 0372                522      BSR     PRINT
 0000155E                           523      
-0000155E  3239 00003342            524      MOVE.W  (money),    D1
+0000155E  3239 00003350            524      MOVE.W  (money),    D1
 00001564  6100 0370                525      BSR     PRINT_INT
 00001568                           526      
 00001568  43F9 00002FC2            527      LEA     shop_unable_buy_string_2, A1
@@ -620,12 +620,12 @@ Created On: 21/03/2022 22:46:29
 0000163A  6600 001E                616      BNE     ALREADY_HAVE_ITEM
 0000163E                           617      
 0000163E                           618      * Check if able to afford
-0000163E  3239 00003342            619      MOVE.W  (money),  D1
+0000163E  3239 00003350            619      MOVE.W  (money),  D1
 00001644  9242                     620      SUB.W   D2, D1
 00001646  6B00 FF0C                621      BMI     UNABLE_BUY
 0000164A                           622      
 0000164A                           623      * Remove money and set boolean to true
-0000164A  33C1 00003342            624      MOVE.W  D1, money
+0000164A  33C1 00003350            624      MOVE.W  D1, money
 00001650  12BC 0001                625      MOVE.B  #1, (A1)
 00001654                           626     
 00001654  61C2                     627      BSR     PURCHASED_ITEM_SHOP
@@ -646,7 +646,7 @@ Created On: 21/03/2022 22:46:29
 00001678  343C 0014                642      MOVE.W  #ALARM_COST, D2
 0000167C  6100 FF62                643      BSR     CONFIRM_SHOP
 00001680                           644      
-00001680  43F9 00003351            645      LEA     hasAlarm, A1
+00001680  43F9 0000335F            645      LEA     hasAlarm, A1
 00001686  60AC                     646      BRA     ATTEMPT_BUY_SINGLE_ITEM
 00001688                           647  WATER_MILL:
 00001688  6100 0238                648      BSR     CLEAR_SCREEN
@@ -657,13 +657,13 @@ Created On: 21/03/2022 22:46:29
 00001694  6100 FF4A                653      BSR     CONFIRM_SHOP
 00001698                           654      
 00001698                           655      * Check if able to afford item
-00001698  3239 00003342            656      MOVE.W  (money),  D1
+00001698  3239 00003350            656      MOVE.W  (money),  D1
 0000169E  9242                     657      SUB.W   D2, D1
 000016A0  6B00 FEB2                658      BMI     UNABLE_BUY
 000016A4                           659      
 000016A4                           660      * Remove money and increment count
-000016A4  33C1 00003342            661      MOVE.W  D1, money
-000016AA  5279 0000334C            662      ADD.W   #1, waterMillCount
+000016A4  33C1 00003350            661      MOVE.W  D1, money
+000016AA  5279 0000335A            662      ADD.W   #1, waterMillCount
 000016B0                           663     
 000016B0  6100 FF66                664      BSR     PURCHASED_ITEM_SHOP
 000016B4                           665      
@@ -677,14 +677,14 @@ Created On: 21/03/2022 22:46:29
 000016C4  6100 FF1A                673      BSR     CONFIRM_SHOP
 000016C8                           674      
 000016C8                           675      * Check if able to afford item
-000016C8  3239 00003342            676      MOVE.W  (money),  D1
+000016C8  3239 00003350            676      MOVE.W  (money),  D1
 000016CE  343C 0064                677      MOVE.W  #SOLAR_PANEL_COST, D2
 000016D2  9242                     678      SUB.W   D2, D1
 000016D4  6B00 FE7E                679      BMI     UNABLE_BUY
 000016D8                           680      
 000016D8                           681      * Remove money and increment count
-000016D8  33C1 00003342            682      MOVE.W  D1, money
-000016DE  5279 0000334E            683      ADD.W  #1,  solarPanelCount
+000016D8  33C1 00003350            682      MOVE.W  D1, money
+000016DE  5279 0000335C            683      ADD.W  #1,  solarPanelCount
 000016E4                           684      
 000016E4  6100 FF32                685      BSR     PURCHASED_ITEM_SHOP
 000016E8                           686      
@@ -694,10 +694,10 @@ Created On: 21/03/2022 22:46:29
 000016F0  6100 020C                690      BSR     ENDL
 000016F4                           691      
 000016F4                           692      * Confirm if player wants to buy sword
-000016F4  343C 3352                693      MOVE.W  #hasSword, D2
+000016F4  343C 3360                693      MOVE.W  #hasSword, D2
 000016F8  6100 FEE6                694      BSR     CONFIRM_SHOP
 000016FC                           695      
-000016FC  43F9 00003352            696      LEA     hasSword, A1
+000016FC  43F9 00003360            696      LEA     hasSword, A1
 00001702  6000 FF30                697      BRA     ATTEMPT_BUY_SINGLE_ITEM
 00001706                           698  COFFEE:
 00001706  6100 01BA                699      BSR     CLEAR_SCREEN
@@ -707,7 +707,7 @@ Created On: 21/03/2022 22:46:29
 0000170E  343C 000A                703      MOVE.W  #COFFEE_COST, D2
 00001712  6100 FECC                704      BSR     CONFIRM_SHOP
 00001716                           705      
-00001716  43F9 00003353            706      LEA     hasCoffee, A1
+00001716  43F9 00003361            706      LEA     hasCoffee, A1
 0000171C  6000 FF16                707      BRA     ATTEMPT_BUY_SINGLE_ITEM
 00001720                           708  SELL_ITEM_SHOP:
 00001720  45F9 00002895            709      LEA     SHOP_KEEPER_NAME, A2
@@ -738,7 +738,7 @@ Created On: 21/03/2022 22:46:29
 0000175E  43F9 00003130            734      LEA     manage_browse_string, A1
 00001764  6100 0168                735      BSR     PRINT
 00001768                           736      * if (hasAlarm) 2
-00001768  1239 00003351            737      MOVE.B  (hasAlarm), D1
+00001768  1239 0000335F            737      MOVE.B  (hasAlarm), D1
 0000176E  B23C 0001                738      CMP.B   #1, D1
 00001772  6600 0010                739      BNE     MANAGE_ALARM_END
 00001776  6100 0186                740      BSR     ENDL
@@ -746,7 +746,7 @@ Created On: 21/03/2022 22:46:29
 00001780  6100 014C                742      BSR     PRINT
 00001784                           743  MANAGE_ALARM_END:
 00001784                           744      * if (waterMillCount > 0) 3
-00001784  3239 0000334C            745      MOVE.W  (waterMillCount), D1
+00001784  3239 0000335A            745      MOVE.W  (waterMillCount), D1
 0000178A  B27C 0000                746      CMP.W   #0, D1
 0000178E  6300 0010                747      BLS     MANAGE_WATER_END
 00001792  6100 016A                748      BSR     ENDL
@@ -754,7 +754,7 @@ Created On: 21/03/2022 22:46:29
 0000179C  6100 0130                750      BSR     PRINT
 000017A0                           751  MANAGE_WATER_END:
 000017A0                           752      * if (solarPanelCount > 0) 4
-000017A0  3239 0000334E            753      MOVE.W  (solarPanelCount), D1
+000017A0  3239 0000335C            753      MOVE.W  (solarPanelCount), D1
 000017A6  B27C 0000                754      CMP.W   #0, D1
 000017AA  6300 0010                755      BLS     MANAGE_SOLAR_END
 000017AE  6100 014E                756      BSR     ENDL
@@ -762,7 +762,7 @@ Created On: 21/03/2022 22:46:29
 000017B8  6100 0114                758      BSR     PRINT
 000017BC                           759  MANAGE_SOLAR_END:
 000017BC                           760      * if (hasSword) 5
-000017BC  1239 00003352            761      MOVE.B  (hasSword), D1
+000017BC  1239 00003360            761      MOVE.B  (hasSword), D1
 000017C2  B23C 0001                762      CMP.B   #1, D1
 000017C6  6600 0010                763      BNE     MANAGE_SWORD_END
 000017CA  6100 0132                764      BSR     ENDL
@@ -812,7 +812,7 @@ Created On: 21/03/2022 22:46:29
 00001842  43F9 00003299            808      LEA     manage_default_amount_string, A1
 00001848  6100 0084                809      BSR     PRINT
 0000184C                           810  
-0000184C  3239 0000334C            811      MOVE.W  waterMillCount, D1
+0000184C  3239 0000335A            811      MOVE.W  waterMillCount, D1
 00001852  6100 0082                812      BSR     PRINT_INT
 00001856                           813  
 00001856  43F9 000032AD            814      LEA     manage_default_amount_waterMill, A1
@@ -834,7 +834,7 @@ Created On: 21/03/2022 22:46:29
 0000187E  43F9 00003299            830      LEA     manage_default_amount_string, A1
 00001884  6100 0048                831      BSR     PRINT
 00001888                           832  
-00001888  3239 0000334E            833      MOVE.W  solarPanelCount, D1
+00001888  3239 0000335C            833      MOVE.W  solarPanelCount, D1
 0000188E  6100 0046                834      BSR     PRINT_INT
 00001892                           835  
 00001892  43F9 000032BB            836      LEA     manage_default_amount_solarPanel, A1
@@ -900,7 +900,7 @@ Created On: 21/03/2022 22:46:29
 000018E6                           896  *-----------------------[D0,A1]-------------------------
 000018E6                           897  SYSTEM_PAUSE:
 000018E6  6100 0016                898      BSR      ENDL
-000018EA  43F9 000032E8            899      LEA      PAUSE, A1   *DISPLAY PAUSE MESSAGE
+000018EA  43F9 000032F6            899      LEA      PAUSE, A1   *DISPLAY PAUSE MESSAGE
 000018F0  61DC                     900      BSR      PRINT        
 000018F2  103C 0004                901      MOVE.B  #4, D0
 000018F6  4E4F                     902      TRAP    #15      *ASK FOR NUMBER but dont use number
@@ -1344,59 +1344,58 @@ Created On: 21/03/2022 22:46:29
 00003249= 54 68 65 20 73 77 ...   1340  manage_info_string_sword    DC.B    'The sword is used to slay your enemies.',0
 00003271= 43 6F 66 66 65 65 ...   1341  manage_info_string_coffee   DC.B    'Coffee allows you to stay awake longer.',0
 00003299                          1342  
-00003299= 59 6F 75 20 63 75 ...   1343  manage_default_amount_string    DC.B    'You currently have ',0
-000032AD= 78 20 57 61 74 65 ...   1344  manage_default_amount_waterMill    DC.B    'x Water Mills',0
-Line 1345 ERROR: Undefined symbol
-000032BB= 04                      1345  manage_default_amount_solarPanel    DC.B    DC.B    'x Solar Panels',0
-000032BC                          1346  
-000032BC                          1347  
-000032BC= 57 6F 72 6B 69 6E ...   1348  work_string     DC.B    'Working', 0 
-000032C4= 59 6F 75 20 61 72 ...   1349  work_tired_string   DC.B    'You are too tired to work right now',0
-000032E8= 50 72 65 73 73 20 ...   1350  PAUSE           DC.B    'Press enter to continue . . .', 0
-00003306                          1351  
-00003306                          1352  name            DS.W    30  *Max length of name can be 30
-00003342                          1353  money           DS.W    1   *PLAYER money in hundreds
-00003344                          1354  day             DS.W    1   *DAYS PASSED
-00003346                          1355  
-00003346                          1356  dayCounter     DS.W    1   *INCREASED FROM 3 TO 4 IF ALARM
-00003348                          1357  
-00003348                          1358  temperature     DS.W    1   * Default = 15 C
-0000334A                          1359  CO2_level       DS.W    1   * Default = 4000 ppm or 0.00375 per CO2
-0000334C                          1360  
-0000334C                          1361  * Amount
-0000334C                          1362  waterMillCount    DS.W    1
-0000334E                          1363  solarPanelCount   DS.W    1
-00003350                          1364  * Booleans
-00003350                          1365  visitedShop    DS.B    1   *Check if you visited shop before
-00003351                          1366  hasAlarm       DS.B    1
-00003352                          1367  hasSword       DS.B    1
-00003353                          1368  hasCoffee      DS.B    1
-00003354                          1369  *
-00003354                          1370  
-00003354                          1371  *-------------------------------------------------------
-00003354                          1372  *VALIDATION VALUES TO BE USED
-00003354                          1373  *-------------------------------------------------------
-00003354  =00000014               1374  SALARY    EQU 20
-00003354  =00000032               1375  STARTING_CASH     EQU 50
-00003354  =00002710               1376  MILLION  EQU 10000
-00003354  =000003E8               1377  HUNDREDTHOUSAND EQU 1000
-00003354  =00000064               1378  SECOND  EQU 100
-00003354                          1379  
-00003354  =00000003               1380  DEFAULT_DAY_COUNTER EQU 3
-00003354                          1381  
-00003354  =00000000               1382  CARBON_PRODUCED_DAILY EQU 0
-00003354                          1383  
-00003354  =00000002               1384  ALARM_DAY_COUNTER_BUFF EQU 2
-00003354  =00000001               1385  COFFEE_DAY_COUNTER_BUFF EQU 1
-00003354                          1386  * ITEMS
-00003354  =00000014               1387  ALARM_COST          EQU 20
-00003354  =00000032               1388  WATER_MILL_COST     EQU 50
-00003354  =00000064               1389  SOLAR_PANEL_COST    EQU 100
-00003354  =00000032               1390  SWORD_COST          EQU 50
-00003354  =0000000A               1391  COFFEE_COST          EQU 10
-00003354                          1392      END START
+00003299= 59 6F 75 20 63 75 ...   1343  manage_default_amount_string        DC.B    'You currently have ',0
+000032AD= 78 20 57 61 74 65 ...   1344  manage_default_amount_waterMill     DC.B    'x Water Mills',0
+000032BB= 78 20 53 6F 6C 61 ...   1345  manage_default_amount_solarPanel    DC.B    'x Solar Panels',0
+000032CA                          1346  
+000032CA                          1347  
+000032CA= 57 6F 72 6B 69 6E ...   1348  work_string     DC.B    'Working', 0 
+000032D2= 59 6F 75 20 61 72 ...   1349  work_tired_string   DC.B    'You are too tired to work right now',0
+000032F6= 50 72 65 73 73 20 ...   1350  PAUSE           DC.B    'Press enter to continue . . .', 0
+00003314                          1351  
+00003314                          1352  name            DS.W    30  *Max length of name can be 30
+00003350                          1353  money           DS.W    1   *PLAYER money in hundreds
+00003352                          1354  day             DS.W    1   *DAYS PASSED
+00003354                          1355  
+00003354                          1356  dayCounter     DS.W    1   *INCREASED FROM 3 TO 4 IF ALARM
+00003356                          1357  
+00003356                          1358  temperature     DS.W    1   * Default = 15 C
+00003358                          1359  CO2_level       DS.W    1   * Default = 4000 ppm or 0.00375 per CO2
+0000335A                          1360  
+0000335A                          1361  * Amount
+0000335A                          1362  waterMillCount    DS.W    1
+0000335C                          1363  solarPanelCount   DS.W    1
+0000335E                          1364  * Booleans
+0000335E                          1365  visitedShop    DS.B    1   *Check if you visited shop before
+0000335F                          1366  hasAlarm       DS.B    1
+00003360                          1367  hasSword       DS.B    1
+00003361                          1368  hasCoffee      DS.B    1
+00003362                          1369  *
+00003362                          1370  
+00003362                          1371  *-------------------------------------------------------
+00003362                          1372  *VALIDATION VALUES TO BE USED
+00003362                          1373  *-------------------------------------------------------
+00003362  =00000014               1374  SALARY    EQU 20
+00003362  =00000032               1375  STARTING_CASH     EQU 50
+00003362  =00002710               1376  MILLION  EQU 10000
+00003362  =000003E8               1377  HUNDREDTHOUSAND EQU 1000
+00003362  =00000064               1378  SECOND  EQU 100
+00003362                          1379  
+00003362  =00000003               1380  DEFAULT_DAY_COUNTER EQU 3
+00003362                          1381  
+00003362  =00000000               1382  CARBON_PRODUCED_DAILY EQU 0
+00003362                          1383  
+00003362  =00000002               1384  ALARM_DAY_COUNTER_BUFF EQU 2
+00003362  =00000001               1385  COFFEE_DAY_COUNTER_BUFF EQU 1
+00003362                          1386  * ITEMS
+00003362  =00000014               1387  ALARM_COST          EQU 20
+00003362  =00000032               1388  WATER_MILL_COST     EQU 50
+00003362  =00000064               1389  SOLAR_PANEL_COST    EQU 100
+00003362  =00000032               1390  SWORD_COST          EQU 50
+00003362  =0000000A               1391  COFFEE_COST          EQU 10
+00003362                          1392      END START
 
-1 error detected
+No errors detected
 No warnings generated
 
 
@@ -1416,14 +1415,14 @@ CITY                1436
 CITYCHOICE          2DCA
 CLEAR_INPUT_NAME    1092
 CLEAR_SCREEN        18C2
-CO2_LEVEL           334A
+CO2_LEVEL           3358
 COFFEE              1706
 COFFEE_COST         A
 COFFEE_DAY_COUNTER_BUFF  1
 CONFIRM_SHOP        15E0
 CRLF                19A2
-DAY                 3344
-DAYCOUNTER          3346
+DAY                 3352
+DAYCOUNTER          3354
 DAY_LABEL           2012
 DEFAULT_DAY_COUNTER  3
 DISPLAY             1346
@@ -1446,9 +1445,9 @@ GUIDE_1_STRING_1    1E9E
 GUIDE_1_STRING_2    1ED3
 GUIDE_1_STRING_3    1ED9
 GUIDE_NAME          224F
-HASALARM            3351
-HASCOFFEE           3353
-HASSWORD            3352
+HASALARM            335F
+HASCOFFEE           3361
+HASSWORD            3360
 HUNDREDTHOUSAND     3E8
 INITIALIZE          1020
 INPUT_NAME          1096
@@ -1488,15 +1487,15 @@ MANAGE_SWORD_INPUT  18A8
 MANAGE_WATER_END    17A0
 MANAGE_WATER_INPUT  1830
 MILLION             2710
-MONEY               3342
+MONEY               3350
 MONEY_LABEL         200A
-NAME                3306
+NAME                3314
 NAME_CONFIRMATION_1  1C4D
 NAME_CONFIRMATION_2  1C5C
 NAME_CONFIRMATION_FAIL  1CB9
 NAME_LABEL          2003
 NAME_LENGTH_FAIL    1C8F
-PAUSE               32E8
+PAUSE               32F6
 PRINT               18CE
 PRINT_DOTS          196C
 PRINT_INT           18D6
@@ -1525,7 +1524,7 @@ SHOW_ASCII          1928
 SLEEP_INCREMENT_CO2_STRING_1  2D90
 SLEEP_INCREMENT_CO2_STRING_2  2DBA
 SLEEP_STRING        2D85
-SOLARPANELCOUNT     334E
+SOLARPANELCOUNT     335C
 SOLAR_PANEL         16B8
 SOLAR_PANEL_COST    64
 SPEAK               193A
@@ -1539,15 +1538,15 @@ SWORD_COST          32
 SYSTEM_PAUSE        18E6
 TALK_1              2028
 TALK_2              202C
-TEMPERATURE         3348
+TEMPERATURE         3356
 TEMPERATURE_LABEL   2018
 TIRED_WORK          1420
 TITLE               19A5
 UNABLE_BUY          1554
-VISITEDSHOP         3350
+VISITEDSHOP         335E
 WAIT                1956
 WAIT_LOOP           195C
-WATERMILLCOUNT      334C
+WATERMILLCOUNT      335A
 WATER_MILL          1688
 WATER_MILL_COST     32
 WELCOME             1158
@@ -1555,7 +1554,7 @@ WELCOME_STRING_1    1CDA
 WELCOME_STRING_2    1CFD
 WELCOME_STRING_3    1D61
 WORK                13DC
-WORK_STRING         32BC
-WORK_TIRED_STRING   32C4
+WORK_STRING         32CA
+WORK_TIRED_STRING   32D2
 YES_NO              30A1
 YOU                 202E
