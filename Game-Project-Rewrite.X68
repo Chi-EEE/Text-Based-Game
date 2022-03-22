@@ -245,9 +245,38 @@ ADD_DAY_COUNTER:
     BSR     PRINT
     BSR     ENDL
     BSR     ENDL
-ADD_DAY_COUNTER_END:
+    ADD_DAY_COUNTER_END:
     RTS
-END_DAY:
+*-------------------------------------------------------
+*-----------------------CO2_REDUCER---------------------
+*--------[A2: message,D1: count, D2:money, D3: CO2]----- 
+*Checks if D1 is true and add day counter buff to day counter
+CO2_REDUCER:
+    CMP.W   #0, D1
+    BLS     CO2_REDUCER_END
+    
+    LEA     your,A1
+    BSR     PRINT
+    
+    BSR     PRINT_INT
+    
+    MOVE    A2, A1
+    BSR     PRINT
+    
+    MOVE.W  D2,D1
+    BSR     PRINT_INT
+    
+    LEA     and,A1
+    BSR     PRINT
+    
+    MOVE.W  D3,D1
+    BSR     PRINT_INT
+    
+    LEA     from_air,A1
+    BSR     PRINT
+CO2_REDUCER_END:
+    RTS
+END_DAY:    
     BSR     CLEAR_SCREEN
     ADD.W   #1, day     *Increase day by 1
     BSR     RANDOM_NUMBER_100   * Get rng num between 0 - 100
@@ -286,18 +315,28 @@ DISPLAY_END_DAY:
 	
     MOVE.W  #DAY_COUNTER_INCREMENT,dayCounter  *Increase reset day counter
     
-    LEA     sleep_alarm_day, A1
+    LEA     sleep_alarm_day, A2
     MOVE.B  (hasAlarm), D1
     MOVE.W  #ALARM_DAY_COUNTER_BUFF, D2
     BSR     ADD_DAY_COUNTER
     
-    LEA     sleep_coffee_day, A1
+    LEA     sleep_coffee_day, A2
     MOVE.B  (hasCoffee), D1
     MOVE.W  #COFFEE_DAY_COUNTER_BUFF, D2
     BSR     ADD_DAY_COUNTER
     
     MOVE.B  #0, hasCoffee * Reset coffee to 0 as it is consumed
     
+    MOVE.W    (waterMillCount), D1
+    MOVE.W    #WATER_MILL_MONEY, D2
+    MOVE.W    #WATER_MILL_REDUCTION, D3
+    BSR       CO2_REDUCER
+
+    MOVE.W    (solarPanelCount), D1
+    MOVE.W    #SOLAR_PANEL_MONEY, D2
+    MOVE.W    #SOLAR_PANEL_REDUCTION, D3
+    BSR       CO2_REDUCER
+
 	LEA sleep_increment_co2_string_1, A1
 	BSR     PRINT
 	
@@ -649,7 +688,7 @@ PURCHASED_ITEM_SHOP:
     BSR     CLEAR_SCREEN
     RTS
 *-------------------------------------------------------
-*------------ATTEMPT_BUY_SINGLE_ITEM SUBROUTINE---------
+*---------ATTEMPT_BUY_SINGLE_ITEM SUBROUTINE------------
 *----------------[D2:cost, A1: boolean]-----------------
 *           Used for purchasing boolean items
 ATTEMPT_BUY_SINGLE_ITEM:
@@ -1374,7 +1413,7 @@ SHOP_KEEPER      DC.B    '             .^JG&@@@@@@@@&BJ.               '
     
 mainChoice   	DC.B	'What would you like to do?'
                 DC.B	$0D,$0A
-                DC.B	'1) Go to work and earn $20'
+                DC.B	'1) Go to work and earn $75'
                 DC.B	$0D,$0A
                 DC.B	'2) Enter the Town'
                 DC.B	$0D,$0A
@@ -1388,6 +1427,13 @@ sleep_increment_co2_string_2 DC.B    ' CO2 in the air',0
 
 sleep_alarm_day              DC.B    'You woke up early because of your alarm!',0
 sleep_coffee_day             DC.B    'You start your day consuming the coffee.',0
+
+your    DC.B    'Your ',0
+and     DC.B    ' and removed ',0 
+from_air    DC.B    ' CO2 from the air',0
+
+sleep_watermill_produce     DC.B    ' x Water Mills have given $',0
+sleep_solarpanel_produce    DC.B    ' x Solar Panels have given $',0
 
 cityChoice		DC.B	'What would you like to do in the town?'
                 DC.B	$0D,$0A
@@ -1465,8 +1511,8 @@ manage_browse_coffee    DC.B    '6) Coffee',0
 manage_browse_choice    DC.B	'Enter your choice) ',0
 
 manage_info_string_alarm    DC.B    'This alarm clock allows you to wake up earlier',0
-manage_info_string_water    DC.B    'Water mills are a cheap and reliable CO2 reducer.',0
-manage_info_string_solar    DC.B    'Solar panels are expensive but are efficient at removing CO2.',0
+manage_info_string_water    DC.B    'Water Mills are a cheap and reliable CO2 reducer.',0
+manage_info_string_solar    DC.B    'Solar Panels are expensive but are efficient at removing CO2.',0
 manage_info_string_sword    DC.B    'The sword is used to slay your enemies.',0
 manage_info_string_coffee   DC.B    'Coffee allows you to stay awake longer.',0
 
@@ -1512,22 +1558,29 @@ temperatureSecondWarning DS.B   1
 *-------------------------------------------------------
 *VALIDATION VALUES TO BE USED
 *-------------------------------------------------------
-SALARY	  EQU 20
-STARTING_CASH	  EQU 50
-MILLION	 EQU 10000
-HUNDREDTHOUSAND EQU 1000
+SALARY	  EQU 75
+STARTING_CASH	  EQU 100
 SECOND  EQU 100
 
 DAY_COUNTER_INCREMENT EQU 3
 
 ALARM_DAY_COUNTER_BUFF EQU 2
 COFFEE_DAY_COUNTER_BUFF EQU 1
+
 * ITEMS
 ALARM_COST          EQU 20
-WATER_MILL_COST     EQU 50
-SOLAR_PANEL_COST    EQU 100
+WATER_MILL_COST     EQU 200
+SOLAR_PANEL_COST    EQU 1000
 SWORD_COST          EQU 50
-COFFEE_COST         EQU 10
+COFFEE_COST         EQU 12
+
+* CO2 Reducers
+WATER_MILL_REDUCTION    EQU 10
+SOLAR_PANEL_REDUCTION   EQU 25
+
+* CO2 Money Givers
+WATER_MILL_MONEY    EQU 10
+SOLAR_PANEL_MONEY   EQU 27
 
 * Temperature Thresholds
 TEMP_THRESHOLD_FIRST   EQU 16
