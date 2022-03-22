@@ -245,11 +245,11 @@ ADD_DAY_COUNTER:
     BSR     PRINT
     BSR     ENDL
     BSR     ENDL
-    ADD_DAY_COUNTER_END:
+ADD_DAY_COUNTER_END:
     RTS
-*-------------------------------------------------------
-*-----------------------CO2_REDUCER---------------------
-*--------[A2: message,D1: count, D2:money, D3: CO2]----- 
+*----------------------------------------------------------------
+*------------------------CO2_REDUCER-----------------------------
+*[A2: message, D1,D2: count, D3:money, D4: CO2, D5: totalCO2Made]
 *Checks if D1 is true and add day counter buff to day counter
 CO2_REDUCER:
     CMP.W   #0, D1
@@ -258,12 +258,19 @@ CO2_REDUCER:
     LEA     your,A1
     BSR     PRINT
     
+    MOVE.W  D2,D1 * Move count into D1
+    MULU.W  D3,D1 * Multiply count by money
+    
     BSR     PRINT_INT
     
     MOVE    A2, A1
     BSR     PRINT
     
-    MOVE.W  D2,D1
+    MOVE.W  D2,D1 * Move count into D1
+    MULU.W  D4,D1 * Multiply count by CO2 reduced
+    SUB.W   D1,D5 * Subtract CO2 produced
+    BMI     SET_0_D5 ***************************************************************************************************TODOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
+    
     BSR     PRINT_INT
     
     LEA     and,A1
@@ -274,21 +281,16 @@ CO2_REDUCER:
     
     LEA     from_air,A1
     BSR     PRINT
+    
+    BSR     ENDL
+    BSR     ENDL
 CO2_REDUCER_END:
     RTS
-END_DAY:    
-    BSR     CLEAR_SCREEN
-    ADD.W   #1, day     *Increase day by 1
-    BSR     RANDOM_NUMBER_100   * Get rng num between 0 - 100
-    
-    ADD.W   D1, CO2_level   * Add random number to CO2_level
-    MOVE.W  D1, D5          * Keep track of CO2 produced
-    
-    MOVE.W  (CO2_daily), D1
-    ADD.W   D1, CO2_level  * Increase CO2 level by CO2_daily so harder and faster
-    
-    ADD.W   (CO2_daily), D5          * Keep track of CO2 produced
-    
+
+*-------------------------------------------------------
+*--------------------GET_TEMPERATURE--------------------
+*------------------------------------------------------- 
+GET_TEMPERATURE:
     * Equation to get temp : co2 * 0.0375
     MOVE.L  #375, D1
     MULU.W  (CO2_level), D1
@@ -296,9 +298,16 @@ END_DAY:
     DIVU.W  #10000, D1
     DIVU.W  #10, D1
     MOVE.W  D1, temperature
+END_DAY:    
+    BSR     CLEAR_SCREEN
+    ADD.W   #1, day     *Increase day by 1
+    BSR     RANDOM_NUMBER_100   * Get rng num between 0 - 100
+    MOVE.W  D1, D5          * add random number to total CO2 produced    
+    
+    ADD.W   (CO2_daily), D5 * add CO2 daily to total CO2 produced
     
     BSR     RANDOM_NUMBER_10 * Get random number between 0 - 10
-    ADD.W   D1, CO2_daily  * Increase D2
+    ADD.W   D1, CO2_daily  * Increase CO2 daily
 DISPLAY_END_DAY:
     LEA     YOU,  A4    *Load Ascii for Shop keeper
     BSR     SHOW_ASCII
@@ -315,28 +324,33 @@ DISPLAY_END_DAY:
 	
     MOVE.W  #DAY_COUNTER_INCREMENT,dayCounter  *Increase reset day counter
     
-    LEA     sleep_alarm_day, A2
+    LEA     sleep_alarm_day, A1
     MOVE.B  (hasAlarm), D1
     MOVE.W  #ALARM_DAY_COUNTER_BUFF, D2
     BSR     ADD_DAY_COUNTER
     
-    LEA     sleep_coffee_day, A2
+    LEA     sleep_coffee_day, A1
     MOVE.B  (hasCoffee), D1
     MOVE.W  #COFFEE_DAY_COUNTER_BUFF, D2
     BSR     ADD_DAY_COUNTER
     
     MOVE.B  #0, hasCoffee * Reset coffee to 0 as it is consumed
     
-    MOVE.W    (waterMillCount), D1
-    MOVE.W    #WATER_MILL_MONEY, D2
-    MOVE.W    #WATER_MILL_REDUCTION, D3
+    LEA       sleep_watermill_produce, A2
+    MOVE.W    (waterMillCount), D2
+    MOVE.W    #WATER_MILL_MONEY, D3
+    MOVE.W    #WATER_MILL_REDUCTION, D4
     BSR       CO2_REDUCER
 
-    MOVE.W    (solarPanelCount), D1
-    MOVE.W    #SOLAR_PANEL_MONEY, D2
-    MOVE.W    #SOLAR_PANEL_REDUCTION, D3
+    LEA       sleep_solarpanel_produce, A2
+    MOVE.W    (solarPanelCount), D2
+    MOVE.W    #SOLAR_PANEL_MONEY, D3
+    MOVE.W    #SOLAR_PANEL_REDUCTION, D4
     BSR       CO2_REDUCER
-
+    
+    ADD.W     D5,   CO2_level
+    BSR       GET_TEMPERATURE
+    
 	LEA sleep_increment_co2_string_1, A1
 	BSR     PRINT
 	
@@ -471,7 +485,7 @@ WORK:
 	*if (dayCounter - 2 < 0) = tired
 	MOVE.W  (dayCounter),  D1
 	SUB     #2, D1
-	BMI     TIRED_WORK
+	BMI     TIRED_WORK  * Prevent day counter from going into -1
     
     MOVE.W  D1,  dayCounter * Set day counter to subtracted day counter
 
@@ -597,6 +611,39 @@ FIRST_TIME_SHOP:
     *
     BRA     SHOP
 *-------------------------------------------------------
+*----------------PRINT_SHOP SUBROUTINE------------------
+*-------------------------------------------------------
+PRINT_SHOP:
+    LEA     shop_browse_1, A1
+    BSR     PRINT
+    MOVE.W  #ALARM_COST, D1
+    BSR     PRINT_INT
+
+    LEA     shop_browse_2, A1
+    BSR     PRINT
+    MOVE.W  #WATER_MILL_COST, D1
+    BSR     PRINT_INT
+
+    LEA     shop_browse_3, A1
+    BSR     PRINT
+    MOVE.W  #SOLAR_PANEL_COST, D1
+    BSR     PRINT_INT
+
+    LEA     shop_browse_4, A1
+    BSR     PRINT
+    MOVE.W  #SWORD_COST, D1
+    BSR     PRINT_INT
+
+    LEA     shop_browse_5, A1
+    BSR     PRINT
+    MOVE.W  #COFFEE_COST, D1
+    BSR     PRINT_INT
+    
+    LEA     shop_browse_6, A1
+    BSR     PRINT
+    
+    RTS
+*-------------------------------------------------------
 *-------------------UNABLE_BUY SUBROUTINE---------------
 *----------------------[D2: need_money]-----------------
 UNABLE_BUY:
@@ -626,11 +673,9 @@ BROWSE_SHOP:
     
     BSR     ENDL
     
-    LEA     shop_browse_string, A1
-    BSR     PRINT
+    BSR     PRINT_SHOP
 
 	MOVE.B  #4, D0
-
 	TRAP	#15		 *ASK FOR INPUT
 	
 	CMP.W   #1,D1	   *Alarm Clock IF (D1 == #1)
@@ -1459,18 +1504,18 @@ shop_string_3           DC.B	$0D,$0A
                         DC.B	$0D,$0A
                         DC.B	'Enter your choice) ',0
                         
-shop_browse_string      DC.B    'There is a selection of items that caught your interest:'
+shop_browse_1           DC.B    'There is a selection of items that caught your interest:'
                         DC.B	$0D,$0A
-                        DC.B    '1) Alarm Clock : $20'
-                        DC.B	$0D,$0A
-                        DC.B    '2) Water Mill : $50'
-                        DC.B	$0D,$0A
-                        DC.B    '3) Solar Panel : $100'
-                        DC.B	$0D,$0A
-                        DC.B    '4) Sword : $50'
-                        DC.B	$0D,$0A
-                        DC.B    '5) Coffee : $10'
-                        DC.B	$0D,$0A
+                        DC.B    '1) Alarm Clock : $',0
+shop_browse_2           DC.B	$0D,$0A
+                        DC.B    '2) Water Mill : $',0
+shop_browse_3           DC.B	$0D,$0A
+                        DC.B    '3) Solar Panel : $',0
+shop_browse_4           DC.B	$0D,$0A
+                        DC.B    '4) Sword : $',0
+shop_browse_5           DC.B	$0D,$0A
+                        DC.B    '5) Coffee : $',0
+shop_browse_6           DC.B	$0D,$0A
                         DC.B    '6) Exit Browse'
                         DC.B	$0D,$0A
                         DC.B	'Enter your choice) ',0
@@ -1559,7 +1604,7 @@ temperatureSecondWarning DS.B   1
 *VALIDATION VALUES TO BE USED
 *-------------------------------------------------------
 SALARY	  EQU 75
-STARTING_CASH	  EQU 100
+STARTING_CASH	  EQU 10000
 SECOND  EQU 100
 
 DAY_COUNTER_INCREMENT EQU 3
@@ -1587,6 +1632,7 @@ TEMP_THRESHOLD_FIRST   EQU 16
 TEMP_THRESHOLD_SECOND  EQU 24
 TEMP_THRESHOLD_THIRD   EQU 31
 	END	START
+
 
 
 
