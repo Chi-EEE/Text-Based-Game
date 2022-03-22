@@ -24,11 +24,12 @@ INITIALIZE:
 	MOVE.W  #STARTING_CASH,money
 	MOVE.W  #1,     day
 	
-	MOVE.W  #DEFAULT_DAY_COUNTER,     dayCounter  
+	MOVE.W  #DAY_COUNTER_INCREMENT,     dayCounter  
 	
 	* Initalize game
     MOVE.W  #15,    temperature
-    MOVE.W  #400,    CO2_level
+    MOVE.W  #400,   CO2_level
+    MOVE.W  #3,     CO2_daily
     
     * Initalize booleans
     MOVE.B  #0,     visitedShop
@@ -244,11 +245,15 @@ ADD_DAY_COUNTER_END:
 END_DAY:
     BSR     CLEAR_SCREEN
     ADD.W   #1, day     *Increase day by 1
-    BSR     RANDOM_NUMBER   * Get rng num between 0 - 10000
+    BSR     RANDOM_NUMBER_100   * Get rng num between 0 - 100
+    
     ADD.W   D1, CO2_level   * Add random number to CO2_level
     MOVE.W  D1, D5          * Keep track of CO2 produced
-    ADD.W   #CARBON_PRODUCED_DAILY, CO2_level  * Increase CO2 level by CARBON_PRODUCED_DAILY so harder and faster
-    ADD.W   #CARBON_PRODUCED_DAILY, D5          * Keep track of CO2 produced
+    
+    MOVE.W  (CO2_daily), D1
+    ADD.W   D1, CO2_level  * Increase CO2 level by CO2_daily so harder and faster
+    
+    ADD.W   (CO2_daily), D5          * Keep track of CO2 produced
     
     * Equation to get temp : co2 * 0.0375
     MOVE.L  #375, D1
@@ -258,7 +263,7 @@ END_DAY:
     DIVU.W  #10, D1
     MOVE.W  D1, temperature
     
-    MOVE.W  #DEFAULT_DAY_COUNTER,dayCounter  *Increase reset day counter
+    MOVE.W  #DAY_COUNTER_INCREMENT,dayCounter  *Increase reset day counter
     
     MOVE.B  (hasAlarm), D1
     MOVE.W  #ALARM_DAY_COUNTER_BUFF, D2
@@ -269,6 +274,9 @@ END_DAY:
     BSR     ADD_DAY_COUNTER
     
     MOVE.B  #0, hasCoffee * Reset coffee to 0 as it is consumed
+    
+    BSR     RANDOM_NUMBER_10 * Get random number between 0 - 10
+    ADD.W   D1, CO2_daily  * Increase D2
 DISPLAY_END_DAY:
     LEA     YOU,  A4    *Load Ascii for Shop keeper
     BSR     SHOW_ASCII
@@ -718,9 +726,15 @@ SELL_ITEM_SHOP:
 *--------------------EXPLORE SUBROUTINE-----------------
 *-------------------------------------------------------
 EXPLORE:
+    BSR     CLEAR_SCREEN
+    
+    BSR     ENDL
+
 	LEA 	exploreChoice, A1
 	BSR		PRINT
 	
+    BSR     ENDL
+    
 	BSR	 	SYSTEM_PAUSE
 	BRA		CITY
 	
@@ -767,6 +781,14 @@ MANAGE_SOLAR_END:
     LEA     manage_browse_string_sword, A1
     BSR     PRINT
 MANAGE_SWORD_END:
+    * if (hasCoffee) 6
+    MOVE.B  (hasCoffee), D1
+    CMP.B   #1, D1
+    BNE     MANAGE_COFFEE_END
+    BSR     ENDL
+    LEA     manage_browse_coffee_sword, A1
+    BSR     PRINT
+MANAGE_COFFEE_END:
     BSR     ENDL
     LEA     manage_browse_string_choice, A1
     BSR     PRINT
@@ -783,6 +805,8 @@ MANAGE_SWORD_END:
     BEQ     MANAGE_SOLAR_INPUT
     CMP     #5, D1
     BEQ     MANAGE_SWORD_INPUT
+    CMP     #6, D1
+    BEQ     MANAGE_COFFEE_INPUT
 
 	BRA	 	MANAGE
 
@@ -873,6 +897,24 @@ MANAGE_SWORD_INPUT:
     BSR     SYSTEM_PAUSE
 
     BRA     MANAGE
+
+MANAGE_COFFEE_INPUT:
+    * if (!hasCoffee) { return; }
+    MOVE.B  (hasCoffee), D1
+    CMP.B   #1, D1
+    BNE     MANAGE
+
+    BSR     CLEAR_SCREEN
+    
+    * Info about item
+    LEA     manage_info_coffee_sword, A1
+    BSR     PRINT
+
+    BSR     ENDL
+    BSR     SYSTEM_PAUSE
+
+    BRA     MANAGE
+
 
 *-------------------------------------------------------------------------------------------------------------------------------------------------------*
 *-------------------------------------------------------------------------------------------------------------------------------------------------------*
@@ -1020,12 +1062,37 @@ GET_MILLISECONDS:
     MOVE.B #8, D0 # Load
     TRAP #15  #Time in D1
     RTS
-RANDOM_NUMBER:     
+*-------------------------------------------------------
+*--------------RANDOM_NUMBER_100 SUBROUTINE-------------
+*-------------------------------------------------------
+*         Gets a random number between 0 - 100
+RANDOM_NUMBER_100:     
     BSR GET_MILLISECONDS
 
     AND.L #$5FFFFF, D1 # AND 6 Bits to prevent any overflow
 
     DIVU #100, D1 #Divide by 100, 1000, 10000 depending on Number range required
+
+    SWAP D1 #SWAP Higher Order Word and Lower Order Word in D1
+
+    ADDQ.W #1, D1 #Add 1 to D1.W so number is at least 1
+
+    MOVE.W D1, D2 #Extract the number from D1.W
+
+    CLR.L D1 # Clear contents of D1
+
+    MOVE.W D2, D1 #Move the generated number to D1
+    RTS
+*-------------------------------------------------------
+*---------------RANDOM_NUMBER_10 SUBROUTINE-------------
+*-------------------------------------------------------
+*         Gets a random number between 0 - 10
+RANDOM_NUMBER_10:     
+    BSR GET_MILLISECONDS
+
+    AND.L #$7FFFF, D1 # AND 5 Bits to prevent any overflow
+
+    DIVU #10, D1 #Divide by 10
 
     SWAP D1 #SWAP Higher Order Word and Lower Order Word in D1
 
@@ -1283,11 +1350,11 @@ sleep_increment_co2_string_2 DC.B    ' CO2 in the air',0
 
 cityChoice		DC.B	'What would you like to do in the town?'
                 DC.B	$0D,$0A
-                DC.B	'1) Visit the Building Shop'
+                DC.B	'1) Visit the General Store'
                 DC.B	$0D,$0A
                 DC.B	'2) Explore the Town'
                 DC.B	$0D,$0A
-                DC.B	'3) Manage your Buildings'
+                DC.B	'3) Manage your items'
                 DC.B	$0D,$0A
                 DC.B	'4) Exit the Town'
                 DC.B	$0D,$0A
@@ -1328,7 +1395,7 @@ shop_unable_buy_string_3: DC.B    ' more cash to purchase this item.',0
 
 shop_already_have_string:  DC.B    'You already have this item.',0
 
-shop_intro_string_1           DC.B    'Welcome to my Shop, my name is ',0
+shop_intro_string_1           DC.B    'Welcome to my Store, my name is ',0
 shop_intro_string_2           DC.B    '!' 
                               DC.B    $0D,$0A
                               DC.B    'I sell items that could be used to reduce your CO2 output.',0
@@ -1376,6 +1443,7 @@ money 			DS.W	1	*PLAYER money in hundreds
 day             DS.W    1   *DAYS PASSED
 
 dayCounter     DS.W    1   *INCREASED FROM 3 TO 4 IF ALARM
+CO2_daily      DS.W    1
 
 temperature     DS.W    1   * Default = 15 C
 CO2_level       DS.W    1   * Default = 4000 ppm or 0.00375 per CO2
@@ -1390,6 +1458,7 @@ hasSword       DS.B    1
 hasCoffee      DS.B    1
 *
 
+*
 *-------------------------------------------------------
 *VALIDATION VALUES TO BE USED
 *-------------------------------------------------------
@@ -1399,9 +1468,7 @@ MILLION	 EQU 10000
 HUNDREDTHOUSAND EQU 1000
 SECOND  EQU 100
 
-DEFAULT_DAY_COUNTER EQU 3
-
-CARBON_PRODUCED_DAILY EQU 0
+DAY_COUNTER_INCREMENT EQU 3
 
 ALARM_DAY_COUNTER_BUFF EQU 2
 COFFEE_DAY_COUNTER_BUFF EQU 1
@@ -1412,6 +1479,7 @@ SOLAR_PANEL_COST    EQU 100
 SWORD_COST          EQU 50
 COFFEE_COST          EQU 10
 	END	START
+
 
 
 
