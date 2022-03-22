@@ -747,14 +747,14 @@ MANAGE:
     BSR     SHOW_ASCII
     BSR     ENDL
     
-    LEA     manage_browse_string, A1
+    LEA     manage_browse, A1
     BSR     PRINT
     * if (hasAlarm) 2
     MOVE.B  (hasAlarm), D1
     CMP.B   #1, D1
     BNE     MANAGE_ALARM_END
     BSR     ENDL
-    LEA     manage_browse_string_alarm, A1
+    LEA     manage_browse_alarm, A1
     BSR     PRINT
 MANAGE_ALARM_END:
     * if (waterMillCount > 0) 3
@@ -762,7 +762,7 @@ MANAGE_ALARM_END:
     CMP.W   #0, D1
     BLS     MANAGE_WATER_END
     BSR     ENDL
-    LEA     manage_browse_string_water, A1
+    LEA     manage_browse_water, A1
     BSR     PRINT
 MANAGE_WATER_END:
     * if (solarPanelCount > 0) 4
@@ -770,7 +770,7 @@ MANAGE_WATER_END:
     CMP.W   #0, D1
     BLS     MANAGE_SOLAR_END
     BSR     ENDL
-    LEA     manage_browse_string_solar, A1
+    LEA     manage_browse_solar, A1
     BSR     PRINT
 MANAGE_SOLAR_END:
     * if (hasSword) 5
@@ -778,7 +778,7 @@ MANAGE_SOLAR_END:
     CMP.B   #1, D1
     BNE     MANAGE_SWORD_END
     BSR     ENDL
-    LEA     manage_browse_string_sword, A1
+    LEA     manage_browse_sword, A1
     BSR     PRINT
 MANAGE_SWORD_END:
     * if (hasCoffee) 6
@@ -786,11 +786,11 @@ MANAGE_SWORD_END:
     CMP.B   #1, D1
     BNE     MANAGE_COFFEE_END
     BSR     ENDL
-    LEA     manage_browse_coffee_sword, A1
+    LEA     manage_browse_coffee, A1
     BSR     PRINT
 MANAGE_COFFEE_END:
     BSR     ENDL
-    LEA     manage_browse_string_choice, A1
+    LEA     manage_browse_choice, A1
     BSR     PRINT
 
     BSR     INPUT_NUM * D1
@@ -907,7 +907,7 @@ MANAGE_COFFEE_INPUT:
     BSR     CLEAR_SCREEN
     
     * Info about item
-    LEA     manage_info_coffee_sword, A1
+    LEA     manage_info_string_coffee, A1
     BSR     PRINT
 
     BSR     ENDL
@@ -1413,15 +1413,15 @@ shop_thank_string   DC.B    'Thank you for buying this item!',0
 shop_unable_string   DC.B    'Sorry I am currently not buying goods from individuals!',0
 
 exploreChoice	DC.B    'The road to town is currently blocked by a giant immovable boulder.', 0
-manage_browse_string      DC.B    'What should I manage?:'
+manage_browse      DC.B    'What should I manage?:'
                           DC.B    $0D,$0A
                           DC.B    '1) Exit Browse',0
-manage_browse_string_alarm    DC.B    '2) Alarm Clock',0
-manage_browse_string_water    DC.B    '3) Water Mill',0
-manage_browse_string_solar    DC.B    '4) Solar Panel',0
-manage_browse_string_sword    DC.B    '5) Sword',0
-manage_browse_string_coffee    DC.B    '6) Coffee',0
-manage_browse_string_choice    DC.B	'Enter your choice) ',0
+manage_browse_alarm    DC.B    '2) Alarm Clock',0
+manage_browse_water    DC.B    '3) Water Mill',0
+manage_browse_solar    DC.B    '4) Solar Panel',0
+manage_browse_sword    DC.B    '5) Sword',0
+manage_browse_coffee    DC.B    '6) Coffee',0
+manage_browse_choice    DC.B	'Enter your choice) ',0
 
 manage_info_string_alarm    DC.B    'This alarm clock allows you to wake up earlier',0
 manage_info_string_water    DC.B    'Water mills are a cheap and reliable CO2 reducer.',0
@@ -1479,6 +1479,7 @@ SOLAR_PANEL_COST    EQU 100
 SWORD_COST          EQU 50
 COFFEE_COST          EQU 10
 	END	START
+
 
 
 
