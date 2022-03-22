@@ -36,6 +36,8 @@ INITIALIZE:
 	MOVE.B  #0,     hasAlarm
 	MOVE.B  #0,     hasSword
 	MOVE.B  #0,     hasCoffee
+	MOVE.B  #0,     temperatureFirstWarning
+	MOVE.B  #0,     temperatureSecondWarning
 	
 	* Initalize counts
 	MOVE.W  #0,     waterMillCount
@@ -234,12 +236,15 @@ GUIDE_1:
     RTS
 *-------------------------------------------------------
 *--------------------ADD_DAY_COUNTER--------------------
-*-----------------[D1: boolean, D2:buff]---------------- 
+*------------[A1: message,D1: boolean, D2:buff]--------- 
 *Checks if D1 is true and add day counter buff to day counter
 ADD_DAY_COUNTER:
     CMP     #1,     D1
     BNE     ADD_DAY_COUNTER_END
     ADD.W   D2, dayCounter
+    BSR     PRINT
+    BSR     ENDL
+    BSR     ENDL
 ADD_DAY_COUNTER_END:
     RTS
 END_DAY:
@@ -263,18 +268,6 @@ END_DAY:
     DIVU.W  #10, D1
     MOVE.W  D1, temperature
     
-    MOVE.W  #DAY_COUNTER_INCREMENT,dayCounter  *Increase reset day counter
-    
-    MOVE.B  (hasAlarm), D1
-    MOVE.W  #ALARM_DAY_COUNTER_BUFF, D2
-    BSR     ADD_DAY_COUNTER
-    
-    MOVE.B  (hasCoffee), D1
-    MOVE.W  #COFFEE_DAY_COUNTER_BUFF, D2
-    BSR     ADD_DAY_COUNTER
-    
-    MOVE.B  #0, hasCoffee * Reset coffee to 0 as it is consumed
-    
     BSR     RANDOM_NUMBER_10 * Get random number between 0 - 10
     ADD.W   D1, CO2_daily  * Increase D2
 DISPLAY_END_DAY:
@@ -291,6 +284,20 @@ DISPLAY_END_DAY:
 	BSR     ENDL
 	BSR	 	SYSTEM_PAUSE
 	
+    MOVE.W  #DAY_COUNTER_INCREMENT,dayCounter  *Increase reset day counter
+    
+    LEA     sleep_alarm_day, A1
+    MOVE.B  (hasAlarm), D1
+    MOVE.W  #ALARM_DAY_COUNTER_BUFF, D2
+    BSR     ADD_DAY_COUNTER
+    
+    LEA     sleep_coffee_day, A1
+    MOVE.B  (hasCoffee), D1
+    MOVE.W  #COFFEE_DAY_COUNTER_BUFF, D2
+    BSR     ADD_DAY_COUNTER
+    
+    MOVE.B  #0, hasCoffee * Reset coffee to 0 as it is consumed
+    
 	LEA sleep_increment_co2_string_1, A1
 	BSR     PRINT
 	
@@ -312,6 +319,21 @@ GAME_LOOP:
     BSR     CLEAR_SCREEN
     BSR     DISPLAY	
 
+    MOVE.W  (temperature),  D1
+
+    MOVE.W  #TEMP_THRESHOLD_THIRD, D2
+    LEA     temperature_warning_third, A1
+    BSR     TEMPERATURE_WARNING
+
+    MOVE.W  #TEMP_THRESHOLD_SECOND, D2
+    LEA     temperature_warning_second, A1
+    BSR     TEMPERATURE_WARNING
+
+    MOVE.W  #TEMP_THRESHOLD_FIRST, D2
+    LEA     temperature_warning_first, A1
+    BSR     TEMPERATURE_WARNING
+    
+    TEMPERATURE_WARNING_END:
 	LEA 	mainChoice, A1   *LOAD MESSAGE
 	BSR	 	PRINT
 	
@@ -326,7 +348,21 @@ GAME_LOOP:
 	BEQ	 	END_DAY
 	
 	BRA	 	GAME_LOOP	*LOOP FOREVER
-
+*-------------------------------------------------------
+*----------------TEMPERATURE_WARNING--------------------
+*-----[D1: temperature, D2: threshold, A1: Message]----- 
+*Check if temperature is above threshold and send message
+TEMPERATURE_WARNING:
+    CMP.W   D2,    D1
+    BHI     TEMPERATURE_WARNING_CONTINUE
+    RTS
+    TEMPERATURE_WARNING_CONTINUE:
+    BSR     PRINT
+    BSR     ENDL
+    LEA     LINE,   A1
+    BSR     PRINT
+    
+    BRA     TEMPERATURE_WARNING_END
 *-------------------------------------------------------
 *-------------------DISPLAY SUBROUTINE------------------
 *-------------------------------------------------------
@@ -397,9 +433,6 @@ WORK:
 	MOVE.W  (dayCounter),  D1
 	SUB     #2, D1
 	BMI     TIRED_WORK
-
-	CMP     #0, D1          * Check if day counter is equal or less than 0
-    BLS     TIRED_WORK
     
     MOVE.W  D1,  dayCounter * Set day counter to subtracted day counter
 
@@ -754,6 +787,7 @@ MANAGE:
     CMP.B   #1, D1
     BNE     MANAGE_ALARM_END
     BSR     ENDL
+    BSR     ENDL
     LEA     manage_browse_alarm, A1
     BSR     PRINT
 MANAGE_ALARM_END:
@@ -761,6 +795,7 @@ MANAGE_ALARM_END:
     MOVE.W  (waterMillCount), D1
     CMP.W   #0, D1
     BLS     MANAGE_WATER_END
+    BSR     ENDL
     BSR     ENDL
     LEA     manage_browse_water, A1
     BSR     PRINT
@@ -770,6 +805,7 @@ MANAGE_WATER_END:
     CMP.W   #0, D1
     BLS     MANAGE_SOLAR_END
     BSR     ENDL
+    BSR     ENDL
     LEA     manage_browse_solar, A1
     BSR     PRINT
 MANAGE_SOLAR_END:
@@ -778,6 +814,7 @@ MANAGE_SOLAR_END:
     CMP.B   #1, D1
     BNE     MANAGE_SWORD_END
     BSR     ENDL
+    BSR     ENDL
     LEA     manage_browse_sword, A1
     BSR     PRINT
 MANAGE_SWORD_END:
@@ -785,6 +822,7 @@ MANAGE_SWORD_END:
     MOVE.B  (hasCoffee), D1
     CMP.B   #1, D1
     BNE     MANAGE_COFFEE_END
+    BSR     ENDL
     BSR     ENDL
     LEA     manage_browse_coffee, A1
     BSR     PRINT
@@ -1345,8 +1383,11 @@ mainChoice   	DC.B	'What would you like to do?'
                 DC.B	'Enter your choice) ',0
 
 sleep_string    DC.B    'ZzZzZzZzZz',0
-sleep_increment_co2_string_1 DC.B    'You wake up sensing that theres an extra ',0
+sleep_increment_co2_string_1 DC.B    'You sense that theres an extra ',0
 sleep_increment_co2_string_2 DC.B    ' CO2 in the air',0
+
+sleep_alarm_day              DC.B    'You woke up early because of your alarm!',0
+sleep_coffee_day             DC.B    'You start your day consuming the coffee.',0
 
 cityChoice		DC.B	'What would you like to do in the town?'
                 DC.B	$0D,$0A
@@ -1433,10 +1474,17 @@ manage_default_amount_string        DC.B    'You currently have ',0
 manage_default_amount_waterMill     DC.B    'x Water Mills',0
 manage_default_amount_solarPanel    DC.B    'x Solar Panels',0
 
-
 work_string	   	DC.B	'Working', 0 
 work_tired_string   DC.B    'You are too tired to work right now',0
 PAUSE		  	DC.B	'Press enter to continue . . .', 0
+
+temperature_warning_first   DC.B    'Feels quite warmer than before.'
+                            DC.B    $0D,$0A
+                            DC.B    'I should get some water mills or solar panels',0
+temperature_warning_second  DC.B    'Maybe the tax on CO2 was a good idea',0
+temperature_warning_third   DC.B    'Its REALLY getting hot in here.'
+                            DC.B    $0D,$0A
+                            DC.B    'I dont think I can stand much longer at 45C',0
 
 name	 		DS.W	30  *Max length of name can be 30
 money 			DS.W	1	*PLAYER money in hundreds
@@ -1456,6 +1504,8 @@ visitedShop    DS.B    1   *Check if you visited shop before
 hasAlarm       DS.B    1
 hasSword       DS.B    1
 hasCoffee      DS.B    1
+temperatureFirstWarning DS.B    1
+temperatureSecondWarning DS.B   1
 *
 
 *
@@ -1477,7 +1527,12 @@ ALARM_COST          EQU 20
 WATER_MILL_COST     EQU 50
 SOLAR_PANEL_COST    EQU 100
 SWORD_COST          EQU 50
-COFFEE_COST          EQU 10
+COFFEE_COST         EQU 10
+
+* Temperature Thresholds
+TEMP_THRESHOLD_FIRST   EQU 16
+TEMP_THRESHOLD_SECOND  EQU 24
+TEMP_THRESHOLD_THIRD   EQU 31
 	END	START
 
 
