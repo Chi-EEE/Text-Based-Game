@@ -249,19 +249,17 @@ ADD_DAY_COUNTER_END:
     RTS
 *----------------------------------------------------------------
 *------------------------CO2_REDUCER-----------------------------
-*[A2: message, D1,D2: count, D3:money, D4: CO2, D5: totalCO2Made]
-*Checks if D1 is true and add day counter buff to day counter
+*[A2: message, D1,D2: count, D3:money, D4: CO2, , D6: total CO2 reduction, D5: totalCO2Made, D7]
+*  Checks if D1 is true and add day counter buff to day counter
 CO2_REDUCER:
+    MOVE.W  D2, D1 * Move count into D1
     CMP.W   #0, D1
     BLS     CO2_REDUCER_END
     
     LEA     your,A1
     BSR     PRINT
-    
-    MOVE.W  D2,D1 * Move count into D1
-    MULU.W  D3,D1 * Multiply count by money
-    
-    BSR     PRINT_INT
+        
+    BSR     PRINT_INT * Print count of wind mill
     
     MOVE    A2, A1
     BSR     PRINT
@@ -269,15 +267,29 @@ CO2_REDUCER:
     MOVE.W  D2,D1 * Move count into D1
     MULU.W  D4,D1 * Multiply count by CO2 reduced
     SUB.W   D1,D5 * Subtract CO2 produced
-    BMI     SET_0_D5 ***************************************************************************************************TODOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
-    
-    BSR     PRINT_INT
+    BPL     NOT_SET_0_D5 * Prevent overflow
+    MOVE.W  #0,D5 
+NOT_SET_0_D5:
+    MOVE.W  D2,D1 * Move count into D1
+    MULU.W  D6,D1 * Multiply count by CO2 reduced
+    MOVE.W  (CO2_level), D7
+    SUB.W   D1, D7 * Subtract CO2 produced
+    BPL     NOT_SET_0_D7 * Prevent overflow
+    MOVE.W  #0,D7
+NOT_SET_0_D7:
+    MOVE.W  D7, (CO2_level)
+    MULU.W  D3,D1 * Multiply count by money to get total money produced
+    ADD.W   D1, money
+
+    BSR     PRINT_INT * Print money earned
     
     LEA     and,A1
     BSR     PRINT
     
-    MOVE.W  D3,D1
-    BSR     PRINT_INT
+    MOVE.W  D2, D1 * Move count into D1
+    MULU.W  D4,D1 * Multiply count by CO2 to get total co2 reduced
+
+    BSR     PRINT_INT * Print CO2
     
     LEA     from_air,A1
     BSR     PRINT
@@ -286,7 +298,6 @@ CO2_REDUCER:
     BSR     ENDL
 CO2_REDUCER_END:
     RTS
-
 *-------------------------------------------------------
 *--------------------GET_TEMPERATURE--------------------
 *------------------------------------------------------- 
@@ -298,9 +309,15 @@ GET_TEMPERATURE:
     DIVU.W  #10000, D1
     DIVU.W  #10, D1
     MOVE.W  D1, temperature
+    RTS
 END_DAY:    
     BSR     CLEAR_SCREEN
     ADD.W   #1, day     *Increase day by 1
+    
+    MOVE.W  (temperature),D1
+    CMP     #44,    D1
+    BHI     END_GAME    
+    
     BSR     RANDOM_NUMBER_100   * Get rng num between 0 - 100
     MOVE.W  D1, D5          * add random number to total CO2 produced    
     
@@ -340,26 +357,28 @@ DISPLAY_END_DAY:
     MOVE.W    (waterMillCount), D2
     MOVE.W    #WATER_MILL_MONEY, D3
     MOVE.W    #WATER_MILL_REDUCTION, D4
+    MOVE.W    #WATER_MILL_REDUCTION_OVERALL, D6
     BSR       CO2_REDUCER
 
     LEA       sleep_solarpanel_produce, A2
     MOVE.W    (solarPanelCount), D2
     MOVE.W    #SOLAR_PANEL_MONEY, D3
     MOVE.W    #SOLAR_PANEL_REDUCTION, D4
+    MOVE.W    #WATER_MILL_REDUCTION_OVERALL, D6
     BSR       CO2_REDUCER
     
-    ADD.W     D5,   CO2_level
-    BSR       GET_TEMPERATURE
-    
-	LEA sleep_increment_co2_string_1, A1
+	LEA     sleep_increment_co2_string_1, A1
 	BSR     PRINT
 	
-	MOVE.W  D5, D1
+    MOVE.W  D5, D1
 	BSR     PRINT_INT
 	
 	LEA     sleep_increment_co2_string_2, A1
 	BSR     PRINT
 	
+    ADD.W     D5,   CO2_level
+    BSR       GET_TEMPERATURE
+    
     BSR     ENDL
 
 	BSR     WAIT
@@ -1620,18 +1639,22 @@ SWORD_COST          EQU 50
 COFFEE_COST         EQU 12
 
 * CO2 Reducers
-WATER_MILL_REDUCTION    EQU 10
-SOLAR_PANEL_REDUCTION   EQU 25
+WATER_MILL_REDUCTION    EQU 8
+SOLAR_PANEL_REDUCTION   EQU 30
+
+WATER_MILL_REDUCTION_OVERALL    EQU 2
+SOLAR_PANEL_REDUCTION_OVERALL   EQU 25
 
 * CO2 Money Givers
 WATER_MILL_MONEY    EQU 10
-SOLAR_PANEL_MONEY   EQU 27
+SOLAR_PANEL_MONEY   EQU 40
 
 * Temperature Thresholds
 TEMP_THRESHOLD_FIRST   EQU 16
 TEMP_THRESHOLD_SECOND  EQU 24
 TEMP_THRESHOLD_THIRD   EQU 31
 	END	START
+
 
 
 
