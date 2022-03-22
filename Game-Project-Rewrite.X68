@@ -1056,7 +1056,30 @@ MANAGE_COFFEE_INPUT:
 
     BRA     MANAGE
 
+END_GAME:
+    LEA     end_game_fail_1, A1
+    BSR     PRINT
+    
+    MOVE.W  (day),D1
+    BSR     PRINT_INT
 
+    LEA     end_game_fail_2, A1
+    BSR     PRINT
+    BSR     ENDL
+    
+    LEA     end_game_fail_3, A1
+    BSR     PRINT
+    
+    MOVE.W  (solarPanelCount),D1
+    BSR     PRINT_INT
+
+    BSR     ENDL
+    LEA     end_game_fail_4, A1
+    BSR     PRINT
+    
+    MOVE.W  (waterMillCount),D1
+    BSR     PRINT_INT
+    BRA     END
 *-------------------------------------------------------------------------------------------------------------------------------------------------------*
 *-------------------------------------------------------------------------------------------------------------------------------------------------------*
 *-------------------------------------------------------------------------------------------------------------------------------------------------------*
@@ -1595,6 +1618,10 @@ temperature_warning_second  DC.B    'Maybe the tax on CO2 was a good idea',0
 temperature_warning_third   DC.B    'Its REALLY getting hot in here.'
                             DC.B    $0D,$0A
                             DC.B    'I dont think I can stand much longer at 45C',0
+end_game_fail_1   DC.W    'You have survived for ',0
+end_game_fail_2   DC.W    ' days with $',0
+end_game_fail_3   DC.W    'Water Mills: ',0
+end_game_fail_4   DC.W    'Solar Panels: ',0
 
 name	 		DS.W	30  *Max length of name can be 30
 money 			DS.W	1	*PLAYER money in hundreds
@@ -1623,7 +1650,7 @@ temperatureSecondWarning DS.B   1
 *VALIDATION VALUES TO BE USED
 *-------------------------------------------------------
 SALARY	  EQU 75
-STARTING_CASH	  EQU 10000
+STARTING_CASH	  EQU 100
 SECOND  EQU 100
 
 DAY_COUNTER_INCREMENT EQU 3
@@ -1654,6 +1681,7 @@ TEMP_THRESHOLD_FIRST   EQU 16
 TEMP_THRESHOLD_SECOND  EQU 24
 TEMP_THRESHOLD_THIRD   EQU 31
 	END	START
+
 
 
 
