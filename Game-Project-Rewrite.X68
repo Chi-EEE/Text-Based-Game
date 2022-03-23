@@ -892,7 +892,133 @@ EXPLORE_CASTLE_OUT:
     CMP     #2,     D1
     BEQ     EXPLORE_CASTLE_IN
 
-    BRA     EXPLORE_CASTLE_OUT     
+    BRA     EXPLORE_CASTLE_OUT
+EXPLORE_CASTLE_IN:
+    BSR     CLEAR_SCREEN
+    LEA     explore_story_message_1,A1
+    BSR     PRINT
+    
+    BSR     WAIT
+
+    LEA     name, A2
+    LEA     explore_you_message_1,A3
+    LEA     YOU, A4
+    BSR     SPEAKING_ASCII
+
+    BSR     WAIT
+    BSR     WAIT
+    BSR     SYSTEM_PAUSE
+    BSR     CLEAR_SCREEN
+
+    LEA     explore_story_message_2,A1
+    BSR     PRINT
+    
+    BSR     WAIT
+    BSR     SYSTEM_PAUSE
+    BSR     CLEAR_SCREEN
+    
+    LEA     explore_story_message_3,A1
+    BSR     PRINT
+
+    BSR     WAIT
+    BSR     SYSTEM_PAUSE
+    BSR     CLEAR_SCREEN
+
+    LEA     KING_NAME, A2
+    LEA     explore_king_message_1, A3
+    LEA     KING, A4
+    BSR     SPEAKING_ASCII
+
+    BSR     WAIT
+    BSR     SYSTEM_PAUSE
+    BSR     CLEAR_SCREEN
+    
+    LEA     explore_king_message_2, A3
+    BSR     SPEAKING_ASCII
+
+    BSR     WAIT
+    BSR     SYSTEM_PAUSE
+    BSR     CLEAR_SCREEN
+
+    LEA     name, A2
+    LEA     explore_you_message_2,A3
+    LEA     YOU, A4
+    BSR     SPEAKING_ASCII
+
+    BSR     WAIT
+    BSR     SYSTEM_PAUSE
+    BSR     CLEAR_SCREEN
+
+    LEA     KING_NAME, A2
+    LEA     explore_king_message_2, A3
+    LEA     KING, A4
+    BSR     SPEAKING_ASCII
+
+    BSR     WAIT
+    BSR     SYSTEM_PAUSE
+    BSR     CLEAR_SCREEN
+
+    LEA     explore_king_message_3, A3
+    BSR     SPEAKING_ASCII
+    
+    BSR     WAIT
+    BSR     SYSTEM_PAUSE
+    BSR     CLEAR_SCREEN
+    
+    LEA     name, A2
+    LEA     explore_you_message_3,A3
+    LEA     YOU, A4
+    BSR     SPEAKING_ASCII
+
+    BSR     WAIT
+    BSR     SYSTEM_PAUSE
+    BSR     CLEAR_SCREEN
+
+    LEA     KING_NAME, A2
+    LEA     explore_king_message_4, A3
+    LEA     KING, A4
+    BSR     SPEAKING_ASCII
+    
+    BSR     WAIT
+    BSR     SYSTEM_PAUSE
+    BSR     CLEAR_SCREEN
+    
+    LEA     name, A2
+    LEA     explore_you_message_4,A3
+    LEA     YOU, A4
+    BSR     SPEAKING_ASCII
+
+    BSR     WAIT
+    BSR     SYSTEM_PAUSE
+    BSR     CLEAR_SCREEN
+
+    LEA     KING_NAME, A2
+    LEA     explore_king_message_5, A3
+    LEA     KING, A4
+    BSR     SPEAKING_ASCII
+
+    BSR     WAIT
+    BSR     SYSTEM_PAUSE
+    BSR     CLEAR_SCREEN
+
+    LEA     explore_option_in, A1
+    BSR     PRINT
+
+    BSR     INPUT_INT
+
+    CMP     #1,     D1
+    CMP     #2,     D1
+   DC.B    'Should I go slay the king?'
+                    DC.B	$0D,$0A
+                    DC.B	$0D,$09
+                    DC.B	'1) Yes'
+                    DC.B	$0D,$0A
+                    DC.B	$0D,$09
+                    DC.B	'2) No'
+                    DC.B	$0D,$0A
+                    DC.B	'Enter your choice) ',0
+explore_story_message_4 DC.B    'You have slayed the King of Oxeris',0
+explore_story_message_5 DC.B    'However the guards have arrested you and put you into prison',0
 *-------------------------------------------------------
 *--------------------MANAGE SUBROUTINE------------------
 *-------------------------------------------------------
@@ -1463,7 +1589,8 @@ GUIDE            DC.B    '                .!5B&&&@&&#B5?!^             '
                  DC.B    '  B@?    B@?                       Y@Y       '
                  DC.B	$0D,$0A
                  DC.B    '  &@?    P@J                       J@Y       ', 0
-         
+
+KING_NAME        DC.B   'King',0
 KING             DC.B    '            P&G:          ..            '
                  DC.B	$0D,$0A
                  DC.B    '           :&#&&5.     .!P#G            '
@@ -1697,8 +1824,8 @@ explore_you_message_2   DC.B    'What have you done to make a mistake?!',0
 explore_king_message_3  DC.B    'I have ordered my workers to mine into a volcano releasing CO2',0
 explore_you_message_3   DC.B    'Why would you do that!?',0
 explore_king_message_4  DC.B    'I thought that the volcano would give the Kingdom all the energy it would every need',0
-explore_you_message_3   DC.B    'Do you have any plan to solve this',0
-explore_king_message_4  DC.B    'I have no idea how to solve this problem',0
+explore_you_message_4   DC.B    'Do you have any plan to solve this',0
+explore_king_message_5  DC.B    'I have no idea how to solve this problem',0
 explore_option_in   DC.B    'Should I go slay the king?'
                     DC.B	$0D,$0A
                     DC.B	$0D,$09
@@ -1710,6 +1837,7 @@ explore_option_in   DC.B    'Should I go slay the king?'
                     DC.B	'Enter your choice) ',0
 explore_story_message_4 DC.B    'You have slayed the King of Oxeris',0
 explore_story_message_5 DC.B    'However the guards have arrested you and put you into prison',0
+explore_story_message_leave    DC.B    'You leave the castle.'
 
 manage_browse      DC.B    'What should I manage?:'
                           DC.B    $0D,$0A
@@ -1767,6 +1895,7 @@ hasSword       DS.B    1
 hasCoffee      DS.B    1
 temperatureFirstWarning DS.B    1
 temperatureSecondWarning DS.B   1
+visitedCastle  DS.B    1
 *
 
 *
