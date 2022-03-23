@@ -686,7 +686,6 @@ BROWSE_SHOP:
     
     LEA     SHOP_KEEPER,  A4    *Load Ascii for Shop keeper
     BSR     SHOW_ASCII
-    
     BSR     ENDL
     
     BSR     PRINT_SHOP
@@ -833,7 +832,7 @@ SWORD:
     BSR     ENDL
     
     * Confirm if player wants to buy sword
-    MOVE.W  #hasSword, D2
+    MOVE.W  #SWORD_COST, D2
     BSR     CONFIRM_SHOP
     
     LEA     hasSword, A1
@@ -862,14 +861,28 @@ EXPLORE:
     BSR     CLEAR_SCREEN
     
     BSR     ENDL
+    
+    MOVE.W  (day), D2
+    MOVE.W  #CONSTRUCTION_FINISH, D1
+    SUB.W   D2, D1
+    BPL     EXPLORE_SUB_END * if (D1 < 0) {
+    MOVE.W  #0, D1
+    EXPLORE_SUB_END: * }
+    CMP     #0, D1
+    BLS     EXPLORE_CASTLE_OUT
 
-	LEA 	exploreChoice, A1
+	LEA 	explore_1, A1
+	BSR		PRINT
+	
+	BSR     PRINT_INT
+	
+	LEA 	explore_2, A1
 	BSR		PRINT
 	
     BSR     ENDL
     
 	BSR	 	SYSTEM_PAUSE
-	BRA		CITY
+	BRA		GAME_LOOP
 
 EXPLORE_CASTLE_OUT:
     BSR     CLEAR_SCREEN
@@ -879,8 +892,27 @@ EXPLORE_CASTLE_OUT:
     
     BSR     ENDL
     
-    LEA     explore_castle_out, A1
+    LEA     LINE, A1
     BSR     PRINT
+    
+    BSR     ENDL
+    
+    LEA     explore_castle_out_string, A1
+    BSR     PRINT
+    
+    bSR     WAIT
+    BSR     SYSTEM_PAUSE
+    BSR     CLEAR_SCREEN
+    
+    LEA     CASTLE, A1
+    BSR     PRINT
+    
+    BSR     ENDL
+    
+    LEA     LINE, A1
+    BSR     PRINT
+    
+    BSR     ENDL
     
     LEA     explore_option_out, A1
     BSR     PRINT
@@ -888,28 +920,27 @@ EXPLORE_CASTLE_OUT:
     BSR     INPUT_INT
     
     CMP     #1,     D1
-    BEQ     GAME_LOOP
-    CMP     #2,     D1
     BEQ     EXPLORE_CASTLE_IN
+    CMP     #2,     D1
+    BEQ     GAME_LOOP
 
     BRA     EXPLORE_CASTLE_OUT
 EXPLORE_CASTLE_IN:
     BSR     CLEAR_SCREEN
+    BSR     ENDL
     LEA     explore_story_message_1,A1
     BSR     PRINT
     
     BSR     WAIT
+    BSR     SYSTEM_PAUSE
+    BSR     CLEAR_SCREEN
 
     LEA     name, A2
     LEA     explore_you_message_1,A3
     LEA     YOU, A4
     BSR     SPEAKING_ASCII
-
-    BSR     WAIT
-    BSR     WAIT
-    BSR     SYSTEM_PAUSE
-    BSR     CLEAR_SCREEN
-
+    
+    BSR     ENDL
     LEA     explore_story_message_2,A1
     BSR     PRINT
     
@@ -917,6 +948,7 @@ EXPLORE_CASTLE_IN:
     BSR     SYSTEM_PAUSE
     BSR     CLEAR_SCREEN
     
+    BSR     ENDL
     LEA     explore_story_message_3,A1
     BSR     PRINT
 
@@ -929,96 +961,71 @@ EXPLORE_CASTLE_IN:
     LEA     KING, A4
     BSR     SPEAKING_ASCII
 
-    BSR     WAIT
-    BSR     SYSTEM_PAUSE
-    BSR     CLEAR_SCREEN
-    
     LEA     explore_king_message_2, A3
     BSR     SPEAKING_ASCII
-
-    BSR     WAIT
-    BSR     SYSTEM_PAUSE
-    BSR     CLEAR_SCREEN
 
     LEA     name, A2
     LEA     explore_you_message_2,A3
     LEA     YOU, A4
     BSR     SPEAKING_ASCII
-
-    BSR     WAIT
-    BSR     SYSTEM_PAUSE
-    BSR     CLEAR_SCREEN
-
+    
     LEA     KING_NAME, A2
-    LEA     explore_king_message_2, A3
+    LEA     explore_king_message_3, A3
     LEA     KING, A4
     BSR     SPEAKING_ASCII
-
-    BSR     WAIT
-    BSR     SYSTEM_PAUSE
-    BSR     CLEAR_SCREEN
-
-    LEA     explore_king_message_3, A3
-    BSR     SPEAKING_ASCII
-    
-    BSR     WAIT
-    BSR     SYSTEM_PAUSE
-    BSR     CLEAR_SCREEN
-    
+        
     LEA     name, A2
     LEA     explore_you_message_3,A3
     LEA     YOU, A4
     BSR     SPEAKING_ASCII
 
-    BSR     WAIT
-    BSR     SYSTEM_PAUSE
-    BSR     CLEAR_SCREEN
-
     LEA     KING_NAME, A2
     LEA     explore_king_message_4, A3
     LEA     KING, A4
     BSR     SPEAKING_ASCII
-    
-    BSR     WAIT
-    BSR     SYSTEM_PAUSE
-    BSR     CLEAR_SCREEN
-    
+        
     LEA     name, A2
     LEA     explore_you_message_4,A3
     LEA     YOU, A4
     BSR     SPEAKING_ASCII
 
-    BSR     WAIT
-    BSR     SYSTEM_PAUSE
-    BSR     CLEAR_SCREEN
-
     LEA     KING_NAME, A2
     LEA     explore_king_message_5, A3
     LEA     KING, A4
     BSR     SPEAKING_ASCII
+    
+    * if (!hasSword) { return; }
+    MOVE.B  (hasSword), D1
+    CMP.B   #1, D1
+    BNE     EXPLORE_CASTLE_IN_LEAVE
 
-    BSR     WAIT
-    BSR     SYSTEM_PAUSE
+EXPLORE_CASTLE_IN_INPUT:
     BSR     CLEAR_SCREEN
 
+    LEA     YOU, A4
+    BSR     SHOW_ASCII
+    BSR     ENDL
+        
+    BSR     ENDL
     LEA     explore_option_in, A1
     BSR     PRINT
-
+    
     BSR     INPUT_INT
 
     CMP     #1,     D1
+    BEQ     END_GAME_NEUTRAL
     CMP     #2,     D1
-   DC.B    'Should I go slay the king?'
-                    DC.B	$0D,$0A
-                    DC.B	$0D,$09
-                    DC.B	'1) Yes'
-                    DC.B	$0D,$0A
-                    DC.B	$0D,$09
-                    DC.B	'2) No'
-                    DC.B	$0D,$0A
-                    DC.B	'Enter your choice) ',0
-explore_story_message_4 DC.B    'You have slayed the King of Oxeris',0
-explore_story_message_5 DC.B    'However the guards have arrested you and put you into prison',0
+    BEQ     EXPLORE_CASTLE_IN_LEAVE
+    
+    BRA     EXPLORE_CASTLE_IN_INPUT
+EXPLORE_CASTLE_IN_LEAVE:
+    BSR     CLEAR_SCREEN
+    BSR     ENDL
+    LEA     explore_story_message_leave, A1
+    BSR     PRINT
+    BSR     ENDL
+    BSR     SYSTEM_PAUSE
+    BRA     GAME_LOOP
 *-------------------------------------------------------
 *--------------------MANAGE SUBROUTINE------------------
 *-------------------------------------------------------
@@ -1202,41 +1209,37 @@ MANAGE_COFFEE_INPUT:
     BRA     MANAGE
 
 END_GAME_LOSE:
-    LEA     end_game_lose_1, A1
-    BSR     PRINT
-    
-    MOVE.W  (day),D1
-    BSR     PRINT_INT
-
-    LEA     end_game_lose_2, A1
-    BSR     PRINT
-    
-    MOVE.W  (money),D1
-    BSR     PRINT_INT
-    
-    BSR     ENDL
-    
-    LEA     end_game_lose_3, A1
-    BSR     PRINT
-    
-    MOVE.W  (solarPanelCount),D1
-    BSR     PRINT_INT
-
-    BSR     ENDL
-    LEA     end_game_lose_4, A1
-    BSR     PRINT
-    
-    MOVE.W  (waterMillCount),D1
-    BSR     PRINT_INT
-    BRA     END
+    LEA     end_game_lose_string, A1
+    BSR     PRINT    
+    BRA     END_GAME_DISPLAY
 END_GAME_NEUTRAL:
-    LEA     end_game_lose_1, A1
+    LEA     end_game_neutral_1, A1
+    BSR     PRINT
+
+    BSR     WAIT
+    BSR     SYSTEM_PAUSE
+    BSR     CLEAR_SCREEN
+    
+    LEA     end_game_neutral_2, A1
+    BSR     PRINT
+    BRA     END_GAME_DISPLAY
+END_GAME_DISPLAY:
+    BSR     WAIT
+    BSR     SYSTEM_PAUSE
+    BSR     CLEAR_SCREEN
+
+    LEA     LINE, A1
+    BSR     PRINT
+
+    BSR     ENDL
+
+    LEA     end_game_details_1, A1
     BSR     PRINT
     
     MOVE.W  (day),D1
     BSR     PRINT_INT
 
-    LEA     end_game_lose_2, A1
+    LEA     end_game_details_2, A1
     BSR     PRINT
     
     MOVE.W  (money),D1
@@ -1244,20 +1247,25 @@ END_GAME_NEUTRAL:
     
     BSR     ENDL
     
-    LEA     end_game_lose_3, A1
+    LEA     end_game_details_3, A1
     BSR     PRINT
     
     MOVE.W  (solarPanelCount),D1
     BSR     PRINT_INT
 
     BSR     ENDL
-    LEA     end_game_lose_4, A1
+    LEA     end_game_details_4, A1
     BSR     PRINT
     
     MOVE.W  (waterMillCount),D1
     BSR     PRINT_INT
-    BRA     END
 
+    BSR     ENDL
+
+    LEA     end_gameover, A1
+    BSR     PRINT
+
+    BRA     END
 *-------------------------------------------------------------------------------------------------------------------------------------------------------*
 *-------------------------------------------------------------------------------------------------------------------------------------------------------*
 *-------------------------------------------------------------------------UTILITY FUNCTIONS-------------------------------------------------------------*
@@ -1802,10 +1810,14 @@ YES_NO              DC.B	$0D,$0A
 shop_thank_string   DC.B    'Thank you for buying this item!',0
 shop_unable_string   DC.B    'Sorry I am currently not buying goods from individuals!',0
 
-exploreChoice	DC.B    'The road to town is currently blocked by a giant immovable boulder.', 0
+explore_1	    DC.B    'The road to town is currently blocked by a sign to wait until for construction.'
+                DC.B    $0D,$0A
+                DC.B    'to finish in ',0
+explore_2	    DC.B    ' days.',0
 
-explore_castle_out  DC.B    'You notice a castle in the distance',0
-explore_option_out  DC.B    'Should I go visit the castle?'
+                
+explore_castle_out_string  DC.B    'You notice a castle in the distance',0
+explore_option_out  DC.B    'Should you go visit the castle?'
                     DC.B	$0D,$0A
                     DC.B	$0D,$09
                     DC.B	'1) Yes'
@@ -1814,18 +1826,20 @@ explore_option_out  DC.B    'Should I go visit the castle?'
                     DC.B	'2) No'
                     DC.B	$0D,$0A
                     DC.B	'Enter your choice) ',0
-explore_story_message_1 DC.B    'You walk into the empty castle with no guards around',0
-explore_you_message_1   DC.B    'I wonder if this castle is empty',0
-explore_story_message_2 DC.B    'You walk around the castle eventually reaching the throne room',0
-explore_story_message_3 DC.B    'You spot the King of Oxeris sitting on the throne by himself crying',0
+explore_story_message_1 DC.B    'You walk into the empty castle with no guards around.',0
+explore_you_message_1   DC.B    'I wonder if this castle is empty.',0
+explore_story_message_2 DC.B    'You walk around the castle eventually reaching the throne room.',0
+explore_story_message_3 DC.B    'You spot the King of Oxeris sitting on the throne by himself crying..',0
 explore_king_message_1  DC.B    'Hello adventurer...',0
-explore_king_message_2  DC.B    'Im the King of Oxeris and I have done a mistake',0
+explore_king_message_2  DC.B    'Im the King of Oxeris and I have done a mistake!',0
 explore_you_message_2   DC.B    'What have you done to make a mistake?!',0
-explore_king_message_3  DC.B    'I have ordered my workers to mine into a volcano releasing CO2',0
+explore_king_message_3  DC.B    'I have ordered my workers to mine into a volcano releasing CO2.',0
 explore_you_message_3   DC.B    'Why would you do that!?',0
-explore_king_message_4  DC.B    'I thought that the volcano would give the Kingdom all the energy it would every need',0
-explore_you_message_4   DC.B    'Do you have any plan to solve this',0
-explore_king_message_5  DC.B    'I have no idea how to solve this problem',0
+explore_king_message_4  DC.B    'I thought that the volcano would give the Kingdom all the energy it'
+                        DC.B	$0D,$0A
+                        DC.B    'would ever need!',0
+explore_you_message_4   DC.B    'Do you have any plan to solve this?',0
+explore_king_message_5  DC.B    'I have no idea how to solve this problem"',0
 explore_option_in   DC.B    'Should I go slay the king?'
                     DC.B	$0D,$0A
                     DC.B	$0D,$09
@@ -1835,9 +1849,7 @@ explore_option_in   DC.B    'Should I go slay the king?'
                     DC.B	'2) No'
                     DC.B	$0D,$0A
                     DC.B	'Enter your choice) ',0
-explore_story_message_4 DC.B    'You have slayed the King of Oxeris',0
-explore_story_message_5 DC.B    'However the guards have arrested you and put you into prison',0
-explore_story_message_leave    DC.B    'You leave the castle.'
+explore_story_message_leave    DC.B    'You leave the castle.',0
 
 manage_browse      DC.B    'What should I manage?:'
                           DC.B    $0D,$0A
@@ -1870,10 +1882,17 @@ temperature_warning_second  DC.B    'Maybe the tax on CO2 was a good idea',0
 temperature_warning_third   DC.B    'Its REALLY getting hot in here.'
                             DC.B    $0D,$0A
                             DC.B    'I dont think I can stand much longer at 45C',0
-end_game_lose_1   DC.W    'You have survived for ',0
-end_game_lose_2   DC.W    ' days with $',0
-end_game_lose_3   DC.W    'Water Mills: ',0
-end_game_lose_4   DC.W    'Solar Panels: ',0
+
+end_game_lose_string        DC.B    'You have succumbed the heat of the Kingdom',0
+end_game_neutral_1   DC.B    'You have slayed the King of Oxeris',0
+end_game_neutral_2   DC.B    'However the guards have arrested you and put you into prison',0
+
+end_gameover         DC.B    'GAME OVER!',0
+
+end_game_details_1   DC.W    'You have survived for ',0
+end_game_details_2   DC.W    ' days with $',0
+end_game_details_3   DC.W    'Water Mills: ',0
+end_game_details_4   DC.W    'Solar Panels: ',0
 
 name	 		DS.W	30  *Max length of name can be 30
 money 			DS.W	1	*PLAYER money in hundreds
@@ -1933,7 +1952,11 @@ SOLAR_PANEL_MONEY   EQU 40
 TEMP_THRESHOLD_FIRST   EQU 16
 TEMP_THRESHOLD_SECOND  EQU 24
 TEMP_THRESHOLD_THIRD   EQU 31
+* Other
+CONSTRUCTION_FINISH    EQU  2
+
 	END	START
+
 
 
 
