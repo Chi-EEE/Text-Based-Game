@@ -14,9 +14,6 @@ START:
 	BSR     GUIDE_1
 	BRA	 	GAME_LOOP
 	
-END:
-	SIMHALT
-
 *-------------------------------------------------------
 *------------------INITIALIZE SUBROUTINE----------------
 *-------------------------------------------------------
@@ -90,7 +87,7 @@ INPUT_NAME_LOOP:
 	LEA	 	name_confirmation_2, A1
 	BSR     PRINT
 	
-    BSR     INPUT_NUM
+    BSR     INPUT_INT
 
     CMP     #2,D1       *No
 	BEQ     CLEAR_INPUT_NAME
@@ -314,9 +311,9 @@ END_DAY:
     BSR     CLEAR_SCREEN
     ADD.W   #1, day     *Increase day by 1
     
-    MOVE.W  (temperature),D1
+    MOVE.W  (temperature),D1 * If temperature is greater than 44 at end of day
     CMP     #44,    D1
-    BHI     END_GAME    
+    BHI     END_GAME_LOSE * Lose
     
     BSR     RANDOM_NUMBER_100   * Get rng num between 0 - 100
     MOVE.W  D1, D5          * add random number to total CO2 produced    
@@ -873,7 +870,29 @@ EXPLORE:
     
 	BSR	 	SYSTEM_PAUSE
 	BRA		CITY
-	
+
+EXPLORE_CASTLE_OUT:
+    BSR     CLEAR_SCREEN
+
+    LEA     CASTLE, A1
+    BSR     PRINT
+    
+    BSR     ENDL
+    
+    LEA     explore_castle_out, A1
+    BSR     PRINT
+    
+    LEA     explore_option_out, A1
+    BSR     PRINT
+    
+    BSR     INPUT_INT
+    
+    CMP     #1,     D1
+    BEQ     GAME_LOOP
+    CMP     #2,     D1
+    BEQ     EXPLORE_CASTLE_IN
+
+    BRA     EXPLORE_CASTLE_OUT     
 *-------------------------------------------------------
 *--------------------MANAGE SUBROUTINE------------------
 *-------------------------------------------------------
@@ -934,7 +953,7 @@ MANAGE_COFFEE_END:
     LEA     manage_browse_choice, A1
     BSR     PRINT
 
-    BSR     INPUT_NUM * D1
+    BSR     INPUT_INT * D1
     
     CMP     #1, D1
     BEQ     CITY
@@ -1056,34 +1075,66 @@ MANAGE_COFFEE_INPUT:
 
     BRA     MANAGE
 
-END_GAME:
-    LEA     end_game_fail_1, A1
+END_GAME_LOSE:
+    LEA     end_game_lose_1, A1
     BSR     PRINT
     
     MOVE.W  (day),D1
     BSR     PRINT_INT
 
-    LEA     end_game_fail_2, A1
+    LEA     end_game_lose_2, A1
     BSR     PRINT
+    
+    MOVE.W  (money),D1
+    BSR     PRINT_INT
+    
     BSR     ENDL
     
-    LEA     end_game_fail_3, A1
+    LEA     end_game_lose_3, A1
     BSR     PRINT
     
     MOVE.W  (solarPanelCount),D1
     BSR     PRINT_INT
 
     BSR     ENDL
-    LEA     end_game_fail_4, A1
+    LEA     end_game_lose_4, A1
     BSR     PRINT
     
     MOVE.W  (waterMillCount),D1
     BSR     PRINT_INT
     BRA     END
+END_GAME_NEUTRAL:
+    LEA     end_game_lose_1, A1
+    BSR     PRINT
+    
+    MOVE.W  (day),D1
+    BSR     PRINT_INT
+
+    LEA     end_game_lose_2, A1
+    BSR     PRINT
+    
+    MOVE.W  (money),D1
+    BSR     PRINT_INT
+    
+    BSR     ENDL
+    
+    LEA     end_game_lose_3, A1
+    BSR     PRINT
+    
+    MOVE.W  (solarPanelCount),D1
+    BSR     PRINT_INT
+
+    BSR     ENDL
+    LEA     end_game_lose_4, A1
+    BSR     PRINT
+    
+    MOVE.W  (waterMillCount),D1
+    BSR     PRINT_INT
+    BRA     END
+
 *-------------------------------------------------------------------------------------------------------------------------------------------------------*
 *-------------------------------------------------------------------------------------------------------------------------------------------------------*
-*-------------------------------------------------------------------------------------------------------------------------------------------------------*
-*-------------------------------------------------------------------------------------------------------------------------------------------------------*
+*-------------------------------------------------------------------------UTILITY FUNCTIONS-------------------------------------------------------------*
 *-------------------------------------------------------------------------------------------------------------------------------------------------------*
 *-------------------------------------------------------------------------------------------------------------------------------------------------------*
 
@@ -1113,9 +1164,9 @@ PRINT_INT:
 	RTS
 	
 *-------------------------------------------------------
-*----------------INPUT_NUM SUBROUTINE-------------------
+*----------------INPUT_INT SUBROUTINE-------------------
 *-------------------[D0,D1:output]----------------------
-INPUT_NUM:
+INPUT_INT:
     MOVE.B  #4,D0
 	TRAP	#15
     RTS
@@ -1269,7 +1320,9 @@ RANDOM_NUMBER_10:
     MOVE.W D2, D1 #Move the generated number to D1
     RTS
 
-
+	
+END:
+	SIMHALT
 *-------------------------------------------------------
 *-------------------DATA DELARATIONS--------------------
 *-------------------------------------------------------
@@ -1497,7 +1550,43 @@ SHOP_KEEPER      DC.B    '             .^JG&@@@@@@@@&BJ.               '
                  DC.B    'B@@     ^@@!                           .@@?  '
                  DC.B	$0D,$0A
                  DC.B    '&@@     ^@@!                            @@Y  ', 0
-    
+
+CASTLE           DC.B    '                                  |>>>'
+                 DC.B	$0D,$0A
+                 DC.B    '                                  |'
+                 DC.B	$0D,$0A
+                 DC.B    '                    |>>>      _  _|_  _         |>>>'
+                 DC.B	$0D,$0A
+                 DC.B    '                    |        |;| |;| |;|        |'
+                 DC.B	$0D,$0A
+                 DC.B    '                _  _|_  _    \\.    .  /    _  _|_  _'
+                 DC.B	$0D,$0A
+                 DC.B    '               |;|_|;|_|;|    \\:. ,  /    |;|_|;|_|;|'
+                 DC.B	$0D,$0A
+                 DC.B    '               \\..      /    ||;   . |    \\.    .  /'
+                 DC.B	$0D,$0A
+                 DC.B    '                \\.  ,  /     ||:  .  |     \\:  .  /'
+                 DC.B	$0D,$0A
+                 DC.B    '                 ||:   |_   _ ||_ . _ | _   _||:   |'
+                 DC.B	$0D,$0A
+                 DC.B    '                 ||:  .|||_|;|_|;|_|;|_|;|_|;||:.  |'
+                 DC.B	$0D,$0A
+                 DC.B    '                 ||:   ||.    .     .      . ||:  .|'
+                 DC.B	$0D,$0A
+                 DC.B    '                 ||: . || .     . .   .  ,   ||:   |       \,/'
+                 DC.B	$0D,$0A
+                 DC.B    '                 ||:   ||:  ,  _______   .   ||: , |            /`\'
+                 DC.B	$0D,$0A
+                 DC.B    '                 ||:   || .   /+++++++\    . ||:   |'
+                 DC.B	$0D,$0A
+                 DC.B    '                 ||:   ||.    |+++++++| .    ||: . |'
+                 DC.B	$0D,$0A
+                 DC.B    '              __ ||: . ||: ,  |+++++++|.  . _||_   |'
+                 DC.B	$0D,$0A
+                 DC.B    '     ____--`~    `--~~__|.    |+++++__|----~    ~`---,              ___'
+                 DC.B	$0D,$0A
+                 DC.B    '-~--~                   ~---__|,--~`                  ~~----_____-~`   `~----~~', 0
+                 
 mainChoice   	DC.B	'What would you like to do?'
                 DC.B	$0D,$0A
                 DC.B	'1) Go to work and earn $75'
@@ -1587,6 +1676,41 @@ shop_thank_string   DC.B    'Thank you for buying this item!',0
 shop_unable_string   DC.B    'Sorry I am currently not buying goods from individuals!',0
 
 exploreChoice	DC.B    'The road to town is currently blocked by a giant immovable boulder.', 0
+
+explore_castle_out  DC.B    'You notice a castle in the distance',0
+explore_option_out  DC.B    'Should I go visit the castle?'
+                    DC.B	$0D,$0A
+                    DC.B	$0D,$09
+                    DC.B	'1) Yes'
+                    DC.B	$0D,$0A
+                    DC.B	$0D,$09
+                    DC.B	'2) No'
+                    DC.B	$0D,$0A
+                    DC.B	'Enter your choice) ',0
+explore_story_message_1 DC.B    'You walk into the empty castle with no guards around',0
+explore_you_message_1   DC.B    'I wonder if this castle is empty',0
+explore_story_message_2 DC.B    'You walk around the castle eventually reaching the throne room',0
+explore_story_message_3 DC.B    'You spot the King of Oxeris sitting on the throne by himself crying',0
+explore_king_message_1  DC.B    'Hello adventurer...',0
+explore_king_message_2  DC.B    'Im the King of Oxeris and I have done a mistake',0
+explore_you_message_2   DC.B    'What have you done to make a mistake?!',0
+explore_king_message_3  DC.B    'I have ordered my workers to mine into a volcano releasing CO2',0
+explore_you_message_3   DC.B    'Why would you do that!?',0
+explore_king_message_4  DC.B    'I thought that the volcano would give the Kingdom all the energy it would every need',0
+explore_you_message_3   DC.B    'Do you have any plan to solve this',0
+explore_king_message_4  DC.B    'I have no idea how to solve this problem',0
+explore_option_in   DC.B    'Should I go slay the king?'
+                    DC.B	$0D,$0A
+                    DC.B	$0D,$09
+                    DC.B	'1) Yes'
+                    DC.B	$0D,$0A
+                    DC.B	$0D,$09
+                    DC.B	'2) No'
+                    DC.B	$0D,$0A
+                    DC.B	'Enter your choice) ',0
+explore_story_message_4 DC.B    'You have slayed the King of Oxeris',0
+explore_story_message_5 DC.B    'However the guards have arrested you and put you into prison',0
+
 manage_browse      DC.B    'What should I manage?:'
                           DC.B    $0D,$0A
                           DC.B    '1) Exit Browse',0
@@ -1618,10 +1742,10 @@ temperature_warning_second  DC.B    'Maybe the tax on CO2 was a good idea',0
 temperature_warning_third   DC.B    'Its REALLY getting hot in here.'
                             DC.B    $0D,$0A
                             DC.B    'I dont think I can stand much longer at 45C',0
-end_game_fail_1   DC.W    'You have survived for ',0
-end_game_fail_2   DC.W    ' days with $',0
-end_game_fail_3   DC.W    'Water Mills: ',0
-end_game_fail_4   DC.W    'Solar Panels: ',0
+end_game_lose_1   DC.W    'You have survived for ',0
+end_game_lose_2   DC.W    ' days with $',0
+end_game_lose_3   DC.W    'Water Mills: ',0
+end_game_lose_4   DC.W    'Solar Panels: ',0
 
 name	 		DS.W	30  *Max length of name can be 30
 money 			DS.W	1	*PLAYER money in hundreds
@@ -1681,6 +1805,9 @@ TEMP_THRESHOLD_FIRST   EQU 16
 TEMP_THRESHOLD_SECOND  EQU 24
 TEMP_THRESHOLD_THIRD   EQU 31
 	END	START
+
+
+
 
 
 
