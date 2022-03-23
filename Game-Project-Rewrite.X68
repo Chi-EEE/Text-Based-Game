@@ -34,6 +34,7 @@ INITIALIZE:
 	MOVE.B  #0,     hasCoffee
 	MOVE.B  #0,     temperatureFirstWarning
 	MOVE.B  #0,     temperatureSecondWarning
+	MOVE.B  #0,     visitedCastle
 	
 	* Initalize counts
 	MOVE.W  #0,     waterMillCount
@@ -396,7 +397,7 @@ GAME_LOOP:
 *--------------TEMPERATURE_WARNING_MORE-----------------
 *-----[D1: temperature, D2: threshold, A1: Message]----- 
 *Check if temperature is above threshold and send message
-TEMPERATURE_WARNING:
+TEMPERATURE_WARNING_MORE:
     CMP.W   D2,    D1
     BHI     TEMPERATURE_WARNING_CONTINUE
     RTS
@@ -413,9 +414,9 @@ TEMPERATURE_WARNING:
 *Check if temperature is above threshold and send message
 TEMPERATURE_WARNING_LESS:
     CMP.W   D2,    D1
-    BLS     TEMPERATURE_WARNING_CONTINUE
+    BLS     TEMPERATURE_WARNING_CONTINUE_L
     RTS
-    TEMPERATURE_WARNING_CONTINUE:
+    TEMPERATURE_WARNING_CONTINUE_L:
     BSR     PRINT
     BSR     ENDL
     LEA     LINE,   A1
@@ -620,6 +621,8 @@ FIRST_TIME_SHOP:
 *----------------PRINT_SHOP SUBROUTINE------------------
 *-------------------------------------------------------
 PRINT_SHOP:
+    * Display shop items and cost
+
     LEA     shop_browse_1, A1
     BSR     PRINT
     MOVE.W  #ALARM_COST, D1
@@ -656,12 +659,14 @@ UNABLE_BUY:
     LEA     shop_unable_buy_string_1, A1
     BSR     PRINT
     
+    * Display current money
     MOVE.W  (money),    D1
     BSR     PRINT_INT
     
     LEA     shop_unable_buy_string_2, A1
     BSR     PRINT
     
+    * Display money needed
     SUB     D1, D2
     MOVE    D2, D1
     BSR     PRINT_INT
@@ -877,6 +882,7 @@ EXPLORE:
 EXPLORE_CASTLE_OUT:
     BSR     CLEAR_SCREEN
 
+    * Messages
     LEA     CASTLE, A1
     BSR     PRINT
     
@@ -916,8 +922,15 @@ EXPLORE_CASTLE_OUT:
 
     BRA     EXPLORE_CASTLE_OUT
 EXPLORE_CASTLE_IN:
+    * if visited castle with sword then skip to input
+    MOVE.B  (visitedCastle), D1
+    CMP.B   #1, D1
+    BEQ     EXPLORE_CASTLE_IN_INPUT
+
     BSR     CLEAR_SCREEN
     BSR     ENDL
+    
+    * Messages
     LEA     explore_story_message_1,A1
     BSR     PRINT
     
@@ -988,7 +1001,7 @@ EXPLORE_CASTLE_IN:
     MOVE.B  (hasSword), D1
     CMP.B   #1, D1
     BNE     EXPLORE_CASTLE_IN_LEAVE
-
+    MOVE.B  #1, visitedCastle * Set visited castle
 EXPLORE_CASTLE_IN_INPUT:
     BSR     CLEAR_SCREEN
 
@@ -1198,11 +1211,11 @@ MANAGE_COFFEE_INPUT:
 
     BRA     MANAGE
 
-END_GAME_LOSE:
+END_GAME_LOSE: * Lose ending for dying to temperature
     LEA     end_game_lose_string, A1
     BSR     PRINT    
     BRA     END_GAME_DISPLAY
-END_GAME_NEUTRAL:
+END_GAME_NEUTRAL: * Neutral ending for slaying king
     LEA     end_game_neutral_1, A1
     BSR     PRINT
 
@@ -1232,6 +1245,7 @@ END_GAME_DISPLAY:
     LEA     end_game_details_2, A1
     BSR     PRINT
     
+    * Display money
     MOVE.W  (money),D1
     BSR     PRINT_INT
     
@@ -1240,6 +1254,7 @@ END_GAME_DISPLAY:
     LEA     end_game_details_3, A1
     BSR     PRINT
     
+    * Display solar panel count
     MOVE.W  (solarPanelCount),D1
     BSR     PRINT_INT
 
@@ -1247,6 +1262,7 @@ END_GAME_DISPLAY:
     LEA     end_game_details_4, A1
     BSR     PRINT
     
+    * Display water mill count
     MOVE.W  (waterMillCount),D1
     BSR     PRINT_INT
 
@@ -1911,6 +1927,7 @@ TEMP_THRESHOLD_THIRD   EQU 31
 CONSTRUCTION_FINISH    EQU  8
 
 	END	START
+
 
 
 
