@@ -206,7 +206,7 @@ ADD_DAY_COUNTER_END:
     RTS
 *----------------------------------------------------------------
 *------------------------CO2_REDUCER-----------------------------
-*[A2: message, D1,D2: count, D3:money, D4: CO2, , D6: total CO2 reduction, D5: totalCO2Made, D7]
+*[A2: message, D1,D2: count, D3:money, D4: CO2 income reduction, D6: total CO2 reduction, D5: total CO2 being made, D7: total CO2 produced so far]
 *  Checks if D1 is true and add day counter buff to day counter
 CO2_REDUCER:
     MOVE.W  D2, D1 * Move count into D1
@@ -234,8 +234,8 @@ NOT_SET_0_D5:
     BPL     NOT_SET_0_D7 * Prevent overflow
     MOVE.W  #0,D7
 NOT_SET_0_D7:
-    MOVE.W  D7, (CO2_level)
-    MULU.W  D3,D1 * Multiply count by money to get total money produced
+    MOVE.W  D7,(CO2_level) * [D7]
+    MULU.W  D3,D1 * Multiply count by money to get total money produced * [D7]
     ADD.W   D1, money
 
     BSR     PRINT_INT * Print money earned
@@ -243,8 +243,13 @@ NOT_SET_0_D7:
     LEA     and,A1
     BSR     PRINT
     
-    MOVE.W  D2, D1 * Move count into D1
-    MULU.W  D4,D1 * Multiply count by CO2 to get total co2 reduced
+    MOVE.W  D2,D1 * Move count into D1
+    MULU.W  D4,D1 * Multiply count by CO2 to get total co2 reduced [D4]
+    
+    MOVE.W  D2,D7 * Move count into D4
+    MULU.W  D6,D7 * Multiply count by CO2 total reducer
+
+    ADD.W   D7, D1
 
     BSR     PRINT_INT * Print CO2
     
@@ -262,10 +267,16 @@ GET_TEMPERATURE:
     * Equation to get temp : co2 * 0.0375
     MOVE.L  #375, D1
     MULU.W  (CO2_level), D1
-
+    
+    CMP     #0, D1 * Check if D1 is 0
+    BNE     GET_TEMPERATURE_END
+    MOVE.W  #0, temperature
+    RTS
+    GET_TEMPERATURE_END: * Cant divide by 0
     DIVU.W  #10000, D1
     DIVU.W  #10, D1
-    MOVE.W  D1, temperature
+    MOVE.W  D1, temperature * Calculate temperature
+
     RTS
 END_DAY:    
     BSR     CLEAR_SCREEN
@@ -362,6 +373,10 @@ GAME_LOOP:
     LEA     temperature_warning_first, A1
     BSR     TEMPERATURE_WARNING
     
+    MOVE.W  #TEMP_THRESHOLD_ZERO, D2
+    LEA     temperature_warning_zero, A1
+    BSR     TEMPERATURE_WARNING
+
     TEMPERATURE_WARNING_END:
 	LEA 	mainChoice, A1   *LOAD MESSAGE
 	BSR	 	PRINT
@@ -1662,7 +1677,7 @@ sleep_coffee_day             DC.B    'You start your day consuming the coffee.',
 
 your    DC.B    'Your ',0
 and     DC.B    ' and removed ',0 
-from_air    DC.B    ' CO2 from the air',0
+from_air    DC.B    ' CO2 total from the air',0
 
 sleep_watermill_produce     DC.B    ' x Water Mills have given $',0
 sleep_solarpanel_produce    DC.B    ' x Solar Panels have given $',0
@@ -1796,6 +1811,9 @@ work_string	   	DC.B	'Working', 0
 work_tired_string   DC.B    'You are too tired to work right now',0
 PAUSE		  	DC.B	'Press enter to continue . . .', 0
 
+temperature_warning_zero    DC.B    'Brrr...'
+                            DC.B    $0D,$0A
+                            DC.B    'Its freezing and the temperature cant drop below 0',0
 temperature_warning_first   DC.B    'Feels quite warmer than before.'
                             DC.B    $0D,$0A
                             DC.B    'I should get some water mills or solar panels',0
@@ -1859,24 +1877,26 @@ SWORD_COST          EQU 50
 COFFEE_COST         EQU 12
 
 * CO2 Reducers
-WATER_MILL_REDUCTION    EQU 8
-SOLAR_PANEL_REDUCTION   EQU 30
+WATER_MILL_REDUCTION    EQU 10
+SOLAR_PANEL_REDUCTION   EQU 35
 
 WATER_MILL_REDUCTION_OVERALL    EQU 2
-SOLAR_PANEL_REDUCTION_OVERALL   EQU 25
+SOLAR_PANEL_REDUCTION_OVERALL   EQU 20
 
 * CO2 Money Givers
-WATER_MILL_MONEY    EQU 10
-SOLAR_PANEL_MONEY   EQU 40
+WATER_MILL_MONEY    EQU 6
+SOLAR_PANEL_MONEY   EQU 28
 
 * Temperature Thresholds
+TEMP_THRESHOLD_ZERO   EQU 5
 TEMP_THRESHOLD_FIRST   EQU 16
 TEMP_THRESHOLD_SECOND  EQU 24
 TEMP_THRESHOLD_THIRD   EQU 31
 * Other
-CONSTRUCTION_FINISH    EQU  2
+CONSTRUCTION_FINISH    EQU  8
 
 	END	START
+
 
 
 
