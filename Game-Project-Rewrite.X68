@@ -363,19 +363,19 @@ GAME_LOOP:
 
     MOVE.W  #TEMP_THRESHOLD_THIRD, D2
     LEA     temperature_warning_third, A1
-    BSR     TEMPERATURE_WARNING
+    BSR     TEMPERATURE_WARNING_MORE
 
     MOVE.W  #TEMP_THRESHOLD_SECOND, D2
     LEA     temperature_warning_second, A1
-    BSR     TEMPERATURE_WARNING
+    BSR     TEMPERATURE_WARNING_MORE
 
     MOVE.W  #TEMP_THRESHOLD_FIRST, D2
     LEA     temperature_warning_first, A1
-    BSR     TEMPERATURE_WARNING
+    BSR     TEMPERATURE_WARNING_MORE
     
     MOVE.W  #TEMP_THRESHOLD_ZERO, D2
     LEA     temperature_warning_zero, A1
-    BSR     TEMPERATURE_WARNING
+    BSR     TEMPERATURE_WARNING_LESS
 
     TEMPERATURE_WARNING_END:
 	LEA 	mainChoice, A1   *LOAD MESSAGE
@@ -393,12 +393,27 @@ GAME_LOOP:
 	
 	BRA	 	GAME_LOOP	*LOOP FOREVER
 *-------------------------------------------------------
-*----------------TEMPERATURE_WARNING--------------------
+*--------------TEMPERATURE_WARNING_MORE-----------------
 *-----[D1: temperature, D2: threshold, A1: Message]----- 
 *Check if temperature is above threshold and send message
 TEMPERATURE_WARNING:
     CMP.W   D2,    D1
     BHI     TEMPERATURE_WARNING_CONTINUE
+    RTS
+    TEMPERATURE_WARNING_CONTINUE:
+    BSR     PRINT
+    BSR     ENDL
+    LEA     LINE,   A1
+    BSR     PRINT
+    
+    BRA     TEMPERATURE_WARNING_END
+*-------------------------------------------------------
+*--------------TEMPERATURE_WARNING_LESS-----------------
+*-----[D1: temperature, D2: threshold, A1: Message]----- 
+*Check if temperature is above threshold and send message
+TEMPERATURE_WARNING_LESS:
+    CMP.W   D2,    D1
+    BLS     TEMPERATURE_WARNING_CONTINUE
     RTS
     TEMPERATURE_WARNING_CONTINUE:
     BSR     PRINT
@@ -1813,7 +1828,7 @@ PAUSE		  	DC.B	'Press enter to continue . . .', 0
 
 temperature_warning_zero    DC.B    'Brrr...'
                             DC.B    $0D,$0A
-                            DC.B    'Its freezing and the temperature cant drop below 0',0
+                            DC.B    'Its freezing, the temperature cant go lower than this.',0
 temperature_warning_first   DC.B    'Feels quite warmer than before.'
                             DC.B    $0D,$0A
                             DC.B    'I should get some water mills or solar panels',0
