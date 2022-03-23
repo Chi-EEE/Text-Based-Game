@@ -11,7 +11,6 @@ START:
 	BSR	 	INPUT_NAME
 	BSR	 	WELCOME
 	BSR     STORY
-	BSR     GUIDE_1
 	BRA	 	GAME_LOOP
 	
 *-------------------------------------------------------
@@ -190,45 +189,6 @@ STORY:
     LEA     intro_story_string_4, A3
     BSR     SPEAKING_ASCII
     *
-
-    RTS
-
-*-------------------------------------------------------
-*-----------------GUIDE_1 SUBROUTINE--------------------
-*-------------------------------------------------------
-GUIDE_1:
-    LEA     GUIDE_NAME, A2
-    LEA     guide_1_string_1, A3
-    LEA     GUIDE,      A4
-    
-    BSR     SPEAKING_ASCII
-    
-    * INTRODUCE
-    BSR     SHOW_ASCII
-    BSR	 	ENDL
-    
-    LEA     GUIDE_NAME, A1
-    BSR     PRINT
-    
-    LEA     TALK_1, A1
-    BSR     PRINT
-    
-    LEA     guide_1_string_2, A1
-    BSR     PRINT
-    
-    LEA     GUIDE_NAME, A1
-    BSR     PRINT
-    
-    LEA     guide_1_string_3, A1
-    BSR     PRINT
-    
-    LEA     TALK_2, A1
-    BSR     PRINT
-    
-    BSR	 	ENDL
-    
-    * NEXT
-	BSR	 	SYSTEM_PAUSE
 
     RTS
 *-------------------------------------------------------
@@ -1516,10 +1476,6 @@ intro_story_string_3 	DC.B	'I am unsure why he has imposed a tax on CO2'
 
 intro_story_string_4 	DC.B	'I should make a plan to solve this problem.',0
 
-guide_1_string_1        DC.B    'Welcome to the Kingdom of Oxeris, fellow adventurer.',0
-guide_1_string_2        DC.B    'I am ',0
-guide_1_string_3        DC.B    ' and I am going to help you begin your adventure!',0
-
 LINE            DC.B    '================================================================================',0
 
 GAME_LINES      DC.B    '================================================================================'
@@ -1562,41 +1518,6 @@ YOU              DC.B    '             ^JB&@@@@@&&&&BY~.          '
                  DC.B    '&@G    ~@&                         ^@B  '
                  DC.B	$0D,$0A
                  DC.B    '@@G    .@&                         7@B  ', 0  
-
-GUIDE_NAME       DC.B    'Guide Gary',   0
-GUIDE            DC.B    '                .!5B&&&@&&#B5?!^             '
-                 DC.B	$0D,$0A
-                 DC.B    '            !5G#&#G?^.....^~?PB&&7           '
-                 DC.B	$0D,$0A
-                 DC.B    '           P@G!^.              ^@&:          '
-                 DC.B	$0D,$0A
-                 DC.B    '          .@@^                  B@@&##P?:    '
-                 DC.B	$0D,$0A
-                 DC.B    '     .~?PG#@@.                   B@#~!5#&&5. '
-                 DC.B	$0D,$0A
-                 DC.B    '  ^P&&#G?P@@P                  :~P@@5   .!&@7'
-                 DC.B	$0D,$0A
-                 DC.B    ' P@#~.   .P#&&#BP55J???JJY5GB#&&&BJ~      ?@@'
-                 DC.B	$0D,$0A
-                 DC.B    '#@G          .^~7JY5PPPPP5J?!^.        .!G@#7'
-                 DC.B	$0D,$0A
-                 DC.B    'G@#~.          ...:::^~!777???JY555PPB#&&5^  '
-                 DC.B	$0D,$0A
-                 DC.B    ' !P#&##BBB##&####B&@@&#BBBBGG5YYYJJJ#@&:     '
-                 DC.B	$0D,$0A
-                 DC.B    '    :J#&@@@@7     &@#P!:::::::...   !&@J     '
-                 DC.B	$0D,$0A
-                 DC.B    '   7@#YJ?B@&      &@BPPY7~~^^^^^^^~~J&@!     '
-                 DC.B	$0D,$0A
-                 DC.B    '   &&    J@B      P@&GPPPPP5555555PG#@@^     '
-                 DC.B	$0D,$0A
-                 DC.B    '  ^@P    P@5       5&@&&########&&&@@B:      '
-                 DC.B	$0D,$0A
-                 DC.B    '  J@Y    B@?        .~?5GGBBBBGPY?~B@Y       '
-                 DC.B	$0D,$0A
-                 DC.B    '  B@?    B@?                       Y@Y       '
-                 DC.B	$0D,$0A
-                 DC.B    '  &@?    P@J                       J@Y       ', 0
 
 KING_NAME        DC.B   'King',0
 KING             DC.B    '            P&G:          ..            '
